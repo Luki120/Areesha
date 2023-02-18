@@ -107,9 +107,9 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 			self.animatingDifferences = !isFromCache ? true : false
 		}
 		.receive(on: DispatchQueue.main)
-		.sink(receiveCompletion: { _ in }) { credits in
-			self.castCrew = credits.cast
-			self.reloadSnapshot(self.animatingDifferences)
+		.sink(receiveCompletion: { _ in }) { [weak self] credits in
+			self?.castCrew = credits.cast
+			self?.reloadSnapshot(self?.animatingDifferences ?? false)
 		}
 		.store(in: &subscriptions)
 	}
