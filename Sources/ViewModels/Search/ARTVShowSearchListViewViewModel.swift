@@ -88,6 +88,7 @@ extension ARTVShowSearchListViewViewModel {
 		let cellRegistration = CellRegistration { cell, _, viewModel in
 			var content = cell.defaultContentConfiguration()
 			content.text = viewModel.displayTVShowNameText
+			content.textProperties.font = .systemFont(ofSize: 18, weight: .semibold)
 
 			cell.contentConfiguration = content
 		}
