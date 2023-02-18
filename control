@@ -1,0 +1,9 @@
+Package: me.luki.areesha
+Name: Areesha
+Version: 0.9.0
+Architecture: iphoneos-arm
+Description: A goddamn neat awesome application
+Maintainer: Luki
+Author: Luki
+Section: Utilities
+Depends: ${LIBSWIFT}

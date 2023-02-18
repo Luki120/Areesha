@@ -1,0 +1,5 @@
+.cache/
+.theos/
+packages/
+compile_commands.json
+Sources/Utilities/Private/
