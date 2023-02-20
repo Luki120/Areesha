@@ -66,12 +66,11 @@ final class ARTVShowDetailsGenreTableViewCell: UITableViewCell {
 
 		// took me a while to figure out this fuckery 💀, but here's a ref for it:
 		// https://gist.github.com/leptos-null/c26810604e62af00fbb16a3783a4cd26
-		genreLabel.setContentHuggingPriority(.required, for: .horizontal)
 		episodeAverageDurationLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
 
 		setupSizeConstraints(forView: separatorView, width: 1, height: 20)
 
-		lastAirDateLabel.topAnchor.constraint(equalTo: genreLabel.bottomAnchor, constant: 10).isActive = true
+		lastAirDateLabel.topAnchor.constraint(equalTo: genreDetailsStackView.bottomAnchor, constant: 10).isActive = true
 		lastAirDateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10).isActive = true
 		lastAirDateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
 
