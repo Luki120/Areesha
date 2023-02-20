@@ -34,12 +34,16 @@ final class ARTVShowSearchVC: UIViewController {
 
 extension ARTVShowSearchVC: ARTVShowSearchListViewDelegate {
 
-	func didTapCloseButtonInTVShowSearchListView() {
+	func arTVShowSearchListView(_ arTVShowSearchListView: ARTVShowSearchListView, didSelect tvShow: TVShow) {
+		coordinator?.eventOccurred(with: .tvShowCellTapped(tvShow: tvShow))
+	}
+
+	func didTapCloseButton(in searchTextFieldView: ARSearchTextFieldView) {
 		coordinator?.eventOccurred(with: .closeButtonTapped)
 	}
 
-	func arTVShowSearchListView(_ arTVShowSearchListView: ARTVShowSearchListView, didSelect tvShow: TVShow) {
-		coordinator?.eventOccurred(with: .tvShowCellTapped(tvShow: tvShow))
+	func didTapClearButton(in searchTextFieldView: ARSearchTextFieldView) {
+		searchTextFieldView.textField.text = ""
 	}
 
 }

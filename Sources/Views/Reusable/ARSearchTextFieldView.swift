@@ -2,7 +2,8 @@ import UIKit
 
 // https://stackoverflow.com/questions/37102504/proper-naming-convention-for-a-delegate-method-with-no-arguments-except-the-dele
 protocol ARSearchTextFieldViewDelegate: AnyObject {
-	func didTapCloseButtonInSearchTextFieldView()
+	func didTapCloseButton(in searchTextFieldView: ARSearchTextFieldView)
+	func didTapClearButton(in searchTextFieldView: ARSearchTextFieldView)
 }
 
 /// Reusable UIView subclass to display a custom text field to search for TV shows
@@ -14,14 +15,6 @@ final class ARSearchTextFieldView: UIView {
 		stackView.alignment = .center
 		stackView.spacing = 8
 		return stackView
-	}()
-
-	@UsesAutoLayout
-	private var closeButton: UIButton = {
-		var configuration = UIButton.Configuration.plain()
-		configuration.image = UIImage(systemName: "xmark.circle")
-		configuration.baseForegroundColor = .label
-		return UIButton(configuration: configuration)
 	}()
 
 	@UsesAutoLayout
@@ -47,7 +40,10 @@ final class ARSearchTextFieldView: UIView {
 		return imageView
 	}()
 
+	private var closeButton, clearAllButton: UIButton!
+
 	var textField: UITextField { return searchTextField }
+	var clearButton: UIButton { return clearAllButton }
 
 	weak var delegate: ARSearchTextFieldViewDelegate?
 
@@ -59,11 +55,8 @@ final class ARSearchTextFieldView: UIView {
 
 	override init(frame: CGRect) {
 		super.init(frame: frame)
-		closeButton.addAction(
-			UIAction { [weak self] _ in self?.delegate?.didTapCloseButtonInSearchTextFieldView() },
-			for: .touchUpInside
-		)
 		setupUI()
+		setupButtons()
 	}
 
 	override func layoutSubviews() {
@@ -74,9 +67,16 @@ final class ARSearchTextFieldView: UIView {
 	// ! Private
 
 	private func setupUI() {
+		closeButton = createButton(usesAutoLayout: true)
+		clearAllButton = createButton(withImage: "xmark.circle", tintColor: .darkGray)
+		clearAllButton.alpha = 0
+
 		addSubview(textFieldStackView)
 		textFieldStackView.addArrangedSubviews(closeButton, searchTextField)
-		searchTextField.addSubview(searchIconImageView)
+
+		searchTextField.addSubviews(searchIconImageView, clearButton)
+		searchTextField.rightView = clearButton
+		searchTextField.rightViewMode = .always
 	}
 
 	private func layoutUI() {
@@ -86,6 +86,40 @@ final class ARSearchTextFieldView: UIView {
 
 		searchIconImageView.centerYAnchor.constraint(equalTo: searchTextField.centerYAnchor).isActive = true
 		searchIconImageView.leadingAnchor.constraint(equalTo: searchTextField.leadingAnchor, constant: 15).isActive = true
+	}
+
+	private func setupButtons() {
+		closeButton.addAction(
+			UIAction { [weak self] _ in
+				guard let self = self else { return }
+				self.delegate?.didTapCloseButton(in: self)
+			},
+			for: .touchUpInside
+		)
+		clearButton.addAction(
+			UIAction { [weak self] _ in
+				guard let self = self else { return }
+				self.delegate?.didTapClearButton(in: self)
+			},
+			for: .touchUpInside
+		)
+	}
+
+	// ! Reusable
+
+	private func createButton(
+		withImage systemName: String = "xmark.circle",
+		tintColor: UIColor = .label,
+		usesAutoLayout: Bool = false
+	) -> UIButton {
+		var configuration = UIButton.Configuration.plain()
+		configuration.image = UIImage(systemName: systemName) ?? UIImage()
+		configuration.baseForegroundColor = tintColor
+
+		let button = UIButton()
+		button.configuration = configuration
+		button.translatesAutoresizingMaskIntoConstraints = !usesAutoLayout
+		return button
 	}
 
 }

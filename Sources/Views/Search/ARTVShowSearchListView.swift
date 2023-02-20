@@ -2,7 +2,8 @@ import UIKit
 
 // https://stackoverflow.com/questions/37102504/proper-naming-convention-for-a-delegate-method-with-no-arguments-except-the-dele
 protocol ARTVShowSearchListViewDelegate: AnyObject {
-	func didTapCloseButtonInTVShowSearchListView()
+	func didTapCloseButton(in searchTextFieldView: ARSearchTextFieldView)
+	func didTapClearButton(in searchTextFieldView: ARSearchTextFieldView)
 	func arTVShowSearchListView(_ arTVShowSearchListView: ARTVShowSearchListView, didSelect tvShow: TVShow)
 }
 
@@ -69,6 +70,9 @@ final class ARTVShowSearchListView: UIView {
 	@objc
 	private func textFieldDidChange(_ textField: UITextField) {
 		let textToSearch = textField.text!.trimmingCharacters(in: .newlines)
+		UIView.transition(with: searchTextFieldView.clearButton, duration: 0.35, options: .transitionCrossDissolve) {
+			self.searchTextFieldView.clearButton.alpha = textField.text?.count ?? 0 > 0 ? 1 : 0	
+		}
 		guard !textToSearch.isEmpty else { return }
 		viewModel.searchQuerySubject.send(textToSearch)
 	}
@@ -79,8 +83,12 @@ final class ARTVShowSearchListView: UIView {
 
 extension ARTVShowSearchListView: ARSearchTextFieldViewDelegate {
 
-	func didTapCloseButtonInSearchTextFieldView() {
-		delegate?.didTapCloseButtonInTVShowSearchListView()
+	func didTapCloseButton(in: ARSearchTextFieldView) {
+		delegate?.didTapCloseButton(in: searchTextFieldView)
+	}
+
+	func didTapClearButton(in: ARSearchTextFieldView) {
+		delegate?.didTapClearButton(in: searchTextFieldView)
 	}
 
 }
