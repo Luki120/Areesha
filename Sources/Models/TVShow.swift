@@ -16,6 +16,7 @@ struct TVShow: Codable {
 	let last_air_date: String?
 	let networks: [Networks]?
 	let status: String?
+	let vote_average: Double?
 }
 
 struct Genres: Codable {

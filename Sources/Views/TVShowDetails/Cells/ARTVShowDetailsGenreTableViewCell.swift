@@ -104,9 +104,11 @@ extension ARTVShowDetailsGenreTableViewCell {
 		let date = dateFormatter.date(from: viewModel.displayLastAirDateText) ?? Date()
 
 		genreLabel.text = viewModel.displayGenreText
-		episodeAverageDurationLabel.text = "\(viewModel.displayEpisodeAverageDurationText)m"
-		lastAirDateLabel.text = "Last: \(shortDateFormatter.string(from: date))"
-		statusLabel.text = viewModel.displayStatusText
+		episodeAverageDurationLabel.text = viewModel.displayEpisodeAverageDurationText
+		lastAirDateLabel.text = "Last aired: \(shortDateFormatter.string(from: date))"
+		statusLabel.text = "\(viewModel.displayStatusText), \(viewModel.displayVoteAverageText)"
+
+		separatorView.isHidden = viewModel.displayEpisodeAverageDurationText.isEmpty ? true : false
 	}
 
 }

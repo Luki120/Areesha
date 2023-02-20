@@ -23,7 +23,7 @@ final class ARSearchTextFieldView: UIView {
 		textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 45, height: textField.frame.height))
 		textField.leftViewMode = .always
 		textField.textColor = .label
-		textField.placeholder = "Search for your favorite TV shows"
+		textField.placeholder = "Search for TV shows"
 		textField.layer.borderColor = UIColor.darkGray.cgColor
 		textField.layer.borderWidth = 1
 		textField.layer.cornerCurve = .continuous

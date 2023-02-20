@@ -127,7 +127,7 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 
 			self.episodeRunTimes = tvShow.episode_run_time ?? []
 			self.episodeRunTimeValues = self.episodeRunTimes.map { String($0) }
-			self.episodeAverageDurationText = self.episodeRunTimeValues.joined(separator: ", ")
+			self.episodeAverageDurationText = self.episodeRunTimes.isEmpty ? "" : String(describing: self.episodeRunTimeValues.joined(separator: ", ")) + " min"
 
 			self.genres = tvShow.genres ?? []
 			self.genresNames = self.genres.map(\.name)
@@ -139,7 +139,8 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 				genreText: self.genreText,
 				episodeAverageDurationText: self.episodeAverageDurationText,
 				lastAirDateText: tvShow.last_air_date,
-				statusText: tvShow.status
+				statusText: tvShow.status,
+				voteAverageText: String(describing: tvShow.vote_average?.round(to: 1) ?? 0) + "/10"
 			)
 
 			self.reloadSnapshot(self.animatingDifferences)
