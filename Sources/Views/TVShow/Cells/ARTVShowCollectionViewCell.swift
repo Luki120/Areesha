@@ -1,7 +1,7 @@
 import UIKit
 
 /// Class to represent the tv show cell
-final class ARTVShowCollectionViewCell: UICollectionViewCell, Configurable {
+final class ARTVShowCollectionViewCell: UICollectionViewCell {
 
 	@UsesAutoLayout
 	private var tvShowImageView: UIImageView = {
@@ -54,13 +54,8 @@ final class ARTVShowCollectionViewCell: UICollectionViewCell, Configurable {
 
 }
 
-extension ARTVShowCollectionViewCell {
+extension ARTVShowCollectionViewCell: Configurable {
 
-	// ! Public
-
-	/// Function to configure the cell with its respective view model
-	/// - Parameters:
-	/// 	- with: The cell's view model
 	func configure(with viewModel: ARTVShowCollectionViewCellViewModel) {
 		Task.detached(priority: .background) {
 			let image = try? await viewModel.fetchTVShowImage()
