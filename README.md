@@ -6,12 +6,13 @@
 
 ## To do
 
+* [ ] Add a top header collection view to switch between trending & top rated with a horizontal scrolling indicator, similar to the ones of Instagram, Twitter, etc.
 * [ ] Add ratings label somewhere in the details view.
-* [ ] Add an X button to delete the text from the search text field all at once.
+* [x] Add an X button to delete the text from the search text field all at once.
 * [ ] Build settings UI.
 * [ ] Build episode details UI.
 * [ ] Build seasons UI.
-* [ ] Make a fancier collection view instead of the current plain list style one in ARTVShowSearchListView?.
+* [ ] Make a fancier collection view instead of the current plain list style one in ARTVShowSearchListView?
 * [ ] Persist chosen TV shows logic.
 * [ ] Slide the search text field from top once ARTVShowSearchVC appears.
 
