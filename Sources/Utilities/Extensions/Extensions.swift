@@ -1,6 +1,13 @@
 import UIKit
 
 
+extension Double {
+	func round(to places: Int) -> Double {
+		let divisor = pow(10.0, Double(places))
+		return Darwin.round(self * divisor) / divisor
+	}
+}
+
 extension UIColor {
 	static let areeshaPinkColor = UIColor(red: 0.78, green: 0.64, blue: 0.83, alpha: 1.0)
 }
