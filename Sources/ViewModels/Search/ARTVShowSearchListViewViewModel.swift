@@ -7,18 +7,17 @@ protocol ARTVShowSearchListViewViewModelDelegate: AnyObject {
 }
 
 /// View model class for ARTVShowSearchView
-final class ARTVShowSearchListViewViewModel: NSObject, ObservableObject {
+final class ARTVShowSearchListViewViewModel: ARBaseViewModel<UICollectionViewListCell>, ObservableObject {
 
 	let searchQuerySubject = PassthroughSubject<String, Never>()
 
-	private var cellViewModels = [ARTVShowSearchCollectionViewListCellViewModel]()
 	private var searchedTVShows = [TVShow]() {
 		didSet {
 			for tvShow in searchedTVShows {
 				let viewModel = ARTVShowSearchCollectionViewListCellViewModel(tvShowNameText: tvShow.name)
 
-				if !cellViewModels.contains(viewModel) {
-					cellViewModels.append(viewModel)
+				if !viewModels.contains(viewModel) {
+					viewModels.append(viewModel)
 				}
 			}
 		}
@@ -28,21 +27,11 @@ final class ARTVShowSearchListViewViewModel: NSObject, ObservableObject {
 
 	private var subscriptions = Set<AnyCancellable>()
 
-	// ! UITableViewDiffableDataSource
-
-	@frozen private enum Sections: Hashable {
-		case main
-	}
-
-	private typealias CellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, ARTVShowSearchCollectionViewListCellViewModel>
-	private typealias DataSource = UICollectionViewDiffableDataSource<Sections, ARTVShowSearchCollectionViewListCellViewModel>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, ARTVShowSearchCollectionViewListCellViewModel>
-
-	private var dataSource: DataSource!
-	private var snapshot: Snapshot!
-
-	override init() {
-		super.init()
+	override init(collectionView: UICollectionView) {
+		super.init(collectionView: collectionView)
+		onCellRegistration = { cell, viewModel in
+			cell.configure(with: viewModel)
+		}
 		setupSearchQuerySubject()
 	}
 
@@ -50,11 +39,15 @@ final class ARTVShowSearchListViewViewModel: NSObject, ObservableObject {
 		searchQuerySubject
 			.debounce(for: .seconds(0.8), scheduler: DispatchQueue.main)
 			.sink { [weak self] in
-				self?.cellViewModels.removeAll()
+				self?.viewModels.removeAll()
 				self?.fetchSearchedTVShow(withQuery: $0)
 			}
 			.store(in: &subscriptions)
 	}
+
+}
+
+extension ARTVShowSearchListViewViewModel {
 
 	// ! Public
 
@@ -79,39 +72,14 @@ final class ARTVShowSearchListViewViewModel: NSObject, ObservableObject {
 
 // ! CollectionView
 
-extension ARTVShowSearchListViewViewModel {
+extension UICollectionViewListCell: Configurable {
+	func configure(with viewModel: ARTVShowSearchCollectionViewListCellViewModel) {
+		var content = defaultContentConfiguration()
+		content.text = viewModel.displayTVShowNameText
+		content.textProperties.font = .systemFont(ofSize: 18, weight: .semibold)
 
-	/// Function to setup the collection view's diffable data source
-	/// - Parameters:
-	///		- collectionView: the collection view
-	func setupCollectionViewDiffableDataSource(_ collectionView: UICollectionView) {
-		let cellRegistration = CellRegistration { cell, _, viewModel in
-			var content = cell.defaultContentConfiguration()
-			content.text = viewModel.displayTVShowNameText
-			content.textProperties.font = .systemFont(ofSize: 18, weight: .semibold)
-
-			cell.contentConfiguration = content
-		}
-
-		dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, identifier -> UICollectionViewCell? in
-			let cell = collectionView.dequeueConfiguredReusableCell(
-				using: cellRegistration,
-				for: indexPath,
-				item: identifier
-			)
-			return cell
-		}
-		applySnapshot()
+		contentConfiguration = content
 	}
-
-	private func applySnapshot() {
-		snapshot = Snapshot()
-		snapshot.appendSections([.main])
-		snapshot.appendItems(cellViewModels)
-
-		dataSource.apply(snapshot, animatingDifferences: true)
-	}
-
 }
 
 extension ARTVShowSearchListViewViewModel: UICollectionViewDelegate {

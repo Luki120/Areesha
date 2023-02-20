@@ -1,7 +1,7 @@
 import UIKit
 
 /// Class to represent the tv show cell
-final class ARTVShowCollectionViewCell: UICollectionViewCell {
+final class ARTVShowCollectionViewCell: UICollectionViewCell, Configurable {
 
 	@UsesAutoLayout
 	private var tvShowImageView: UIImageView = {

@@ -8,7 +8,7 @@ protocol ARTVShowListViewDelegate: AnyObject {
 /// Class to represent the tv shows list view
 final class ARTVShowListView: UIView {
 
-	private let viewModel = ARTVShowListViewViewModel()
+	private lazy var viewModel = ARTVShowListViewViewModel(collectionView: tvShowsCollectionView)
 
 	private let compositionalLayout: UICollectionViewCompositionalLayout = {
 		let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1 / 3), heightDimension: .fractionalHeight(1))
@@ -57,7 +57,6 @@ final class ARTVShowListView: UIView {
 	// ! Private
 
 	private func setupViewModel() {
-		viewModel.setupCollectionViewDiffableDataSource(tvShowsCollectionView)
 		viewModel.delegate = self
 		viewModel.fetchTVShows()
 	}

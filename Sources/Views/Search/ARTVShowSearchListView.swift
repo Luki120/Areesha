@@ -10,7 +10,7 @@ protocol ARTVShowSearchListViewDelegate: AnyObject {
 /// Class that'll show the searched tv shows in a collection view
 final class ARTVShowSearchListView: UIView {
 
-	private let viewModel = ARTVShowSearchListViewViewModel()
+	private lazy var viewModel = ARTVShowSearchListViewViewModel(collectionView: listCollectionView)
 
 	@UsesAutoLayout
 	private var searchTextFieldView = ARSearchTextFieldView()
@@ -34,12 +34,8 @@ final class ARTVShowSearchListView: UIView {
 
 	override init(frame: CGRect) {
 		super.init(frame: frame)
-		searchTextFieldView.delegate = self
-		searchTextFieldView.textField.delegate = self
-		searchTextFieldView.textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-		viewModel.setupCollectionViewDiffableDataSource(listCollectionView)
-		viewModel.delegate = self
-		setupUI()
+		setupStuff()
+		addSubviews(searchTextFieldView, listCollectionView)
 	}
 
 	override func layoutSubviews() {
@@ -49,9 +45,12 @@ final class ARTVShowSearchListView: UIView {
 
 	// ! Private
 
-	private func setupUI() {
+	private func setupStuff() {
+		searchTextFieldView.delegate = self
+		searchTextFieldView.textField.delegate = self
+		searchTextFieldView.textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+		viewModel.delegate = self
 		listCollectionView.delegate = viewModel
-		addSubviews(searchTextFieldView, listCollectionView)
 	}
 
 	private func layoutUI() {
