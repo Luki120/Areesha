@@ -5,14 +5,6 @@ final class ARTVShowDetailsGenreTableViewCell: UITableViewCell {
 
 	static let identifier = "ARTVShowDetailsGenreTableViewCell"
 
-	@UsesAutoLayout
-	private var genreDetailsStackView: UIStackView = {
-		let stackView = UIStackView()
-		stackView.alignment = .top
-		stackView.spacing = 10
-		return stackView
-	}()
-
 	private var genreLabel, episodeAverageDurationLabel, lastAirDateLabel, statusLabel: UILabel!
 
 	@UsesAutoLayout
@@ -50,27 +42,31 @@ final class ARTVShowDetailsGenreTableViewCell: UITableViewCell {
 		genreLabel = createLabel()
 		episodeAverageDurationLabel = createLabel(numberOfLines: 1)
 
-		lastAirDateLabel = createLabel(withWeight: .light, usesAutoLayout: true)
-		statusLabel = createLabel(withWeight: .light, usesAutoLayout: true)
+		lastAirDateLabel = createLabel(withWeight: .light)
+		statusLabel = createLabel(withWeight: .light)
 
-		contentView.addSubviews(genreDetailsStackView, lastAirDateLabel, statusLabel)
-		genreDetailsStackView.addArrangedSubviews(genreLabel, separatorView, episodeAverageDurationLabel)
+		contentView.addSubviews(genreLabel, separatorView, episodeAverageDurationLabel, lastAirDateLabel, statusLabel)
 
 		layoutUI()
 	}
 
 	private func layoutUI() {
-		genreDetailsStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
-		genreDetailsStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
-		genreDetailsStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
+		genreLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
+		genreLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
+		genreLabel.trailingAnchor.constraint(equalTo: separatorView.leadingAnchor, constant: -10).isActive = true
+
+		separatorView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
+		separatorView.trailingAnchor.constraint(equalTo: episodeAverageDurationLabel.leadingAnchor, constant: -10).isActive = true
+		setupSizeConstraints(forView: separatorView, width: 1, height: 20)
+
+		episodeAverageDurationLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
+		episodeAverageDurationLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
 
 		// took me a while to figure out this fuckery 💀, but here's a ref for it:
 		// https://gist.github.com/leptos-null/c26810604e62af00fbb16a3783a4cd26
 		episodeAverageDurationLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-		setupSizeConstraints(forView: separatorView, width: 1, height: 20)
-
-		lastAirDateLabel.topAnchor.constraint(equalTo: genreDetailsStackView.bottomAnchor, constant: 10).isActive = true
+		lastAirDateLabel.topAnchor.constraint(equalTo: genreLabel.bottomAnchor, constant: 10).isActive = true
 		lastAirDateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10).isActive = true
 		lastAirDateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
 
@@ -80,16 +76,12 @@ final class ARTVShowDetailsGenreTableViewCell: UITableViewCell {
 
 	// ! Reusable
 
-	private func createLabel(
-		withWeight weight: UIFont.Weight = .semibold,
-		numberOfLines lines: Int = 0,
-		usesAutoLayout: Bool = false
-	) -> UILabel {
+	private func createLabel(withWeight weight: UIFont.Weight = .semibold, numberOfLines lines: Int = 0) -> UILabel {
 		let label = UILabel()
 		label.font = .systemFont(ofSize: 15, weight: weight)
 		label.textColor = .label
 		label.numberOfLines = lines
-		label.translatesAutoresizingMaskIntoConstraints = !usesAutoLayout
+		label.translatesAutoresizingMaskIntoConstraints = false
 		return label
 	}
 
