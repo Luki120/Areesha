@@ -8,7 +8,7 @@ final class ARTVShowDetailsGenreTableViewCell: UITableViewCell {
 	@UsesAutoLayout
 	private var genreDetailsStackView: UIStackView = {
 		let stackView = UIStackView()
-		stackView.alignment = .center
+		stackView.alignment = .top
 		stackView.spacing = 10
 		return stackView
 	}()
@@ -64,9 +64,14 @@ final class ARTVShowDetailsGenreTableViewCell: UITableViewCell {
 		genreDetailsStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
 		genreDetailsStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
 
+		// took me a while to figure out this fuckery 💀, but here's a ref for it:
+		// https://gist.github.com/leptos-null/c26810604e62af00fbb16a3783a4cd26
+		genreLabel.setContentHuggingPriority(.required, for: .horizontal)
+		episodeAverageDurationLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+
 		setupSizeConstraints(forView: separatorView, width: 1, height: 20)
 
-		lastAirDateLabel.topAnchor.constraint(equalTo: genreDetailsStackView.bottomAnchor, constant: 10).isActive = true
+		lastAirDateLabel.topAnchor.constraint(equalTo: genreLabel.bottomAnchor, constant: 10).isActive = true
 		lastAirDateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10).isActive = true
 		lastAirDateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
 
@@ -103,7 +108,7 @@ extension ARTVShowDetailsGenreTableViewCell {
 
 	/// Function to configure the cell with its respective view model
 	/// - Parameters:
-	/// 	- with: The cell's view model
+	///     - with: The cell's view model
 	func configure(with viewModel: ARTVShowDetailsGenreTableViewCellViewModel) {
 		let date = dateFormatter.date(from: viewModel.displayLastAirDateText) ?? Date()
 
