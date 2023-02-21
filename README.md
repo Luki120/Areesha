@@ -7,14 +7,15 @@
 ## To do
 
 * [ ] Add a top header collection view to switch between trending & top rated with a horizontal scrolling indicator, similar to the ones of Instagram, Twitter, etc.
-* [ ] Add ratings label somewhere in the details view.
+* [x] Add ratings label somewhere in the details view.
 * [x] Add an X button to delete the text from the search text field all at once.
 * [ ] Build settings UI.
 * [ ] Build episode details UI.
 * [ ] Build seasons UI.
-* [ ] Make a fancier collection view instead of the current plain list style one in ARTVShowSearchListView?
+* [ ] Get rid of class prefixes 💀.
 * [ ] Persist chosen TV shows logic.
-* [ ] Slide the search text field from top once ARTVShowSearchVC appears.
+* [ ] Slide the search text field from top once `ARTVShowSearchVC` appears.
+* [ ] Use `CodingKey` protocol for `Codable` models.
 
 ## Socials
 
