@@ -24,15 +24,6 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 		}
 	}
 
-	private var genreText = ""
-	private var episodeAverageDurationText = ""
-
-	private var episodeRunTimeValues = [String]()
-	private var episodeRunTimes = [Int]()
-
-	private var genresNames = [String]()
-	private var genres = [Genres]()
-
 	private var networksNames = [String]()
 	private var networks = [Networks]() {
 		didSet {
@@ -125,19 +116,19 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 		.sink(receiveCompletion: { _ in }) { [weak self] tvShow in
 			guard let self = self else { return }
 
-			self.episodeRunTimes = tvShow.episode_run_time ?? []
-			self.episodeRunTimeValues = self.episodeRunTimes.map { String($0) }
-			self.episodeAverageDurationText = self.episodeRunTimes.isEmpty ? "" : String(describing: self.episodeRunTimeValues.joined(separator: ", ")) + " min"
+			let episodeRunTimes = tvShow.episode_run_time ?? []
+			let episodeRunTimeValues = episodeRunTimes.map { String($0) }
 
-			self.genres = tvShow.genres ?? []
-			self.genresNames = self.genres.map(\.name)
-			self.genreText = self.genresNames.joined(separator: ", ")
+			let episodeAverageDurationText = episodeRunTimes.isEmpty ? "" : String(describing: episodeRunTimeValues.joined(separator: ", ")) + " min"
+
+			let genres = tvShow.genres ?? []
+			let genresNames = genres.map(\.name)
 
 			self.networks = tvShow.networks ?? []
 
 			self.genreCellViewModel = .init(
-				genreText: self.genreText,
-				episodeAverageDurationText: self.episodeAverageDurationText,
+				genreText: genresNames.joined(separator: ", "),
+				episodeAverageDurationText: episodeAverageDurationText,
 				lastAirDateText: tvShow.last_air_date,
 				statusText: tvShow.status,
 				voteAverageText: String(describing: tvShow.vote_average?.round(to: 1) ?? 0) + "/10"
