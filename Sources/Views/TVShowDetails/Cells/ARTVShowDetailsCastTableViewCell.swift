@@ -1,7 +1,7 @@
 import UIKit
 
 /// Class to represent the tv show details cast cell
-final class ARTVShowDetailsCastTableViewCell: UITableViewCell {
+final class ARTVShowDetailsCastTableViewCell: ARTVShowDetailsBaseTableViewCell {
 
 	static let identifier = "ARTVShowDetailsCastTableViewCell"
 
@@ -13,30 +13,18 @@ final class ARTVShowDetailsCastTableViewCell: UITableViewCell {
 
 	// ! Lifecycle
 
-	required init?(coder: NSCoder) {
-		super.init(coder: coder)
-	}
-
-	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-		super.init(style: style, reuseIdentifier: reuseIdentifier)
-		setupUI()
-	}
-
 	override func prepareForReuse() {
 		super.prepareForReuse()
 		castCrewLabel.text = nil
 	}
 
-	// ! Private
-
-	private func setupUI() {
+	override func setupUI() {
 		castLabel = createLabel(withWeight: .bold)
 		castCrewLabel = createLabel()
-
-		layoutUI()
+		super.setupUI()
 	}
 
-	private func layoutUI() {
+	override func layoutUI() {
 		castLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
 		castLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
 

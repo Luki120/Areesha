@@ -1,7 +1,7 @@
 import UIKit
 
 /// Class to represent the tv show details overview cell
-final class ARTVShowDetailsOverviewTableViewCell: UITableViewCell {
+final class ARTVShowDetailsOverviewTableViewCell: ARTVShowDetailsBaseTableViewCell {
 
 	static let identifier = "ARTVShowDetailsOverviewTableViewCell"
 
@@ -15,13 +15,17 @@ final class ARTVShowDetailsOverviewTableViewCell: UITableViewCell {
 
 	// ! Lifecycle
 
-	required init?(coder: NSCoder) {
-		super.init(coder: coder)
+	override func prepareForReuse() {
+		super.prepareForReuse()
+		overviewLabel.text = nil
 	}
 
-	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-		super.init(style: style, reuseIdentifier: reuseIdentifier)
+	override func setupUI() {
 		contentView.addSubview(overviewLabel)
+		super.setupUI()
+	}
+
+	override func layoutUI() {
 		contentView.pinViewToAllEdges(
 			overviewLabel,
 			topConstant: 20,
@@ -29,11 +33,6 @@ final class ARTVShowDetailsOverviewTableViewCell: UITableViewCell {
 			leadingConstant: 20,
 			trailingConstant: -20
 		)
-	}
-
-	override func prepareForReuse() {
-		super.prepareForReuse()
-		overviewLabel.text = nil
 	}
 
 }
@@ -50,4 +49,3 @@ extension ARTVShowDetailsOverviewTableViewCell {
 	}
 
 }
-

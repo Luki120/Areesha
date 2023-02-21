@@ -1,7 +1,7 @@
 import UIKit
 
 /// Class to represent the tv show details networks cell
-final class ARTVShowDetailsNetworksTableViewCell: UITableViewCell {
+final class ARTVShowDetailsNetworksTableViewCell: ARTVShowDetailsBaseTableViewCell {
 
 	static let identifier = "ARTVShowDetailsNetworksTableViewCell"
 
@@ -13,30 +13,18 @@ final class ARTVShowDetailsNetworksTableViewCell: UITableViewCell {
 
 	// ! Lifecycle
 
-	required init?(coder: NSCoder) {
-		super.init(coder: coder)
-	}
-
-	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-		super.init(style: style, reuseIdentifier: reuseIdentifier)
-		setupUI()
-	}
-
 	override func prepareForReuse() {
 		super.prepareForReuse()
 		networksNamesLabel.text = nil
 	}
 
-	// ! Private
-
-	private func setupUI() {
+	override func setupUI() {
 		networksTitleLabel = createLabel(withWeight: .bold)
 		networksNamesLabel = createLabel()
-
-		layoutUI()
+		super.setupUI()
 	}
 
-	private func layoutUI() {
+	override func layoutUI() {
 		networksTitleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
 		networksTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
 

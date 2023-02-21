@@ -1,7 +1,7 @@
 import UIKit
 
 /// Class to represent the tv show details genre cell
-final class ARTVShowDetailsGenreTableViewCell: UITableViewCell {
+final class ARTVShowDetailsGenreTableViewCell: ARTVShowDetailsBaseTableViewCell {
 
 	static let identifier = "ARTVShowDetailsGenreTableViewCell"
 
@@ -19,15 +19,6 @@ final class ARTVShowDetailsGenreTableViewCell: UITableViewCell {
 
 	// ! Lifecycle
 
-	required init?(coder: NSCoder) {
-		super.init(coder: coder)
-	}
-
-	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-		super.init(style: style, reuseIdentifier: reuseIdentifier)
-		setupUI()
-	}
-
 	override func prepareForReuse() {
 		super.prepareForReuse()
 		genreLabel.text = nil
@@ -36,9 +27,7 @@ final class ARTVShowDetailsGenreTableViewCell: UITableViewCell {
 		statusLabel.text = nil
 	}
 
-	// ! Private
-
-	private func setupUI() {
+	override func setupUI() {
 		genreLabel = createLabel()
 		episodeAverageDurationLabel = createLabel(numberOfLines: 1)
 
@@ -46,11 +35,10 @@ final class ARTVShowDetailsGenreTableViewCell: UITableViewCell {
 		statusLabel = createLabel(withWeight: .light)
 
 		contentView.addSubviews(genreLabel, separatorView, episodeAverageDurationLabel, lastAirDateLabel, statusLabel)
-
-		layoutUI()
+		super.setupUI()
 	}
 
-	private func layoutUI() {
+	override func layoutUI() {
 		genreLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
 		genreLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
 		genreLabel.trailingAnchor.constraint(equalTo: separatorView.leadingAnchor, constant: -10).isActive = true
