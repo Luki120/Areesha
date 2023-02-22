@@ -41,7 +41,6 @@ final class ARTVShowDetailsView: UIView {
 		super.init(frame: .zero)
 		setupTableView()
 		viewModel.setupTableView(tvShowDetailsTableView)
-		viewModel.fetchTVShowDetails()
 	}
 
 	override func layoutSubviews() {

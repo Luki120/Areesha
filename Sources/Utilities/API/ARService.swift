@@ -19,14 +19,14 @@ final class ARService {
 
 	/// Function that'll handle API calls
 	/// - Parameters:
-	///		- withURL: the API call url
-	///		- expecting: the given type that conforms to Codable from which we will decode the JSON data
+	///     - withURL: the API call url
+	///     - expecting: the given type that conforms to Codable from which we will decode the JSON data
 	/// - Returns: Any type of publisher, of generic type T & Error
- 	func fetchTVShows<T: Codable>(
- 		withURL url: URL,
- 		expecting type: T.Type,
- 		isFromCache: @escaping (Bool) -> () = { _ in }
- 	) -> AnyPublisher<T, Error> {
+	func fetchTVShows<T: Codable>(
+		withURL url: URL,
+		expecting type: T.Type,
+		isFromCache: @escaping (Bool) -> () = { _ in }
+	) -> AnyPublisher<T, Error> {
 		if let cachedData = apiCache[url.absoluteString] {
 			isFromCache(true)
 			return Just(cachedData)

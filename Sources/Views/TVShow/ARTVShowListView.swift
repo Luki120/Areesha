@@ -46,19 +46,12 @@ final class ARTVShowListView: UIView {
 		addSubview(tvShowsCollectionView)
 		tvShowsCollectionView.delegate = viewModel
 		tvShowsCollectionView.setCollectionViewLayout(compositionalLayout, animated: true)
-		setupViewModel()
+		viewModel.delegate = self
 	}
 
 	override func layoutSubviews() {
 		super.layoutSubviews()
 		pinViewToAllEdges(tvShowsCollectionView)
-	}
-
-	// ! Private
-
-	private func setupViewModel() {
-		viewModel.delegate = self
-		viewModel.fetchTVShows()
 	}
 
 }

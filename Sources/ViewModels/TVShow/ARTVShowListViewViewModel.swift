@@ -34,16 +34,10 @@ final class ARTVShowListViewViewModel: ARBaseViewModel<ARTVShowCollectionViewCel
 				await cell.configure(with: viewModel)
 			}
 		}
+		fetchTVShows()
 	}
 
-}
-
-extension ARTVShowListViewViewModel {
-
-	// ! Public
-
-	/// Function to get the top rated TV shows
-	func fetchTVShows() {
+	private func fetchTVShows() {
 		guard let url = URL(string: ARService.Constants.topRatedTVShowsURL) else { return }
 
 		ARService.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)

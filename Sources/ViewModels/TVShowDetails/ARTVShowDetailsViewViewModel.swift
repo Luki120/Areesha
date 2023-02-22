@@ -72,6 +72,8 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 		self.tvShow = tvShow
 		super.init()
 		setupModels()
+		fetchTVShowCast()
+		fetchTVShowDetails()
 	}
 
 	// ! Private
@@ -105,7 +107,7 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 		.store(in: &subscriptions)
 	}
 
-	private func fetchCurrentTVShowDetails() {
+	private func fetchTVShowDetails() {
 		let urlString = "\(ARService.Constants.baseURL)tv/\(tvShow.id)?api_key=\(ARService.Constants.apiKey)&language=en-US"
 		guard let url = URL(string: urlString) else { return }
 
@@ -137,18 +139,6 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 			self.reloadSnapshot(self.animatingDifferences)
 		}
 		.store(in: &subscriptions)
-	}
-
-}
-
-extension ARTVShowDetailsViewViewModel {
-
-	// ! Public
-
-	/// Function to get additional details for the specified TV show id
-	func fetchTVShowDetails() {
-		fetchTVShowCast()
-		fetchCurrentTVShowDetails()
 	}
 
 }
