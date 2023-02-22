@@ -8,6 +8,13 @@ extension Double {
 	}
 }
 
+extension Task where Success == Never, Failure == Never {
+	static func sleep(seconds: Double) async throws {
+		let nanoseconds = UInt64(seconds * 1_000_000_000)
+		try await Task.sleep(nanoseconds: nanoseconds)
+	}
+}
+
 extension UIColor {
 	static let areeshaPinkColor = UIColor(red: 0.78, green: 0.64, blue: 0.83, alpha: 1.0)
 }
@@ -46,23 +53,13 @@ extension UIView {
 		topConstant: CGFloat = 0,
 		bottomConstant: CGFloat = 0,
 		leadingConstant: CGFloat = 0,
-		trailingConstant: CGFloat = 0,
-		pinToSafeArea: Bool = false
+		trailingConstant: CGFloat = 0
 	) {
-		guard pinToSafeArea else {
-			NSLayoutConstraint.activate([
-				view.topAnchor.constraint(equalTo: topAnchor, constant: topConstant),
-				view.bottomAnchor.constraint(equalTo: bottomAnchor, constant: bottomConstant),
-				view.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingConstant),
-				view.trailingAnchor.constraint(equalTo: trailingAnchor, constant: trailingConstant)
-			])
-			return
-		}
 		NSLayoutConstraint.activate([
-			view.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: topConstant),
-			view.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: bottomConstant),
-			view.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: leadingConstant),
-			view.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: trailingConstant)
+			view.topAnchor.constraint(equalTo: topAnchor, constant: topConstant),
+			view.bottomAnchor.constraint(equalTo: bottomAnchor, constant: bottomConstant),
+			view.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingConstant),
+			view.trailingAnchor.constraint(equalTo: trailingAnchor, constant: trailingConstant)
 		])
 	}
 
