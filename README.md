@@ -10,12 +10,13 @@
 * [x] Add ratings label somewhere in the details view.
 * [x] Add an X button to delete the text from the search text field all at once.
 * [ ] Build settings UI.
-* [ ] Build episode details UI.
 * [ ] Build seasons UI.
+* [ ] Build season's episodes UI.
+* [ ] Build episode details UI.
 * [ ] Get rid of class prefixes 💀.
 * [ ] Persist chosen TV shows logic.
-* [ ] Slide the search text field from top once `ARTVShowSearchVC` appears.
-* [ ] Use `CodingKey` protocol for `Codable` models.
+* [x] Slide the search text field from top once `ARTVShowSearchVC` appears.
+* [x] Use `CodingKey` protocol for `Codable` models.
 
 ## Socials
 
