@@ -35,27 +35,7 @@ final class ARTVShowSearchListViewViewModel: ARBaseViewModel<UICollectionViewLis
 		setupSearchQuerySubject()
 	}
 
-	private func setupSearchQuerySubject() {
-		searchQuerySubject
-			.debounce(for: .seconds(0.8), scheduler: DispatchQueue.main)
-			.sink { [weak self] in
-				self?.viewModels.removeAll()
-				self?.fetchSearchedTVShow(withQuery: $0)
-			}
-			.store(in: &subscriptions)
-	}
-
-}
-
-extension ARTVShowSearchListViewViewModel {
-
-	// ! Public
-
-	/// Function to get the queried tv show by name
-	/// - Parameters:
-	///		- fromQuery: an optional string to represent the given query,
-	///		defaulting to nil if none was provided
-	func fetchSearchedTVShow(withQuery query: String? = nil) {
+	private func fetchSearchedTVShow(withQuery query: String? = nil) {
 		guard let url = URL(string: "\(ARService.Constants.searchTVShowBaseURL)&query=\(query ?? "")") else { return }
 
 		ARService.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)
@@ -64,6 +44,16 @@ extension ARTVShowSearchListViewViewModel {
 			.sink { [weak self] searchedTVShows in
 				self?.searchedTVShows = searchedTVShows.results
 				self?.applySnapshot()
+			}
+			.store(in: &subscriptions)
+	}
+
+	private func setupSearchQuerySubject() {
+		searchQuerySubject
+			.debounce(for: .seconds(0.8), scheduler: DispatchQueue.main)
+			.sink { [weak self] in
+				self?.viewModels.removeAll()
+				self?.fetchSearchedTVShow(withQuery: $0)
 			}
 			.store(in: &subscriptions)
 	}
