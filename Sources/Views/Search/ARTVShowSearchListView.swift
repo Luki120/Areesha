@@ -13,7 +13,12 @@ final class ARTVShowSearchListView: UIView {
 	private lazy var viewModel = ARTVShowSearchListViewViewModel(collectionView: listCollectionView)
 
 	@UsesAutoLayout
-	private var searchTextFieldView = ARSearchTextFieldView()
+	private var searchTextFieldView: ARSearchTextFieldView = {
+		let view = ARSearchTextFieldView()
+		view.alpha = 0
+		view.transform = .init(translationX: 0, y: -50)
+		return view
+	}()
 
 	@UsesAutoLayout
 	private var listCollectionView: UICollectionView = {
@@ -35,7 +40,7 @@ final class ARTVShowSearchListView: UIView {
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		setupStuff()
-		addSubviews(searchTextFieldView, listCollectionView)
+		setupUI()
 	}
 
 	override func layoutSubviews() {
@@ -51,6 +56,17 @@ final class ARTVShowSearchListView: UIView {
 		searchTextFieldView.textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
 		viewModel.delegate = self
 		listCollectionView.delegate = viewModel
+	}
+
+	private func setupUI() {
+		addSubviews(searchTextFieldView, listCollectionView)
+		Task {
+			try await Task.sleep(seconds: 0.20)
+			UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 1) {
+	 			self.searchTextFieldView.alpha = 1
+				self.searchTextFieldView.transform = .init(translationX: 0, y: 0)
+			}
+		}
 	}
 
 	private func layoutUI() {
@@ -82,11 +98,11 @@ final class ARTVShowSearchListView: UIView {
 
 extension ARTVShowSearchListView: ARSearchTextFieldViewDelegate {
 
-	func didTapCloseButton(in: ARSearchTextFieldView) {
+	func didTapCloseButton(in searchTextFieldView: ARSearchTextFieldView) {
 		delegate?.didTapCloseButton(in: searchTextFieldView)
 	}
 
-	func didTapClearButton(in: ARSearchTextFieldView) {
+	func didTapClearButton(in searchTextFieldView: ARSearchTextFieldView) {
 		delegate?.didTapClearButton(in: searchTextFieldView)
 	}
 
