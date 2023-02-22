@@ -86,7 +86,7 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 			.networks(viewModel: networksCellViewModel)
 		]
 
-		guard let url = URL(string: "\(ARService.Constants.baseImageURL)w1280/\(tvShow.backdrop_path ?? "")") else {
+		guard let url = URL(string: "\(ARService.Constants.baseImageURL)w1280/\(tvShow.backdropPath ?? "")") else {
 			return
 		}
 		headerViewViewModel = .init(imageURL: url)
@@ -118,7 +118,7 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 		.sink(receiveCompletion: { _ in }) { [weak self] tvShow in
 			guard let self = self else { return }
 
-			let episodeRunTimes = tvShow.episode_run_time ?? []
+			let episodeRunTimes = tvShow.episodeRunTime ?? []
 			let episodeRunTimeValues = episodeRunTimes.map { String($0) }
 
 			let episodeAverageDurationText = episodeRunTimes.isEmpty ? "" : String(describing: episodeRunTimeValues.joined(separator: ", ")) + " min"
@@ -131,9 +131,9 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 			self.genreCellViewModel = .init(
 				genreText: genresNames.joined(separator: ", "),
 				episodeAverageDurationText: episodeAverageDurationText,
-				lastAirDateText: tvShow.last_air_date,
+				lastAirDateText: tvShow.lastAirDate,
 				statusText: tvShow.status,
-				voteAverageText: String(describing: tvShow.vote_average?.round(to: 1) ?? 0) + "/10"
+				voteAverageText: String(describing: tvShow.voteAverage?.round(to: 1) ?? 0) + "/10"
 			)
 
 			self.reloadSnapshot(self.animatingDifferences)

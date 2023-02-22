@@ -12,7 +12,7 @@ final class ARTVShowListViewViewModel: ARBaseViewModel<ARTVShowCollectionViewCel
 	private var tvShows = [TVShow]() {
 		didSet {
 			for tvShow in tvShows {
-				let imageURLString = "\(ARService.Constants.baseImageURL)w500/\(tvShow.poster_path ?? "")"
+				let imageURLString = "\(ARService.Constants.baseImageURL)w500/\(tvShow.posterPath ?? "")"
 				guard let url = URL(string: imageURLString) else { return }
 				let viewModel = ARTVShowCollectionViewCellViewModel(imageURL: url)
 

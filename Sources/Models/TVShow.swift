@@ -9,14 +9,28 @@ struct TVShow: Codable {
 	let id: Int
 	let name: String
 	let overview: String?
-	let poster_path: String?
-	let backdrop_path: String?
-	let episode_run_time: [Int]?
+	let posterPath: String?
+	let backdropPath: String?
+	let episodeRunTime: [Int]?
 	let genres: [Genres]?
-	let last_air_date: String?
+	let lastAirDate: String?
 	let networks: [Networks]?
 	let status: String?
-	let vote_average: Double?
+	let voteAverage: Double?
+
+	enum CodingKeys: String, CodingKey {
+		case id
+		case name
+		case overview
+		case posterPath = "poster_path"
+		case backdropPath = "backdrop_path"
+		case episodeRunTime = "episode_run_time"
+		case genres
+		case lastAirDate = "last_air_date"
+		case networks
+		case status
+		case voteAverage = "vote_average"
+	}
 }
 
 struct Genres: Codable {
