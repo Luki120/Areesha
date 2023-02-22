@@ -21,11 +21,13 @@ final class ARTVShowSearchVC: UIViewController {
  	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		coordinator?.eventOccurred(with: .pushedVC)
+		tvShowSearchListView.becomeTextFieldFirstResponder()
 	}
 
  	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
 		coordinator?.eventOccurred(with: .poppedVC)
+		tvShowSearchListView.resignTextFieldFirstResponder()
 	}
 
 }

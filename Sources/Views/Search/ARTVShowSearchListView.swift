@@ -94,6 +94,22 @@ final class ARTVShowSearchListView: UIView {
 
 }
 
+extension ARTVShowSearchListView {
+
+	// Public
+
+	/// Function to become the text field's first responder when needed
+	func becomeTextFieldFirstResponder() {
+		searchTextFieldView.textField.becomeFirstResponder()
+	}
+
+	/// Function to resign the text field's first responder when needed
+	func resignTextFieldFirstResponder() {
+		searchTextFieldView.textField.resignFirstResponder()
+	}
+
+}
+
 // ! ARSearchTextFieldViewDelegate
 
 extension ARTVShowSearchListView: ARSearchTextFieldViewDelegate {
@@ -108,10 +124,14 @@ extension ARTVShowSearchListView: ARSearchTextFieldViewDelegate {
 
 }
 
+// ! ARTVShowSearchListViewViewModelDelegate
+
 extension ARTVShowSearchListView: ARTVShowSearchListViewViewModelDelegate {
+
 	func didSelect(tvShow: TVShow) {
 		delegate?.arTVShowSearchListView(self, didSelect: tvShow)
 	}
+
 }
 
 // ! UITextFieldDelegate
