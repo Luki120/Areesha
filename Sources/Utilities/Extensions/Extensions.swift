@@ -44,6 +44,7 @@ extension UIView {
 	func createSpinnerView(withStyle style: UIActivityIndicatorView.Style, childOf view: UIView) -> UIActivityIndicatorView {
 		let spinnerView = UIActivityIndicatorView(style: style)
 		spinnerView.hidesWhenStopped = true
+		spinnerView.translatesAutoresizingMaskIntoConstraints = false
 		view.addSubview(spinnerView)
 		return spinnerView
 	}
