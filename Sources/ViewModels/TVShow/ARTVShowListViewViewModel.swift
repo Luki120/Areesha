@@ -3,6 +3,7 @@ import UIKit
 
 
 protocol ARTVShowListViewViewModelDelegate: AnyObject {
+	func didLoadTVShows()
 	func didSelect(tvShow: TVShow)
 }
 
@@ -45,7 +46,7 @@ final class ARTVShowListViewViewModel: ARBaseViewModel<ARTVShowCollectionViewCel
 			.receive(on: DispatchQueue.main)
 			.sink { [weak self] tvShows in
 				self?.tvShows = tvShows.results
-				self?.applySnapshot()
+				self?.delegate?.didLoadTVShows()
 			}
 			.store(in: &subscriptions)
 	}

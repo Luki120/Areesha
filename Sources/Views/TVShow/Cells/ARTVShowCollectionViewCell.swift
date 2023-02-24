@@ -15,6 +15,8 @@ final class ARTVShowCollectionViewCell: UICollectionViewCell {
 		return imageView
 	}()
 
+	private lazy var spinnerView = createSpinnerView(withStyle: .medium, childOf: contentView) 
+
 	// ! Lifecyle
 
 	required init?(coder: NSCoder) {
@@ -28,11 +30,12 @@ final class ARTVShowCollectionViewCell: UICollectionViewCell {
 
 	override func layoutSubviews() {
 		super.layoutSubviews()
-		contentView.pinViewToAllEdges(tvShowImageView)
+		layoutUI()
 	}
 
 	override func prepareForReuse() {
 		super.prepareForReuse()
+		spinnerView.startAnimating()
 		tvShowImageView.image = nil
 	}
 
@@ -48,8 +51,15 @@ final class ARTVShowCollectionViewCell: UICollectionViewCell {
 		contentView.layer.shadowOffset = CGSize(width: 0, height: 1)
 		contentView.layer.shadowOpacity = 0.5
 		contentView.layer.shadowRadius = 4
-
 		contentView.addSubview(tvShowImageView)
+
+		spinnerView.startAnimating()
+	}
+
+	private func layoutUI() {
+		contentView.pinViewToAllEdges(tvShowImageView)
+		tvShowImageView.centerViewOnBothAxes(spinnerView)
+		setupSizeConstraints(forView: spinnerView, width: 100, height: 100)
 	}
 
 }
@@ -65,6 +75,7 @@ extension ARTVShowCollectionViewCell: Configurable {
 					self.tvShowImageView.image = image
 					self.tvShowImageView.transform = .init(scaleX: 1, y: 1)
 				}
+				self.spinnerView.stopAnimating()
 			}
 		}
 	}
