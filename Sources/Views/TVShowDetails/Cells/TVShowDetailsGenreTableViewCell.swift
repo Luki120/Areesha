@@ -1,9 +1,9 @@
 import UIKit
 
 /// Class to represent the tv show details genre cell
-final class ARTVShowDetailsGenreTableViewCell: ARTVShowDetailsBaseTableViewCell {
+final class TVShowDetailsGenreTableViewCell: TVShowDetailsBaseTableViewCell {
 
-	static let identifier = "ARTVShowDetailsGenreTableViewCell"
+	static let identifier = "TVShowDetailsGenreTableViewCell"
 
 	private var genreLabel, episodeAverageDurationLabel, lastAirDateLabel, statusLabel: UILabel!
 
@@ -81,14 +81,14 @@ final class ARTVShowDetailsGenreTableViewCell: ARTVShowDetailsBaseTableViewCell 
 
 }
 
-extension ARTVShowDetailsGenreTableViewCell {
+extension TVShowDetailsGenreTableViewCell {
 
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
 	/// - Parameters:
 	///     - with: The cell's view model
-	func configure(with viewModel: ARTVShowDetailsGenreTableViewCellViewModel) {
+	func configure(with viewModel: TVShowDetailsGenreTableViewCellViewModel) {
 		let date = dateFormatter.date(from: viewModel.displayLastAirDateText) ?? Date()
 
 		genreLabel.text = viewModel.displayGenreText

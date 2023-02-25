@@ -1,7 +1,7 @@
 import UIKit
 
 /// Base TV show details table view cell class to clean up initialization code
-class ARTVShowDetailsBaseTableViewCell: UITableViewCell {
+class TVShowDetailsBaseTableViewCell: UITableViewCell {
 
 	// ! Lifecycle
 

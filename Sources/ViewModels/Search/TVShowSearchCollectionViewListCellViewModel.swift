@@ -1,7 +1,7 @@
 import Foundation
 
-/// View model struct for the vanilla collection view list cells in ARTVShowSearchListView's collection view
-struct ARTVShowSearchCollectionViewListCellViewModel: Hashable {
+/// View model struct for the vanilla collection view list cells in TVShowSearchListView's collection view
+struct TVShowSearchCollectionViewListCellViewModel: Hashable {
 
 	private let tvShowNameText: String
 

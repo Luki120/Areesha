@@ -1,7 +1,7 @@
 import UIKit
 
 /// Controller that'll show the settings view
-final class ARSettingsVC: UIViewController {
+final class SettingsVC: UIViewController {
 
 	var coordinator: SettingsCoordinator?
 

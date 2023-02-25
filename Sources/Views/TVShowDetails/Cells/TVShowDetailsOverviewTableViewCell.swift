@@ -1,9 +1,9 @@
 import UIKit
 
 /// Class to represent the tv show details overview cell
-final class ARTVShowDetailsOverviewTableViewCell: ARTVShowDetailsBaseTableViewCell {
+final class TVShowDetailsOverviewTableViewCell: TVShowDetailsBaseTableViewCell {
 
-	static let identifier = "ARTVShowDetailsOverviewTableViewCell"
+	static let identifier = "TVShowDetailsOverviewTableViewCell"
 
 	@UsesAutoLayout
 	private var overviewLabel: UILabel = {
@@ -37,14 +37,14 @@ final class ARTVShowDetailsOverviewTableViewCell: ARTVShowDetailsBaseTableViewCe
 
 }
 
-extension ARTVShowDetailsOverviewTableViewCell {
+extension TVShowDetailsOverviewTableViewCell {
 
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
 	/// - Parameters:
 	/// 	- with: The cell's view model
-	func configure(with viewModel: ARTVShowDetailsOverviewTableViewCellViewModel) {
+	func configure(with viewModel: TVShowDetailsOverviewTableViewCellViewModel) {
 		overviewLabel.text = viewModel.displayOverviewText
 	}
 

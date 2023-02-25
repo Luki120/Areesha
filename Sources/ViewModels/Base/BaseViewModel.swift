@@ -1,12 +1,12 @@
 import UIKit
 
 /// Base class to handle a generic UICollectionViewDiffableDataSource
-class ARBaseViewModel<CellType: UICollectionViewCell & Configurable>: NSObject {
+class BaseViewModel<Cell: UICollectionViewCell & Configurable>: NSObject {
 
 	// ! UICollectionViewDiffableDataSource
 
-	typealias ViewModel = CellType.ProvidedViewModel
-	private typealias CellRegistration = UICollectionView.CellRegistration<CellType, ViewModel>
+	typealias ViewModel = Cell.ViewModel
+	private typealias CellRegistration = UICollectionView.CellRegistration<Cell, ViewModel>
 	private typealias DataSource = UICollectionViewDiffableDataSource<Sections, ViewModel>
 	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, ViewModel>
 
@@ -18,7 +18,7 @@ class ARBaseViewModel<CellType: UICollectionViewCell & Configurable>: NSObject {
 	}
 
 	/// Closure that takes two generic arguments & returns nothing to configure the cell's registration
-	var onCellRegistration: ((CellType, ViewModel) -> Void)!
+	var onCellRegistration: ((Cell, ViewModel) -> Void)!
 	/// Array of view model objects
 	var viewModels = [ViewModel]()
 
@@ -60,7 +60,7 @@ class ARBaseViewModel<CellType: UICollectionViewCell & Configurable>: NSObject {
 
 }
 
-extension ARBaseViewModel {
+extension BaseViewModel {
 
 	// ! Public
 

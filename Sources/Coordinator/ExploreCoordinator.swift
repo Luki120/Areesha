@@ -16,7 +16,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 
 	override init() {
 		super.init()
-		let exploreVC = ARExploreVC()
+		let exploreVC = ExploreVC()
 		exploreVC.title = "Explore"
 		exploreVC.coordinator = self
 		exploreVC.tabBarItem = UITabBarItem(title: "Explore", image: UIImage(systemName: "magnifyingglass"), tag: 0)
@@ -27,7 +27,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 	func eventOccurred(with event: Event) {
 		switch event {
 			case .tvShowCellTapped(let tvShow):
-				let viewModel = ARTVShowDetailsViewViewModel(tvShow: tvShow)
+				let viewModel = TVShowDetailsViewViewModel(tvShow: tvShow)
 				let detailVC = TVShowDetailsVC(viewModel: viewModel)
 				detailVC.coordinator = self
 				navigationController.pushViewController(detailVC, animated: true)
@@ -36,7 +36,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 				navigationController.popViewController(animated: true)
 
 			case .searchButtonTapped:
-				let searchVC = ARTVShowSearchVC()
+				let searchVC = TVShowSearchVC()
 				searchVC.coordinator = self
 				navigationController.pushViewController(searchVC, animated: true)
 
@@ -107,7 +107,7 @@ extension SwipeableNavigationController: UINavigationControllerDelegate {
 		to toVC: UIViewController
 	) -> UIViewControllerAnimatedTransitioning? {
 		/// Class to use neat custom transitions when pushing & popping vcs into the stack
-		final class ARPushPopAnimator: NSObject, UIViewControllerAnimatedTransitioning {
+		final class PushPopAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 			func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
 				return 0.35
 			}
@@ -127,7 +127,7 @@ extension SwipeableNavigationController: UINavigationControllerDelegate {
 				}
 			}
 		}
-		return ARPushPopAnimator()
+		return PushPopAnimator()
 	}
 
 }

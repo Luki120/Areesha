@@ -8,7 +8,7 @@ final class TrackedTVShowsCoordinator: Coordinator {
 	var navigationController = SwipeableNavigationController()
 
 	init() {
-		let trackedTVShowsVC = ARTrackedTVShowsVC()
+		let trackedTVShowsVC = TrackedTVShowsVC()
 		trackedTVShowsVC.coordinator = self
 		trackedTVShowsVC.title = "Shows"
 		trackedTVShowsVC.tabBarItem = UITabBarItem(title: "Shows", image: UIImage(named: "Movie"), tag: 2)

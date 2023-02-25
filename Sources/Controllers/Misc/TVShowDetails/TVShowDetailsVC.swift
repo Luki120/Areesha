@@ -3,8 +3,8 @@ import UIKit
 /// Controller that'll show the tv show details view
 final class TVShowDetailsVC: UIViewController {
 
-	let tvShowDetailsViewViewModel: ARTVShowDetailsViewViewModel
-	let tvShowDetailsView: ARTVShowDetailsView
+	let tvShowDetailsViewViewModel: TVShowDetailsViewViewModel
+	let tvShowDetailsView: TVShowDetailsView
 
 	var coordinator: ExploreCoordinator?
 
@@ -17,9 +17,9 @@ final class TVShowDetailsVC: UIViewController {
 	/// Designated initializer
 	/// - Parameters:
 	///     - viewModel: the view model object for this vc's view
-	init(viewModel: ARTVShowDetailsViewViewModel) {
+	init(viewModel: TVShowDetailsViewViewModel) {
 		self.tvShowDetailsViewViewModel = viewModel
-		self.tvShowDetailsView = ARTVShowDetailsView(viewModel: viewModel)
+		self.tvShowDetailsView = TVShowDetailsView(viewModel: viewModel)
 		super.init(nibName: nil, bundle: nil)
 	}
 

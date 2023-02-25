@@ -1,11 +1,11 @@
 import UIKit
 
 /// Controller that'll show the TV show search list view
-final class ARTVShowSearchVC: UIViewController {
+final class TVShowSearchVC: UIViewController {
 
 	var coordinator: ExploreCoordinator?
 
-	private let tvShowSearchListView = ARTVShowSearchListView()
+	private let tvShowSearchListView = TVShowSearchListView()
 
 	// ! Lifecycle
 
@@ -32,19 +32,19 @@ final class ARTVShowSearchVC: UIViewController {
 
 }
 
-// ! ARTVShowSearchListViewDelegate
+// ! TVShowSearchListViewDelegate
 
-extension ARTVShowSearchVC: ARTVShowSearchListViewDelegate {
+extension TVShowSearchVC: TVShowSearchListViewDelegate {
 
-	func arTVShowSearchListView(_ arTVShowSearchListView: ARTVShowSearchListView, didSelect tvShow: TVShow) {
+	func tvShowSearchListView(_ tvShowSearchListView: TVShowSearchListView, didSelect tvShow: TVShow) {
 		coordinator?.eventOccurred(with: .tvShowCellTapped(tvShow: tvShow))
 	}
 
-	func didTapCloseButton(in searchTextFieldView: ARSearchTextFieldView) {
+	func didTapCloseButton(in searchTextFieldView: SearchTextFieldView) {
 		coordinator?.eventOccurred(with: .closeButtonTapped)
 	}
 
-	func didTapClearButton(in searchTextFieldView: ARSearchTextFieldView) {
+	func didTapClearButton(in searchTextFieldView: SearchTextFieldView) {
 		searchTextFieldView.textField.text = ""
 	}
 

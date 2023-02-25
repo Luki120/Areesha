@@ -1,7 +1,7 @@
 import UIKit
 
 /// Class to represent the header image for the details view
-final class ARTVShowDetailsHeaderView: UIView {
+final class TVShowDetailsHeaderView: UIView {
 
 	@UsesAutoLayout
 	private var containerView: UIView = {
@@ -52,14 +52,14 @@ final class ARTVShowDetailsHeaderView: UIView {
 
 }
 
-extension ARTVShowDetailsHeaderView {
+extension TVShowDetailsHeaderView {
 
 	// ! Public
 
 	/// Function to configure the view with its respective view model
 	/// - Parameters:
 	/// 	- with: The view's view model
-	func configure(with viewModel: ARTVShowDetailsHeaderViewViewModel) {
+	func configure(with viewModel: TVShowDetailsHeaderViewViewModel) {
 		Task.detached(priority: .background) {
 			let image = try? await viewModel.fetchTVShowHeaderImage()
 			await MainActor.run {

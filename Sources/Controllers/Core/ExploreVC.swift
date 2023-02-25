@@ -1,12 +1,12 @@
 import UIKit
 
 /// Controller that'll show the main tv shows list
-final class ARExploreVC: UIViewController {
+final class ExploreVC: UIViewController {
 
 	var coordinator: ExploreCoordinator?
 	private var previousVC: UIViewController?
 
-	private let tvShowListView = ARTVShowListView()
+	private let tvShowListView = TVShowListView()
 
 	// ! Lifecycle
 
@@ -38,11 +38,11 @@ final class ARExploreVC: UIViewController {
 
 }
 
-// ! ARTVShowListViewDelegate
+// ! TVShowListViewDelegate
 
-extension ARExploreVC: ARTVShowListViewDelegate {
+extension ExploreVC: TVShowListViewDelegate {
 
-	func arTVShowListView(_ arTVShowListView: ARTVShowListView, didSelect tvShow: TVShow) {
+	func tvShowListView(_ tvShowListView: TVShowListView, didSelect tvShow: TVShow) {
 		coordinator?.eventOccurred(with: .tvShowCellTapped(tvShow: tvShow))
 	}
 
@@ -50,12 +50,12 @@ extension ARExploreVC: ARTVShowListViewDelegate {
 
 // ! UITabBarControllerDelegate
 
-extension ARExploreVC: UITabBarControllerDelegate {
+extension ExploreVC: UITabBarControllerDelegate {
 
 	func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
 		if previousVC == viewController || previousVC == nil {
 			guard let navVC = viewController as? UINavigationController,
-				let vc = navVC.viewControllers.first as? ARExploreVC,
+				let vc = navVC.viewControllers.first as? ExploreVC,
 				vc.view.window != nil else { return }
 
 			tvShowListView.collectionView.setContentOffset(

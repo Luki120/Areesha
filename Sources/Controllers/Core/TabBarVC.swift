@@ -1,7 +1,7 @@
 import UIKit
 
 /// Root view controller, which will show our tabs
-final class ARTabBarVC: UITabBarController {
+final class TabBarVC: UITabBarController {
 
 	private let exploreCoordinator = ExploreCoordinator()
 	private let trackedTVShowsCoordinator = TrackedTVShowsCoordinator()

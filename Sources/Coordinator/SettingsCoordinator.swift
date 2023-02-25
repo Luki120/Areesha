@@ -8,7 +8,7 @@ final class SettingsCoordinator: Coordinator {
 	var navigationController = SwipeableNavigationController()
 
 	init() {
-		let settingsVC = ARSettingsVC()
+		let settingsVC = SettingsVC()
 		settingsVC.coordinator = self
 		settingsVC.title = "Settings"
 		settingsVC.tabBarItem = UITabBarItem(title: "Settings", image: UIImage(systemName: "gear"), tag: 1)

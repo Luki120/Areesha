@@ -2,19 +2,19 @@ import Combine
 import UIKit
 
 
-protocol ARTVShowSearchListViewViewModelDelegate: AnyObject {
+protocol TVShowSearchListViewViewModelDelegate: AnyObject {
 	func didSelect(tvShow: TVShow)
 }
 
 /// View model class for ARTVShowSearchView
-final class ARTVShowSearchListViewViewModel: ARBaseViewModel<UICollectionViewListCell>, ObservableObject {
+final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCell>, ObservableObject {
 
 	let searchQuerySubject = PassthroughSubject<String, Never>()
 
 	private var searchedTVShows = [TVShow]() {
 		didSet {
 			for tvShow in searchedTVShows {
-				let viewModel = ARTVShowSearchCollectionViewListCellViewModel(tvShowNameText: tvShow.name)
+				let viewModel = TVShowSearchCollectionViewListCellViewModel(tvShowNameText: tvShow.name)
 
 				if !viewModels.contains(viewModel) {
 					viewModels.append(viewModel)
@@ -23,7 +23,7 @@ final class ARTVShowSearchListViewViewModel: ARBaseViewModel<UICollectionViewLis
 		}
 	}
 
-	weak var delegate: ARTVShowSearchListViewViewModelDelegate?
+	weak var delegate: TVShowSearchListViewViewModelDelegate?
 
 	private var subscriptions = Set<AnyCancellable>()
 
@@ -36,9 +36,9 @@ final class ARTVShowSearchListViewViewModel: ARBaseViewModel<UICollectionViewLis
 	}
 
 	private func fetchSearchedTVShow(withQuery query: String? = nil) {
-		guard let url = URL(string: "\(ARService.Constants.searchTVShowBaseURL)&query=\(query ?? "")") else { return }
+		guard let url = URL(string: "\(Service.Constants.searchTVShowBaseURL)&query=\(query ?? "")") else { return }
 
-		ARService.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)
+		Service.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)
 			.catch { _ in Just(APIResponse(results: [])) }
 			.receive(on: DispatchQueue.main)
 			.sink { [weak self] searchedTVShows in
@@ -63,7 +63,7 @@ final class ARTVShowSearchListViewViewModel: ARBaseViewModel<UICollectionViewLis
 // ! CollectionView
 
 extension UICollectionViewListCell: Configurable {
-	func configure(with viewModel: ARTVShowSearchCollectionViewListCellViewModel) {
+	func configure(with viewModel: TVShowSearchCollectionViewListCellViewModel) {
 		var content = defaultContentConfiguration()
 		content.text = viewModel.displayTVShowNameText
 		content.textProperties.font = .systemFont(ofSize: 18, weight: .semibold)
@@ -72,7 +72,7 @@ extension UICollectionViewListCell: Configurable {
 	}
 }
 
-extension ARTVShowSearchListViewViewModel: UICollectionViewDelegate {
+extension TVShowSearchListViewViewModel: UICollectionViewDelegate {
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)

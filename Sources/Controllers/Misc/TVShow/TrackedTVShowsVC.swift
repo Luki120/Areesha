@@ -1,7 +1,7 @@
 import UIKit
 
 /// Controller that'll show the tracked tv shows list view
-final class ARTrackedTVShowsVC: UIViewController {
+final class TrackedTVShowsVC: UIViewController {
 
 	var coordinator: TrackedTVShowsCoordinator?
 

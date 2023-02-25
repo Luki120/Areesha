@@ -2,9 +2,9 @@ import Combine
 import Foundation
 
 /// Singleton service to make API calls
-final class ARService {
+final class Service {
 
-	static let sharedInstance = ARService()
+	static let sharedInstance = Service()
 	private init() {}
 
 	private var apiCache = [String:Data]()

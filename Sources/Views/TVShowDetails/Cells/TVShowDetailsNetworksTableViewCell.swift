@@ -1,9 +1,9 @@
 import UIKit
 
 /// Class to represent the tv show details networks cell
-final class ARTVShowDetailsNetworksTableViewCell: ARTVShowDetailsBaseTableViewCell {
+final class TVShowDetailsNetworksTableViewCell: TVShowDetailsBaseTableViewCell {
 
-	static let identifier = "ARTVShowDetailsNetworksTableViewCell"
+	static let identifier = "TVShowDetailsNetworksTableViewCell"
 
 	@UsesAutoLayout
 	private var networksTitleLabel = UILabel()
@@ -47,14 +47,14 @@ final class ARTVShowDetailsNetworksTableViewCell: ARTVShowDetailsBaseTableViewCe
 
 }
 
-extension ARTVShowDetailsNetworksTableViewCell {
+extension TVShowDetailsNetworksTableViewCell {
 
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
 	/// - Parameters:
 	/// 	- with: The cell's view model
-	func configure(with viewModel: ARTVShowDetailsNetworksTableViewCellViewModel) {
+	func configure(with viewModel: TVShowDetailsNetworksTableViewCellViewModel) {
 		networksTitleLabel.text = viewModel.displayNetworksTitleText
 		networksNamesLabel.text = viewModel.displayNetworksNamesText
 	}

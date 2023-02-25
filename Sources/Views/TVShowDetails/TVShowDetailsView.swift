@@ -1,20 +1,20 @@
 import UIKit
 
 /// Class to represent the TV show details view
-final class ARTVShowDetailsView: UIView {
+final class TVShowDetailsView: UIView {
 
-	private let viewModel: ARTVShowDetailsViewViewModel
-	private var headerView: ARTVShowDetailsHeaderView!
+	private let viewModel: TVShowDetailsViewViewModel
+	private var headerView: TVShowDetailsHeaderView!
 
 	@UsesAutoLayout
 	private var tvShowDetailsTableView: UITableView = {
 		let tableView = UITableView()
 		tableView.allowsSelection = false
 		tableView.backgroundColor = .systemBackground
-		tableView.register(ARTVShowDetailsGenreTableViewCell.self, forCellReuseIdentifier: ARTVShowDetailsGenreTableViewCell.identifier)
-		tableView.register(ARTVShowDetailsOverviewTableViewCell.self, forCellReuseIdentifier: ARTVShowDetailsOverviewTableViewCell.identifier)
-		tableView.register(ARTVShowDetailsCastTableViewCell.self, forCellReuseIdentifier: ARTVShowDetailsCastTableViewCell.identifier)
-		tableView.register(ARTVShowDetailsNetworksTableViewCell.self, forCellReuseIdentifier: ARTVShowDetailsNetworksTableViewCell.identifier)
+		tableView.register(TVShowDetailsGenreTableViewCell.self, forCellReuseIdentifier: TVShowDetailsGenreTableViewCell.identifier)
+		tableView.register(TVShowDetailsOverviewTableViewCell.self, forCellReuseIdentifier: TVShowDetailsOverviewTableViewCell.identifier)
+		tableView.register(TVShowDetailsCastTableViewCell.self, forCellReuseIdentifier: TVShowDetailsCastTableViewCell.identifier)
+		tableView.register(TVShowDetailsNetworksTableViewCell.self, forCellReuseIdentifier: TVShowDetailsNetworksTableViewCell.identifier)
 		return tableView
 	}()
 
@@ -36,7 +36,7 @@ final class ARTVShowDetailsView: UIView {
 	/// Designated initializer
 	/// - Parameters:
 	///     - viewModel: the view model object for this view
-	init(viewModel: ARTVShowDetailsViewViewModel) {
+	init(viewModel: TVShowDetailsViewViewModel) {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
 		setupTableView()
@@ -62,10 +62,10 @@ final class ARTVShowDetailsView: UIView {
 
 // ! UITableViewDelegate
 
-extension ARTVShowDetailsView: UITableViewDelegate {
+extension TVShowDetailsView: UITableViewDelegate {
 
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
-		guard let headerView = tvShowDetailsTableView.tableHeaderView as? ARTVShowDetailsHeaderView,
+		guard let headerView = tvShowDetailsTableView.tableHeaderView as? TVShowDetailsHeaderView,
 			let vc = parentViewController as? TVShowDetailsVC else { return }
 
 		headerView.scrollViewDidScroll(scrollView: scrollView)

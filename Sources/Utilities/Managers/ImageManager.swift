@@ -1,9 +1,9 @@
 import UIKit
 
 /// Singleton manager to handle the image fetching logic
-final class ARImageManager {
+final class ImageManager {
 
-	static let sharedInstance = ARImageManager()
+	static let sharedInstance = ImageManager()
 	private init() {}
 
 	private let imageCache = NSCache<NSString, UIImage>()

@@ -1,16 +1,16 @@
 import Combine
 import UIKit
 
-/// View model class for ARTVShowDetailsViewViewModel
-final class ARTVShowDetailsViewViewModel: NSObject {
+/// View model class for TVShowDetailsViewViewModel
+final class TVShowDetailsViewViewModel: NSObject {
 
 	private let tvShow: TVShow
 
-	private var headerViewViewModel: ARTVShowDetailsHeaderViewViewModel!
-	private var genreCellViewModel = ARTVShowDetailsGenreTableViewCellViewModel()
-	private var overviewCellViewModel: ARTVShowDetailsOverviewTableViewCellViewModel!
-	private var castCellViewModel = ARTVShowDetailsCastTableViewCellViewModel()
-	private var networksCellViewModel = ARTVShowDetailsNetworksTableViewCellViewModel()
+	private var headerViewViewModel: TVShowDetailsHeaderViewViewModel!
+	private var genreCellViewModel = TVShowDetailsGenreTableViewCellViewModel()
+	private var overviewCellViewModel: TVShowDetailsOverviewTableViewCellViewModel!
+	private var castCellViewModel = TVShowDetailsCastTableViewCellViewModel()
+	private var networksCellViewModel = TVShowDetailsNetworksTableViewCellViewModel()
 
 	private var castCrewNames = [String]()
 	private var castCrew = [Cast]() {
@@ -47,10 +47,10 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 	// ! UITableViewDiffableDataSource
 
 	private enum CellType: Hashable {
-		case genre(viewModel: ARTVShowDetailsGenreTableViewCellViewModel)
-		case overview(viewModel: ARTVShowDetailsOverviewTableViewCellViewModel)
-		case cast(viewModel: ARTVShowDetailsCastTableViewCellViewModel)
-		case networks(viewModel: ARTVShowDetailsNetworksTableViewCellViewModel)
+		case genre(viewModel: TVShowDetailsGenreTableViewCellViewModel)
+		case overview(viewModel: TVShowDetailsOverviewTableViewCellViewModel)
+		case cast(viewModel: TVShowDetailsCastTableViewCellViewModel)
+		case networks(viewModel: TVShowDetailsNetworksTableViewCellViewModel)
 	}
 
 	private var cells = [CellType]()
@@ -86,17 +86,17 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 			.networks(viewModel: networksCellViewModel)
 		]
 
-		guard let url = URL(string: "\(ARService.Constants.baseImageURL)w1280/\(tvShow.backdropPath ?? "")") else {
+		guard let url = URL(string: "\(Service.Constants.baseImageURL)w1280/\(tvShow.backdropPath ?? "")") else {
 			return
 		}
 		headerViewViewModel = .init(imageURL: url)
 	}
 
 	private func fetchTVShowCast() {
-		let urlString = "\(ARService.Constants.baseURL)tv/\(tvShow.id)/credits?api_key=\(ARService.Constants.apiKey)&language=en-US"
+		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)/credits?api_key=\(Service.Constants.apiKey)&language=en-US"
 		guard let url = URL(string: urlString) else { return }
 
-		ARService.sharedInstance.fetchTVShows(withURL: url, expecting: Credits.self) { isFromCache in
+		Service.sharedInstance.fetchTVShows(withURL: url, expecting: Credits.self) { isFromCache in
 			self.animatingDifferences = !isFromCache ? true : false
 		}
 		.receive(on: DispatchQueue.main)
@@ -108,10 +108,10 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 	}
 
 	private func fetchTVShowDetails() {
-		let urlString = "\(ARService.Constants.baseURL)tv/\(tvShow.id)?api_key=\(ARService.Constants.apiKey)&language=en-US"
+		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)?api_key=\(Service.Constants.apiKey)&language=en-US"
 		guard let url = URL(string: urlString) else { return }
 
-		ARService.sharedInstance.fetchTVShows(withURL: url, expecting: TVShow.self) { isFromCache in
+		Service.sharedInstance.fetchTVShows(withURL: url, expecting: TVShow.self) { isFromCache in
 			self.animatingDifferences = !isFromCache ? true : false
 		}
 		.receive(on: DispatchQueue.main)
@@ -145,13 +145,13 @@ final class ARTVShowDetailsViewViewModel: NSObject {
 
 // ! TableView
 
-extension ARTVShowDetailsViewViewModel {
+extension TVShowDetailsViewViewModel {
 
 	/// Function to setup the table view's header
 	/// - Parameters:
 	///     - view: the view that owns the table view, therefore the header
-	func setupHeaderView(forView view: UIView) -> ARTVShowDetailsHeaderView {
-		let headerView = ARTVShowDetailsHeaderView()
+	func setupHeaderView(forView view: UIView) -> TVShowDetailsHeaderView {
+		let headerView = TVShowDetailsHeaderView()
 		headerView.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 160)
 		headerView.configure(with: headerViewViewModel)
 		return headerView
@@ -166,22 +166,22 @@ extension ARTVShowDetailsViewViewModel {
 
 			switch self.cells[indexPath.row] {
 				case .genre:
-					let cell: ARTVShowDetailsGenreTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: TVShowDetailsGenreTableViewCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: self.genreCellViewModel)
 					return cell
 
 				case .overview(let overviewCellViewModel):
-					let cell: ARTVShowDetailsOverviewTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: TVShowDetailsOverviewTableViewCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: overviewCellViewModel)
 					return cell
 
 				case .cast:
-					let cell: ARTVShowDetailsCastTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: TVShowDetailsCastTableViewCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: self.castCellViewModel)
 					return cell
 
 				case .networks:
-					let cell: ARTVShowDetailsNetworksTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: TVShowDetailsNetworksTableViewCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: self.networksCellViewModel)
 					return cell
 			}

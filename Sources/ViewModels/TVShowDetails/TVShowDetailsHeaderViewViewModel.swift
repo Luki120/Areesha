@@ -1,7 +1,7 @@
 import UIKit.UIImage
 
-/// View model struct for ARTVShowCollectionViewCell
-struct ARTVShowCollectionViewCellViewModel: Hashable {
+/// View model struct for TVShowDetailsHeaderView
+struct TVShowDetailsHeaderViewViewModel {
 
 	private let imageURL: URL?
 
@@ -14,8 +14,9 @@ struct ARTVShowCollectionViewCellViewModel: Hashable {
 
 	/// Function to retrieve the tv show image either from the cache or the network
 	/// - Returns: A UIImage
-	func fetchTVShowImage() async throws -> UIImage {
+	func fetchTVShowHeaderImage() async throws -> UIImage {
 		guard let url = imageURL else { throw URLError(.badURL) }
-		return try await ARImageManager.sharedInstance.fetchImageAsync(url)
+		return try await ImageManager.sharedInstance.fetchImageAsync(url)
 	}
+
 }

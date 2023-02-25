@@ -1,7 +1,7 @@
 import Foundation
 
-/// View model struct for ARTVShowDetailsOverviewTableViewCell
-struct ARTVShowDetailsOverviewTableViewCellViewModel: Hashable {
+/// View model struct for TVShowDetailsOverviewTableViewCell
+struct TVShowDetailsOverviewTableViewCellViewModel: Hashable {
 
 	private let overviewText: String
 

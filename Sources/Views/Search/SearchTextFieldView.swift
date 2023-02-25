@@ -1,13 +1,13 @@
 import UIKit
 
 // https://stackoverflow.com/questions/37102504/proper-naming-convention-for-a-delegate-method-with-no-arguments-except-the-dele
-protocol ARSearchTextFieldViewDelegate: AnyObject {
-	func didTapCloseButton(in searchTextFieldView: ARSearchTextFieldView)
-	func didTapClearButton(in searchTextFieldView: ARSearchTextFieldView)
+protocol SearchTextFieldViewDelegate: AnyObject {
+	func didTapCloseButton(in searchTextFieldView: SearchTextFieldView)
+	func didTapClearButton(in searchTextFieldView: SearchTextFieldView)
 }
 
 /// UIView subclass to display a custom text field to search for TV shows
-final class ARSearchTextFieldView: UIView {
+final class SearchTextFieldView: UIView {
 
 	@UsesAutoLayout
 	private var textFieldStackView: UIStackView = {
@@ -45,7 +45,7 @@ final class ARSearchTextFieldView: UIView {
 	var textField: UITextField { return searchTextField }
 	var clearButton: UIButton { return clearAllButton }
 
-	weak var delegate: ARSearchTextFieldViewDelegate?
+	weak var delegate: SearchTextFieldViewDelegate?
 
 	// ! Lifecycle
 

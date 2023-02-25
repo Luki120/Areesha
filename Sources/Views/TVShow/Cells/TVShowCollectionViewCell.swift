@@ -1,7 +1,7 @@
 import UIKit
 
 /// Class to represent the tv show cell
-final class ARTVShowCollectionViewCell: UICollectionViewCell {
+final class TVShowCollectionViewCell: UICollectionViewCell {
 
 	@UsesAutoLayout
 	private var tvShowImageView: UIImageView = {
@@ -64,9 +64,9 @@ final class ARTVShowCollectionViewCell: UICollectionViewCell {
 
 }
 
-extension ARTVShowCollectionViewCell: Configurable {
+extension TVShowCollectionViewCell: Configurable {
 
-	func configure(with viewModel: ARTVShowCollectionViewCellViewModel) {
+	func configure(with viewModel: TVShowCollectionViewCellViewModel) {
 		Task.detached(priority: .background) {
 			let image = try? await viewModel.fetchTVShowImage()
 			await MainActor.run {

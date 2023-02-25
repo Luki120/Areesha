@@ -2,20 +2,20 @@ import Combine
 import UIKit
 
 
-protocol ARTVShowListViewViewModelDelegate: AnyObject {
+protocol TVShowListViewViewModelDelegate: AnyObject {
 	func didLoadTVShows()
 	func didSelect(tvShow: TVShow)
 }
 
-/// View model class for ARTVShowListView
-final class ARTVShowListViewViewModel: ARBaseViewModel<ARTVShowCollectionViewCell> {
+/// View model class for TVShowListView
+final class TVShowListViewViewModel: BaseViewModel<TVShowCollectionViewCell> {
 
 	private var tvShows = [TVShow]() {
 		didSet {
 			for tvShow in tvShows {
-				let imageURLString = "\(ARService.Constants.baseImageURL)w500/\(tvShow.posterPath ?? "")"
+				let imageURLString = "\(Service.Constants.baseImageURL)w500/\(tvShow.posterPath ?? "")"
 				guard let url = URL(string: imageURLString) else { return }
-				let viewModel = ARTVShowCollectionViewCellViewModel(imageURL: url)
+				let viewModel = TVShowCollectionViewCellViewModel(imageURL: url)
 
 				if !viewModels.contains(viewModel) {
 					viewModels.append(viewModel)
@@ -26,7 +26,7 @@ final class ARTVShowListViewViewModel: ARBaseViewModel<ARTVShowCollectionViewCel
 
 	private var subscriptions = Set<AnyCancellable>()
 
-	weak var delegate: ARTVShowListViewViewModelDelegate?
+	weak var delegate: TVShowListViewViewModelDelegate?
 
 	override init(collectionView: UICollectionView) {
 		super.init(collectionView: collectionView)
@@ -39,9 +39,9 @@ final class ARTVShowListViewViewModel: ARBaseViewModel<ARTVShowCollectionViewCel
 	}
 
 	private func fetchTVShows() {
-		guard let url = URL(string: ARService.Constants.topRatedTVShowsURL) else { return }
+		guard let url = URL(string: Service.Constants.topRatedTVShowsURL) else { return }
 
-		ARService.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)
+		Service.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)
 			.catch { _ in Just(APIResponse(results: [])) }
 			.receive(on: DispatchQueue.main)
 			.sink { [weak self] tvShows in
@@ -55,7 +55,7 @@ final class ARTVShowListViewViewModel: ARBaseViewModel<ARTVShowCollectionViewCel
 
 // ! UICollectionViewDelegate
 
-extension ARTVShowListViewViewModel: UICollectionViewDelegate {
+extension TVShowListViewViewModel: UICollectionViewDelegate {
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)

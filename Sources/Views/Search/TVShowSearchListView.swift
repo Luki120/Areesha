@@ -1,20 +1,20 @@
 import UIKit
 
 // https://stackoverflow.com/questions/37102504/proper-naming-convention-for-a-delegate-method-with-no-arguments-except-the-dele
-protocol ARTVShowSearchListViewDelegate: AnyObject {
-	func didTapCloseButton(in searchTextFieldView: ARSearchTextFieldView)
-	func didTapClearButton(in searchTextFieldView: ARSearchTextFieldView)
-	func arTVShowSearchListView(_ arTVShowSearchListView: ARTVShowSearchListView, didSelect tvShow: TVShow)
+protocol TVShowSearchListViewDelegate: AnyObject {
+	func didTapCloseButton(in searchTextFieldView: SearchTextFieldView)
+	func didTapClearButton(in searchTextFieldView: SearchTextFieldView)
+	func tvShowSearchListView(_ tvShowSearchListView: TVShowSearchListView, didSelect tvShow: TVShow)
 }
 
 /// Class that'll show the searched tv shows in a collection view
-final class ARTVShowSearchListView: UIView {
+final class TVShowSearchListView: UIView {
 
-	private lazy var viewModel = ARTVShowSearchListViewViewModel(collectionView: listCollectionView)
+	private lazy var viewModel = TVShowSearchListViewViewModel(collectionView: listCollectionView)
 
 	@UsesAutoLayout
-	private var searchTextFieldView: ARSearchTextFieldView = {
-		let view = ARSearchTextFieldView()
+	private var searchTextFieldView: SearchTextFieldView = {
+		let view = SearchTextFieldView()
 		view.alpha = 0
 		view.transform = .init(translationX: 0, y: -50)
 		return view
@@ -29,7 +29,7 @@ final class ARTVShowSearchListView: UIView {
 		return collectionView
 	}()
 
-	weak var delegate: ARTVShowSearchListViewDelegate?
+	weak var delegate: TVShowSearchListViewDelegate?
 
 	// ! Lifecycle
 
@@ -94,7 +94,7 @@ final class ARTVShowSearchListView: UIView {
 
 }
 
-extension ARTVShowSearchListView {
+extension TVShowSearchListView {
 
 	// Public
 
@@ -110,33 +110,33 @@ extension ARTVShowSearchListView {
 
 }
 
-// ! ARSearchTextFieldViewDelegate
+// ! SearchTextFieldViewDelegate
 
-extension ARTVShowSearchListView: ARSearchTextFieldViewDelegate {
+extension TVShowSearchListView: SearchTextFieldViewDelegate {
 
-	func didTapCloseButton(in searchTextFieldView: ARSearchTextFieldView) {
+	func didTapCloseButton(in searchTextFieldView: SearchTextFieldView) {
 		delegate?.didTapCloseButton(in: searchTextFieldView)
 	}
 
-	func didTapClearButton(in searchTextFieldView: ARSearchTextFieldView) {
+	func didTapClearButton(in searchTextFieldView: SearchTextFieldView) {
 		delegate?.didTapClearButton(in: searchTextFieldView)
 	}
 
 }
 
-// ! ARTVShowSearchListViewViewModelDelegate
+// ! TVShowSearchListViewViewModelDelegate
 
-extension ARTVShowSearchListView: ARTVShowSearchListViewViewModelDelegate {
+extension TVShowSearchListView: TVShowSearchListViewViewModelDelegate {
 
 	func didSelect(tvShow: TVShow) {
-		delegate?.arTVShowSearchListView(self, didSelect: tvShow)
+		delegate?.tvShowSearchListView(self, didSelect: tvShow)
 	}
 
 }
 
 // ! UITextFieldDelegate
 
-extension ARTVShowSearchListView: UITextFieldDelegate {
+extension TVShowSearchListView: UITextFieldDelegate {
 
 	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 		searchTextFieldView.textField.resignFirstResponder()

@@ -1,9 +1,9 @@
 import UIKit
 
 /// Class to represent the tv show details cast cell
-final class ARTVShowDetailsCastTableViewCell: ARTVShowDetailsBaseTableViewCell {
+final class TVShowDetailsCastTableViewCell: TVShowDetailsBaseTableViewCell {
 
-	static let identifier = "ARTVShowDetailsCastTableViewCell"
+	static let identifier = "TVShowDetailsCastTableViewCell"
 
 	@UsesAutoLayout
 	private var castLabel = UILabel()
@@ -47,14 +47,14 @@ final class ARTVShowDetailsCastTableViewCell: ARTVShowDetailsBaseTableViewCell {
 
 }
 
-extension ARTVShowDetailsCastTableViewCell {
+extension TVShowDetailsCastTableViewCell {
 
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
 	/// - Parameters:
 	/// 	- with: The cell's view model
-	func configure(with viewModel: ARTVShowDetailsCastTableViewCellViewModel) {
+	func configure(with viewModel: TVShowDetailsCastTableViewCellViewModel) {
 		castLabel.text = viewModel.displayCastText
 		castCrewLabel.text = viewModel.displayCastCrewText
 	}

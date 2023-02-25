@@ -1,12 +1,12 @@
 import UIKit
 
 
-protocol ARTVShowListViewDelegate: AnyObject {
-	func arTVShowListView(_ arTVShowListView: ARTVShowListView, didSelect tvShow: TVShow)
+protocol TVShowListViewDelegate: AnyObject {
+	func tvShowListView(_ tvShowListView: TVShowListView, didSelect tvShow: TVShow)
 }
 
 /// Class to represent the tv shows list view
-final class ARTVShowListView: UIView {
+final class TVShowListView: UIView {
 
 	private let compositionalLayout: UICollectionViewCompositionalLayout = {
 		let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1 / 3), heightDimension: .fractionalHeight(1))
@@ -32,10 +32,10 @@ final class ARTVShowListView: UIView {
 
 	var collectionView: UICollectionView { return tvShowsCollectionView }
 
-	weak var delegate: ARTVShowListViewDelegate?
+	weak var delegate: TVShowListViewDelegate?
 
 	private lazy var spinnerView = createSpinnerView(withStyle: .large, childOf: self)
-	private lazy var viewModel = ARTVShowListViewViewModel(collectionView: tvShowsCollectionView)
+	private lazy var viewModel = TVShowListViewViewModel(collectionView: tvShowsCollectionView)
 
 	// ! Lifecycle
 
@@ -72,9 +72,9 @@ final class ARTVShowListView: UIView {
 
 }
 
-// ! ARTVShowListViewViewModelDelegate
+// ! TVShowListViewViewModelDelegate
 
-extension ARTVShowListView: ARTVShowListViewViewModelDelegate {
+extension TVShowListView: TVShowListViewViewModelDelegate {
 
 	func didLoadTVShows() {
 		spinnerView.stopAnimating()
@@ -86,7 +86,7 @@ extension ARTVShowListView: ARTVShowListViewViewModelDelegate {
 	}
 
 	func didSelect(tvShow: TVShow) {
-		delegate?.arTVShowListView(self, didSelect: tvShow)
+		delegate?.tvShowListView(self, didSelect: tvShow)
 	}
 
 }
