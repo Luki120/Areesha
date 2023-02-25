@@ -30,6 +30,11 @@ final class TVShowDetailsVC: UIViewController {
 		setupUI()
 	}
 
+ 	override func viewWillDisappear(_ animated: Bool) {
+		super.viewWillDisappear(animated)
+		tvShowDetailsView.titleLabel.isHidden = true
+	}
+
 	// ! Private
 
 	private func setupUI() {
