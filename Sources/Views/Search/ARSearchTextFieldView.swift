@@ -6,7 +6,7 @@ protocol ARSearchTextFieldViewDelegate: AnyObject {
 	func didTapClearButton(in searchTextFieldView: ARSearchTextFieldView)
 }
 
-/// Reusable UIView subclass to display a custom text field to search for TV shows
+/// UIView subclass to display a custom text field to search for TV shows
 final class ARSearchTextFieldView: UIView {
 
 	@UsesAutoLayout
