@@ -5,7 +5,7 @@ final class SettingsCoordinator: Coordinator {
 
 	enum Event {}
 
-	var navigationController = UINavigationController()
+	var navigationController = SwipeableNavigationController()
 
 	init() {
 		let settingsVC = ARSettingsVC()

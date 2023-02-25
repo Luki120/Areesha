@@ -5,13 +5,13 @@ final class TrackedTVShowsCoordinator: Coordinator {
 
 	enum Event {}
 
-	var navigationController = UINavigationController()
+	var navigationController = SwipeableNavigationController()
 
 	init() {
 		let trackedTVShowsVC = ARTrackedTVShowsVC()
 		trackedTVShowsVC.coordinator = self
 		trackedTVShowsVC.title = "Shows"
-		trackedTVShowsVC.tabBarItem = UITabBarItem(title: "Shows", image: UIImage(named: "Movie"), tag: 0)
+		trackedTVShowsVC.tabBarItem = UITabBarItem(title: "Shows", image: UIImage(named: "Movie"), tag: 2)
 
 		navigationController.viewControllers = [trackedTVShowsVC]
 	}

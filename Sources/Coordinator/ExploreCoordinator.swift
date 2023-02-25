@@ -12,7 +12,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 		case poppedVC
 	}
 
-	var navigationController = UINavigationController()
+	var navigationController = SwipeableNavigationController()
 
 	override init() {
 		super.init()
@@ -21,7 +21,6 @@ final class ExploreCoordinator: NSObject, Coordinator {
 		exploreVC.coordinator = self
 		exploreVC.tabBarItem = UITabBarItem(title: "Explore", image: UIImage(systemName: "magnifyingglass"), tag: 0)
 
-		navigationController.delegate = self
 		navigationController.viewControllers = [exploreVC]
 	}
 
@@ -48,9 +47,58 @@ final class ExploreCoordinator: NSObject, Coordinator {
 
 }
 
+/// Custom UINavigationController subclass to reenable swipe behavior with custom push/pop transitions
+final class SwipeableNavigationController: UINavigationController {
+
+	private var isPushAnimation = false
+
+	// ! Lifecycle
+
+	required init?(coder: NSCoder) {
+		super.init(coder: coder)
+	}
+
+	init() {
+		super.init(nibName: nil, bundle: nil)
+		delegate = self
+	}
+
+	deinit {
+		delegate = nil
+		interactivePopGestureRecognizer?.delegate = nil
+	}
+
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		interactivePopGestureRecognizer?.delegate = self
+	}
+
+	override func pushViewController(_ viewController: UIViewController, animated: Bool) {
+		isPushAnimation = true
+		super.pushViewController(viewController, animated: animated)
+	}
+
+}
+
+// ! UIGestureRecognizerDelegate
+
+extension SwipeableNavigationController: UIGestureRecognizerDelegate {
+
+	func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+		guard gestureRecognizer == interactivePopGestureRecognizer else { return true }
+		return viewControllers.count > 1 && isPushAnimation == false
+	}
+
+}
+
 // ! UINavigationControllerDelegate
 
-extension ExploreCoordinator: UINavigationControllerDelegate {
+extension SwipeableNavigationController: UINavigationControllerDelegate {
+
+	func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+		guard let swipeableNavigationController = navigationController as? SwipeableNavigationController else { return }
+		swipeableNavigationController.isPushAnimation = false
+	}
 
 	func navigationController(
 		_ navigationController: UINavigationController,
