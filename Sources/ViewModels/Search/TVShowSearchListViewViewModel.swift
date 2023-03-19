@@ -63,6 +63,7 @@ final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCel
 // ! CollectionView
 
 extension UICollectionViewListCell: Configurable {
+
 	func configure(with viewModel: TVShowSearchCollectionViewListCellViewModel) {
 		var content = defaultContentConfiguration()
 		content.text = viewModel.displayTVShowNameText
@@ -70,13 +71,14 @@ extension UICollectionViewListCell: Configurable {
 
 		contentConfiguration = content
 	}
+
 }
 
 extension TVShowSearchListViewViewModel: UICollectionViewDelegate {
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
-		delegate?.didSelect(tvShow: searchedTVShows[indexPath.row])
+		delegate?.didSelect(tvShow: searchedTVShows[indexPath.item])
 	}
 
 }
