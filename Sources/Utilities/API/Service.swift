@@ -18,10 +18,11 @@ final class Service {
 		static let searchTVShowBaseURL = "https://api.themoviedb.org/3/search/tv?api_key=\(apiKey)"
 	}
 
-	/// Function that'll handle API calls
+	/// Function to make API calls
 	/// - Parameters:
 	///     - withURL: the API call url
-	///     - expecting: the given type that conforms to Codable from which we will decode the JSON data
+	///     - expecting: the given type that conforms to Codable from which to decode the JSON data
+	///		- isFromCache: escaping closure to check whether the API call is coming from cache or the network
 	/// - Returns: Any type of publisher, of generic type T & Error
 	func fetchTVShows<T: Codable>(
 		withURL url: URL,
