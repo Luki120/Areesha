@@ -6,7 +6,7 @@
 
 ## To do
 
-* [ ] Add a top header collection view to switch between trending & top rated with a horizontal scrolling indicator, similar to the ones of Instagram, Twitter, etc.
+* [x] Add a top header collection view to switch between trending & top rated with a horizontal scrolling indicator, similar to the ones of Instagram, Twitter, etc.
 * [x] Add ratings label somewhere in the details view.
 * [x] Add an X button to delete the text from the search text field all at once.
 * [ ] Build settings UI.
