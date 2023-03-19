@@ -8,34 +8,23 @@ protocol TVShowListViewDelegate: AnyObject {
 /// Class to represent the tv shows list view
 final class TVShowListView: UIView {
 
-	private let compositionalLayout: UICollectionViewCompositionalLayout = {
-		let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1 / 3), heightDimension: .fractionalHeight(1))
-		let item = NSCollectionLayoutItem(layoutSize: itemSize)
-		item.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 5, bottom: 5, trailing: 5)
-
-		let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(180))
-		let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-
-		let section = NSCollectionLayoutSection(group: group)
-		section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 15, bottom: 10, trailing: 15)
-		return UICollectionViewCompositionalLayout(section: section)
-	}()
+	let viewModel = TVShowHostViewViewModel()
 
 	@UsesAutoLayout
-	private var tvShowsCollectionView: UICollectionView = {
-		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
-		collectionView.alpha = 0
+	private var hostCollectionView: UICollectionView = {
+		let layout = UICollectionViewFlowLayout()
+		layout.minimumLineSpacing = 0
+		layout.scrollDirection = .horizontal
+		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
 		collectionView.backgroundColor = .systemGroupedBackground
-		collectionView.showsVerticalScrollIndicator = false
+		collectionView.showsHorizontalScrollIndicator = false
 		return collectionView
 	}()
 
-	var collectionView: UICollectionView { return tvShowsCollectionView }
-
 	weak var delegate: TVShowListViewDelegate?
 
-	private lazy var spinnerView = createSpinnerView(withStyle: .large, childOf: self)
-	private lazy var viewModel = TVShowListViewViewModel(collectionView: tvShowsCollectionView)
+	@UsesAutoLayout
+	private var topHeaderView = TopHeaderView()
 
 	// ! Lifecycle
 
@@ -45,9 +34,12 @@ final class TVShowListView: UIView {
 
 	override init(frame: CGRect) {
 		super.init(frame: frame)
-		setupUI()
-		tvShowsCollectionView.delegate = viewModel
+		addSubviews(topHeaderView, hostCollectionView)
+		setupCollectionView()
+
 		viewModel.delegate = self
+		viewModel.topHeaderView = topHeaderView
+		topHeaderView.delegate = self
 	}
 
 	override func layoutSubviews() {
@@ -57,33 +49,48 @@ final class TVShowListView: UIView {
 
 	// ! Private
 
-	private func setupUI() {
-		addSubview(tvShowsCollectionView)
-		tvShowsCollectionView.setCollectionViewLayout(compositionalLayout, animated: true)
-		spinnerView.startAnimating()
+	private func setupCollectionView() {
+		hostCollectionView.dataSource = viewModel
+		hostCollectionView.delegate = viewModel
+		hostCollectionView.isPagingEnabled = true
+		hostCollectionView.register(TopRatedTVShowsCollectionViewCell.self, forCellWithReuseIdentifier: TopRatedTVShowsCollectionViewCell.identifier)
+		hostCollectionView.register(TrendingTVShowsCollectionViewCell.self, forCellWithReuseIdentifier: TrendingTVShowsCollectionViewCell.identifier)
 	}
 
 	private func layoutUI() {
-		centerViewOnBothAxes(spinnerView)
-		setupSizeConstraints(forView: spinnerView, width: 100, height: 100)
+		NSLayoutConstraint.activate([
+			topHeaderView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 10),
+			topHeaderView.leadingAnchor.constraint(equalTo: leadingAnchor),
+			topHeaderView.trailingAnchor.constraint(equalTo: trailingAnchor),
+			topHeaderView.heightAnchor.constraint(equalToConstant: 50),
 
-		pinViewToAllEdges(tvShowsCollectionView)
+			hostCollectionView.topAnchor.constraint(equalTo: topHeaderView.bottomAnchor),
+			hostCollectionView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+			hostCollectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
+			hostCollectionView.trailingAnchor.constraint(equalTo: trailingAnchor)
+		])
+	}
+
+	private func scrollTo(itemAt indexPath: IndexPath) {
+		let indexPath = IndexPath(item: indexPath.item, section: 0)
+		hostCollectionView.scrollToItem(at: indexPath, at: [], animated: true)
 	}
 
 }
 
-// ! TVShowListViewViewModelDelegate
+// ! TopHeaderViewDelegate
 
-extension TVShowListView: TVShowListViewViewModelDelegate {
+extension TVShowListView: TopHeaderViewDelegate {
 
-	func didLoadTVShows() {
-		spinnerView.stopAnimating()
-		viewModel.applySnapshot()
-
-		UIView.animate(withDuration: 0.5, delay: 0, options: .transitionCrossDissolve) {
-			self.tvShowsCollectionView.alpha = 1
-		}
+	func topHeaderView(_ topHeaderView: TopHeaderView, didSelectItemAt indexPath: IndexPath) {
+		scrollTo(itemAt: indexPath)
 	}
+
+}
+
+// ! TVShowHostViewViewModelDelegate
+
+extension TVShowListView: TVShowHostViewViewModelDelegate {
 
 	func didSelect(tvShow: TVShow) {
 		delegate?.tvShowListView(self, didSelect: tvShow)

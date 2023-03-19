@@ -7,7 +7,7 @@ protocol TVShowListViewViewModelDelegate: AnyObject {
 	func didSelect(tvShow: TVShow)
 }
 
-/// View model class for TVShowListView
+/// View model class for TopRatedTVShowsCollectionViewCell's collection view
 final class TVShowListViewViewModel: BaseViewModel<TVShowCollectionViewCell> {
 
 	private var tvShows = [TVShow]() {
@@ -35,11 +35,10 @@ final class TVShowListViewViewModel: BaseViewModel<TVShowCollectionViewCell> {
 				await cell.configure(with: viewModel)
 			}
 		}
-		fetchTVShows()
 	}
 
-	private func fetchTVShows() {
-		guard let url = URL(string: Service.Constants.topRatedTVShowsURL) else { return }
+	private func fetchTVShows(withURL url: URL?) {
+		guard let url = url else { return }
 
 		Service.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)
 			.catch { _ in Just(APIResponse(results: [])) }
@@ -48,7 +47,23 @@ final class TVShowListViewViewModel: BaseViewModel<TVShowCollectionViewCell> {
 				self?.tvShows = tvShows.results
 				self?.delegate?.didLoadTVShows()
 			}
-			.store(in: &subscriptions)
+			.store(in: &subscriptions)		
+	}
+
+}
+
+extension TVShowListViewViewModel {
+
+	// ! Public
+
+	/// Function to fetch the current top rated tv shows
+	func fetchTopRatedTVShows() {
+		fetchTVShows(withURL: URL(string: Service.Constants.topRatedTVShowsURL))
+	}
+
+	/// Function to fetch the current trending tv shows of the day
+	func fetchTrendingTVShows() {
+		fetchTVShows(withURL: URL(string: Service.Constants.trendingTVShowsURL))
 	}
 
 }
@@ -59,7 +74,7 @@ extension TVShowListViewViewModel: UICollectionViewDelegate {
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
-		delegate?.didSelect(tvShow: tvShows[indexPath.row])
+		delegate?.didSelect(tvShow: tvShows[indexPath.item])
 	}
 
 }

@@ -48,7 +48,7 @@ class BaseViewModel<Cell: UICollectionViewCell & Configurable>: NSObject {
 			)
 			return cell
 		}
-		applySnapshot()
+		applyDiffableDataSourceSnapshot()
 	}
 
 	private func applyDiffableDataSourceSnapshot() {
@@ -63,6 +63,11 @@ class BaseViewModel<Cell: UICollectionViewCell & Configurable>: NSObject {
 extension BaseViewModel {
 
 	// ! Public
+
+	/// Function to setup the diffable data source
+	func setupDiffableDataSource() {
+		setupCollectionViewDiffableDataSource()
+	}
 
 	/// Function to apply the snapshot to the diffable data source
 	func applySnapshot() {
