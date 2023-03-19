@@ -5,6 +5,7 @@ final class ExploreVC: UIViewController {
 
 	var coordinator: ExploreCoordinator?
 	private var previousVC: UIViewController?
+	private var isInitiallyInHomeVC = true
 
 	private let tvShowListView = TVShowListView()
 
@@ -53,15 +54,13 @@ extension ExploreVC: TVShowListViewDelegate {
 extension ExploreVC: UITabBarControllerDelegate {
 
 	func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-		if previousVC == viewController || previousVC == nil {
+		if previousVC == viewController || isInitiallyInHomeVC {
 			guard let navVC = viewController as? UINavigationController,
 				let vc = navVC.viewControllers.first as? ExploreVC,
 				vc.view.window != nil else { return }
 
-			tvShowListView.collectionView.setContentOffset(
-				CGPoint(x: 0, y: -tvShowListView.collectionView.safeAreaInsets.top),
-				animated: true
-			)
+			tvShowListView.viewModel.scrollToTop()
+			isInitiallyInHomeVC = false
 		}
 		previousVC = viewController
 	}
