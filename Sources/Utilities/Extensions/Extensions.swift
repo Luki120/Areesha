@@ -65,24 +65,18 @@ extension UIView {
 	}
 
 	func centerViewOnBothAxes(_ view: UIView) {
-		NSLayoutConstraint.activate([
-			view.centerXAnchor.constraint(equalTo: centerXAnchor),
-			view.centerYAnchor.constraint(equalTo: centerYAnchor)
-		])
+		view.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+		view.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
 	}
 
 	func setupHorizontalConstraints(forView view: UIView, leadingConstant: CGFloat, trailingConstant: CGFloat) {
-		NSLayoutConstraint.activate([
-			view.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingConstant),
-			view.trailingAnchor.constraint(equalTo: trailingAnchor, constant: trailingConstant)
-		])
+		view.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingConstant).isActive = true
+		view.trailingAnchor.constraint(equalTo: trailingAnchor, constant: trailingConstant).isActive = true
 	}
 
 	func setupSizeConstraints(forView view: UIView, width: CGFloat, height: CGFloat) {
-		NSLayoutConstraint.activate([
-			view.widthAnchor.constraint(equalToConstant: width),
-			view.heightAnchor.constraint(equalToConstant: height)
-		])
+		view.widthAnchor.constraint(equalToConstant: width).isActive = true
+		view.heightAnchor.constraint(equalToConstant: height).isActive = true
 	}
 }
 
