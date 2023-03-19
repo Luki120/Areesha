@@ -13,8 +13,9 @@ final class Service {
 		static let apiKey = _Constants.apiKey
 		static let baseURL = "https://api.themoviedb.org/3/"
 		static let baseImageURL = "https://image.tmdb.org/t/p/"
-		static let topRatedTVShowsURL = "\(baseURL)/tv/top_rated?api_key=\(apiKey)&language=en-US"
-		static let searchTVShowBaseURL = "https://api.themoviedb.org/3/search/tv?api_key=\(apiKey)&language=en-US"
+		static let topRatedTVShowsURL = "\(baseURL)/tv/top_rated?api_key=\(apiKey)"
+		static let trendingTVShowsURL = "\(baseURL)trending/tv/day?api_key=\(apiKey)"
+		static let searchTVShowBaseURL = "https://api.themoviedb.org/3/search/tv?api_key=\(apiKey)"
 	}
 
 	/// Function that'll handle API calls
