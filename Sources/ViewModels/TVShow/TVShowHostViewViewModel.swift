@@ -5,7 +5,7 @@ protocol TVShowHostViewViewModelDelegate: AnyObject {
 	func didSelect(tvShow: TVShow)
 }
 
-/// View model class for TVShowListView
+/// View model class for TVShowHostView
 final class TVShowHostViewViewModel: NSObject {
 
 	var topHeaderView: TopHeaderView!

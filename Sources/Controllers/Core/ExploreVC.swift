@@ -7,17 +7,17 @@ final class ExploreVC: UIViewController {
 	private var previousVC: UIViewController?
 	private var isInitiallyInHomeVC = true
 
-	private let tvShowListView = TVShowListView()
+	private let tvShowHostView = TVShowHostView()
 
 	// ! Lifecycle
 
-	override func loadView() { view = tvShowListView }
+	override func loadView() { view = tvShowHostView }
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		setupUI()
 		tabBarController?.delegate = self
-		tvShowListView.delegate = self
+		tvShowHostView.delegate = self
 	}
 
 	// ! Private
@@ -39,11 +39,11 @@ final class ExploreVC: UIViewController {
 
 }
 
-// ! TVShowListViewDelegate
+// ! TVShowHostViewDelegate
 
-extension ExploreVC: TVShowListViewDelegate {
+extension ExploreVC: TVShowHostViewDelegate {
 
-	func tvShowListView(_ tvShowListView: TVShowListView, didSelect tvShow: TVShow) {
+	func tvShowHostView(_ tvShowHostView: TVShowHostView, didSelect tvShow: TVShow) {
 		coordinator?.eventOccurred(with: .tvShowCellTapped(tvShow: tvShow))
 	}
 
@@ -59,7 +59,7 @@ extension ExploreVC: UITabBarControllerDelegate {
 				let vc = navVC.viewControllers.first as? ExploreVC,
 				vc.view.window != nil else { return }
 
-			tvShowListView.viewModel.scrollToTop()
+			tvShowHostView.viewModel.scrollToTop()
 			isInitiallyInHomeVC = false
 		}
 		previousVC = viewController

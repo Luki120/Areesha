@@ -1,12 +1,12 @@
 import UIKit
 
 
-protocol TVShowListViewDelegate: AnyObject {
-	func tvShowListView(_ tvShowListView: TVShowListView, didSelect tvShow: TVShow)
+protocol TVShowHostViewDelegate: AnyObject {
+	func tvShowHostView(_ tvShowHostView: TVShowHostView, didSelect tvShow: TVShow)
 }
 
-/// Class to represent the tv shows list view
-final class TVShowListView: UIView {
+/// Class to represent the tv shows host view
+final class TVShowHostView: UIView {
 
 	let viewModel = TVShowHostViewViewModel()
 
@@ -21,7 +21,7 @@ final class TVShowListView: UIView {
 		return collectionView
 	}()
 
-	weak var delegate: TVShowListViewDelegate?
+	weak var delegate: TVShowHostViewDelegate?
 
 	@UsesAutoLayout
 	private var topHeaderView = TopHeaderView()
@@ -80,7 +80,7 @@ final class TVShowListView: UIView {
 
 // ! TopHeaderViewDelegate
 
-extension TVShowListView: TopHeaderViewDelegate {
+extension TVShowHostView: TopHeaderViewDelegate {
 
 	func topHeaderView(_ topHeaderView: TopHeaderView, didSelectItemAt indexPath: IndexPath) {
 		scrollTo(itemAt: indexPath)
@@ -90,10 +90,10 @@ extension TVShowListView: TopHeaderViewDelegate {
 
 // ! TVShowHostViewViewModelDelegate
 
-extension TVShowListView: TVShowHostViewViewModelDelegate {
+extension TVShowHostView: TVShowHostViewViewModelDelegate {
 
 	func didSelect(tvShow: TVShow) {
-		delegate?.tvShowListView(self, didSelect: tvShow)
+		delegate?.tvShowHostView(self, didSelect: tvShow)
 	}
 
 }
