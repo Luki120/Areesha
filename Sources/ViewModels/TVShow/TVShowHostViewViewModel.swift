@@ -34,7 +34,7 @@ final class TVShowHostViewViewModel: NSObject {
 
 // ! UICollectionView
 
-extension TVShowHostViewViewModel: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+extension TVShowHostViewViewModel: UICollectionViewDataSource, UICollectionViewDelegate {
 
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		return 2
@@ -65,10 +65,6 @@ extension TVShowHostViewViewModel: UICollectionViewDataSource, UICollectionViewD
 
 			default: return UICollectionViewCell()
 		}
-	}
-
-	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-		return CGSize(width: collectionView.bounds.width, height: collectionView.bounds.height)
 	}
 
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {

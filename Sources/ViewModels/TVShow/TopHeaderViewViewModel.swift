@@ -26,11 +26,7 @@ final class TopHeaderViewViewModel: BaseViewModel<TopHeaderCollectionViewCell> {
 
 // ! UICollectionViewDelegate
 
-extension TopHeaderViewViewModel: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
-
-	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-		return CGSize(width: collectionView.bounds.width / 2, height: collectionView.bounds.height)
-	}
+extension TopHeaderViewViewModel: UICollectionViewDelegate {
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		delegate?.didSelectItemAt(indexPath: indexPath)

@@ -10,12 +10,24 @@ final class TVShowHostView: UIView {
 
 	let viewModel = TVShowHostViewViewModel()
 
+	private let compositionalLayout: UICollectionViewCompositionalLayout = {
+		let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
+		let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+		let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
+		let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+
+		let section = NSCollectionLayoutSection(group: group)
+
+		let config = UICollectionViewCompositionalLayoutConfiguration()
+		config.scrollDirection = .horizontal
+
+		return UICollectionViewCompositionalLayout(section: section, configuration: config)
+	}()
+
 	@UsesAutoLayout
 	private var hostCollectionView: UICollectionView = {
-		let layout = UICollectionViewFlowLayout()
-		layout.minimumLineSpacing = 0
-		layout.scrollDirection = .horizontal
-		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
 		collectionView.backgroundColor = .systemGroupedBackground
 		collectionView.showsHorizontalScrollIndicator = false
 		return collectionView
@@ -53,6 +65,7 @@ final class TVShowHostView: UIView {
 		hostCollectionView.dataSource = viewModel
 		hostCollectionView.delegate = viewModel
 		hostCollectionView.isPagingEnabled = true
+		hostCollectionView.setCollectionViewLayout(compositionalLayout, animated: true)
 		hostCollectionView.register(TopRatedTVShowsCollectionViewCell.self, forCellWithReuseIdentifier: TopRatedTVShowsCollectionViewCell.identifier)
 		hostCollectionView.register(TrendingTVShowsCollectionViewCell.self, forCellWithReuseIdentifier: TrendingTVShowsCollectionViewCell.identifier)
 	}

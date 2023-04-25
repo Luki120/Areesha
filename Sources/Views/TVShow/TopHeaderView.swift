@@ -8,11 +8,20 @@ protocol TopHeaderViewDelegate: AnyObject {
 /// Class to display a collection view to switch between top rated & trending TV shows
 final class TopHeaderView: UIView {
 
+	private let compositionalLayout: UICollectionViewCompositionalLayout = {
+		let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1 / 2), heightDimension: .fractionalHeight(1))
+		let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+		let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
+		let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+
+		let section = NSCollectionLayoutSection(group: group)
+		return UICollectionViewCompositionalLayout(section: section)
+	}()
+
 	@UsesAutoLayout
 	private var topHeaderCollectionView: UICollectionView = {
-		let flowLayout = UICollectionViewFlowLayout()
-		flowLayout.minimumInteritemSpacing = 0
-		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
 		collectionView.backgroundColor = .systemBackground
 		collectionView.showsHorizontalScrollIndicator = false
 		return collectionView
@@ -53,6 +62,7 @@ final class TopHeaderView: UIView {
 		viewModel.awake()
 		viewModel.delegate = self
 		topHeaderCollectionView.delegate = viewModel
+		topHeaderCollectionView.setCollectionViewLayout(compositionalLayout, animated: true)
 
 		let selectedIndexPath = IndexPath(item: 0, section: 0)
 		topHeaderCollectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: [])
