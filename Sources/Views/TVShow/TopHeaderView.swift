@@ -22,8 +22,8 @@ final class TopHeaderView: UIView {
 	@UsesAutoLayout
 	private var topHeaderCollectionView: UICollectionView = {
 		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
+		collectionView.isScrollEnabled = false
 		collectionView.backgroundColor = .systemBackground
-		collectionView.showsHorizontalScrollIndicator = false
 		return collectionView
 	}()
 
