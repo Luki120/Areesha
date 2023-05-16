@@ -19,8 +19,10 @@ final class TVShowDetailsVC: UIViewController {
 	///     - viewModel: the view model object for this vc's view
 	init(viewModel: TVShowDetailsViewViewModel) {
 		self.tvShowDetailsViewViewModel = viewModel
-		self.tvShowDetailsView = TVShowDetailsView(viewModel: viewModel)
+		self.tvShowDetailsView = .init(viewModel: viewModel)
 		super.init(nibName: nil, bundle: nil)
+
+		tvShowDetailsView.delegate = self
 	}
 
 	override func loadView() { view = tvShowDetailsView }
@@ -54,6 +56,16 @@ final class TVShowDetailsVC: UIViewController {
 	@objc
 	private func didTapBackButton() {
 		coordinator?.eventOccurred(with: .backButtonTapped)
+	}
+
+}
+
+// ! TVShowDetailsViewDelegate
+
+extension TVShowDetailsVC: TVShowDetailsViewDelegate {
+
+	func didTapSeasonsButton(in tvShowDetailsView: TVShowDetailsView) {
+		coordinator?.eventOccurred(with: .seasonsButtonTapped(tvShow: tvShowDetailsViewViewModel.tvShow))
 	}
 
 }

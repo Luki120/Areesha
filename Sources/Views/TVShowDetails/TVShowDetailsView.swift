@@ -1,5 +1,10 @@
 import UIKit
 
+
+protocol TVShowDetailsViewDelegate: AnyObject {
+	func didTapSeasonsButton(in tvShowDetailsView: TVShowDetailsView)
+}
+
 /// Class to represent the TV show details view
 final class TVShowDetailsView: UIView {
 
@@ -18,6 +23,24 @@ final class TVShowDetailsView: UIView {
 		return tableView
 	}()
 
+	@UsesAutoLayout
+	private var seasonsButton: UIButton = {
+		var configuration: UIButton.Configuration = .plain()
+		configuration.title = "Seasons"
+		configuration.baseForegroundColor = .label
+ 
+		let button = UIButton()
+		button.configuration = configuration
+		button.backgroundColor = .areeshaPinkColor
+		button.layer.cornerCurve = .continuous
+		button.layer.cornerRadius = 25
+		button.layer.shadowColor = UIColor.label.cgColor
+		button.layer.shadowOffset = .init(width: 0, height: 0.5)
+		button.layer.shadowOpacity = 0.5
+		button.layer.shadowRadius = 4
+		return button
+	}()
+
 	private(set) lazy var titleLabel: UILabel = {
 		let label = UILabel()
 		label.font = .systemFont(ofSize: 16, weight: .semibold)
@@ -26,6 +49,8 @@ final class TVShowDetailsView: UIView {
 		label.numberOfLines = 0
 		return label
 	}()
+
+	weak var delegate: TVShowDetailsViewDelegate?
 
 	// ! Lifecycle
 
@@ -39,23 +64,44 @@ final class TVShowDetailsView: UIView {
 	init(viewModel: TVShowDetailsViewViewModel) {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
-		setupTableView()
-		viewModel.setupTableView(tvShowDetailsTableView)
+		setupUI()
 	}
 
 	override func layoutSubviews() {
 		super.layoutSubviews()
 		pinViewToAllEdges(tvShowDetailsTableView)
+
+		NSLayoutConstraint.activate([
+			seasonsButton.centerXAnchor.constraint(equalTo: centerXAnchor),
+			seasonsButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -25),
+			seasonsButton.widthAnchor.constraint(equalToConstant: 120),
+			seasonsButton.heightAnchor.constraint(equalToConstant: 50)
+		])
+	}
+
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		super.traitCollectionDidChange(previousTraitCollection)
+		seasonsButton.layer.shadowColor = UIColor.label.cgColor
 	}
 
 	// ! Private
 
-	private func setupTableView() {
+	private func setupUI() {
 		headerView = viewModel.setupHeaderView(forView: self)
 
-		addSubview(tvShowDetailsTableView)
+		addSubviews(tvShowDetailsTableView, seasonsButton)
 		tvShowDetailsTableView.delegate = self
 		tvShowDetailsTableView.tableHeaderView = headerView
+
+		viewModel.setupTableView(tvShowDetailsTableView)
+
+		seasonsButton.addAction(
+			UIAction { [weak self] _ in
+				guard let self = self else { return }
+				self.delegate?.didTapSeasonsButton(in: self)
+			},
+			for: .touchUpInside
+		)
 	}
 
 }

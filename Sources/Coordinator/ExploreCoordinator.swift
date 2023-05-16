@@ -1,12 +1,13 @@
 import UIKit
 
 /// Explore coordinator, which will take care of any navigation events related to ARExploreVC
-final class ExploreCoordinator: NSObject, Coordinator {
+final class ExploreCoordinator: Coordinator {
 
 	enum Event {
 		case tvShowCellTapped(tvShow: TVShow)
 		case backButtonTapped
 		case searchButtonTapped
+		case seasonsButtonTapped(tvShow: TVShow)
 		case closeButtonTapped
 		case pushedVC
 		case poppedVC
@@ -14,8 +15,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 
 	var navigationController = SwipeableNavigationController()
 
-	override init() {
-		super.init()
+	init() {
 		let exploreVC = ExploreVC()
 		exploreVC.title = "Explore"
 		exploreVC.coordinator = self
@@ -39,6 +39,12 @@ final class ExploreCoordinator: NSObject, Coordinator {
 				let searchVC = TVShowSearchVC()
 				searchVC.coordinator = self
 				navigationController.pushViewController(searchVC, animated: true)
+
+			case .seasonsButtonTapped(let tvShow):
+				let viewModel = TVShowSeasonsViewViewModel(tvShow: tvShow)
+				let tvShowSeasonsVC = TVShowSeasonsVC(viewModel: viewModel)
+				tvShowSeasonsVC.coordinator = self
+				navigationController.pushViewController(tvShowSeasonsVC, animated: true)
 
 			case .pushedVC: navigationController.navigationBar.isHidden = true
 			case .poppedVC: navigationController.navigationBar.isHidden = false

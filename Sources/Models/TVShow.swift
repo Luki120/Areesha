@@ -15,6 +15,7 @@ struct TVShow: Codable {
 	let genres: [Genres]?
 	let lastAirDate: String?
 	let networks: [Networks]?
+	let seasons: [Seasons]?
 	let status: String?
 	let voteAverage: Double?
 
@@ -28,6 +29,7 @@ struct TVShow: Codable {
 		case genres
 		case lastAirDate = "last_air_date"
 		case networks
+		case seasons
 		case status
 		case voteAverage = "vote_average"
 	}
@@ -39,4 +41,14 @@ struct Genres: Codable {
 
 struct Networks: Codable {
 	let name: String
+}
+
+struct Seasons: Codable {
+	let name: String?
+	let posterPath: String?
+
+	enum CodingKeys: String, CodingKey {
+		case name
+		case posterPath = "poster_path"
+	}
 }
