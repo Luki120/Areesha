@@ -1,10 +1,10 @@
 import Combine
 import UIKit
 
-/// View model class for TVShowDetailsViewViewModel
+/// View model class for TVShowDetailsView
 final class TVShowDetailsViewViewModel: NSObject {
 
-	private let tvShow: TVShow
+	let tvShow: TVShow
 
 	private var headerViewViewModel: TVShowDetailsHeaderViewViewModel!
 	private var genreCellViewModel = TVShowDetailsGenreTableViewCellViewModel()

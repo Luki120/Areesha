@@ -69,7 +69,7 @@ extension UIView {
 		view.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
 	}
 
-	func setupHorizontalConstraints(forView view: UIView, leadingConstant: CGFloat, trailingConstant: CGFloat) {
+	func setupHorizontalConstraints(forView view: UIView, leadingConstant: CGFloat = 0, trailingConstant: CGFloat = 0) {
 		view.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingConstant).isActive = true
 		view.trailingAnchor.constraint(equalTo: trailingAnchor, constant: trailingConstant).isActive = true
 	}

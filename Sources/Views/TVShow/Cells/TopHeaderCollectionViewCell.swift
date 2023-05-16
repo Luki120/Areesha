@@ -4,7 +4,7 @@ import UIKit
 final class TopHeaderCollectionViewCell: UICollectionViewCell {
 
 	@UsesAutoLayout
-	var cellLabel: UILabel = {
+	private var cellLabel: UILabel = {
 		let label = UILabel()
 		label.font = .systemFont(ofSize: 16, weight: .bold)
 		label.textColor = .darkGray
