@@ -17,6 +17,8 @@ final class TVShowCollectionViewCell: UICollectionViewCell {
 
 	private lazy var spinnerView = createSpinnerView(withStyle: .medium, childOf: contentView) 
 
+	private weak var activeViewModel: TVShowCollectionViewCellViewModel?
+
 	// ! Lifecyle
 
 	required init?(coder: NSCoder) {
@@ -36,6 +38,7 @@ final class TVShowCollectionViewCell: UICollectionViewCell {
 	override func prepareForReuse() {
 		super.prepareForReuse()
 		spinnerView.startAnimating()
+		activeViewModel = nil
 		tvShowImageView.image = nil
 	}
 
@@ -67,7 +70,11 @@ final class TVShowCollectionViewCell: UICollectionViewCell {
 extension TVShowCollectionViewCell: Configurable {
 
 	func configure(with viewModel: TVShowCollectionViewCellViewModel) {
+		activeViewModel = viewModel
+
 		Task.detached(priority: .background) {
+			guard await self.activeViewModel == viewModel else { return }
+
 			let image = try? await viewModel.fetchTVShowImage()
 			await MainActor.run {
 				UIView.transition(with: self.tvShowImageView, duration: 0.5, options: .transitionCrossDissolve) {

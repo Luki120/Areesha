@@ -26,6 +26,8 @@ final class TVShowSeasonsCollectionViewCell: UICollectionViewCell {
 		return label
 	}()
 
+	private weak var activeViewModel: TVShowSeasonsCollectionViewCellViewModel?
+
 	// ! Lifecyle
 
 	required init?(coder: NSCoder) {
@@ -47,6 +49,8 @@ final class TVShowSeasonsCollectionViewCell: UICollectionViewCell {
 
 	override func prepareForReuse() {
 		super.prepareForReuse()
+		activeViewModel = nil
+		seasonNameLabel.text = nil
 		tvShowSeasonImageView.image = nil
 	}
 
@@ -74,9 +78,12 @@ extension TVShowSeasonsCollectionViewCell {
 	/// - Parameters:
 	/// 	- with: The cell's view model
 	func configure(with viewModel: TVShowSeasonsCollectionViewCellViewModel) {
+		activeViewModel = viewModel
 		seasonNameLabel.text = viewModel.displaySeasonNameText
 
 		Task.detached(priority: .background) {
+			guard await self.activeViewModel == viewModel else { return }
+
 			let image = try? await viewModel.fetchTVShowSeasonImage()
 			await MainActor.run {
 				UIView.transition(with: self.tvShowSeasonImageView, duration: 0.5, options: .transitionCrossDissolve) {
@@ -84,7 +91,7 @@ extension TVShowSeasonsCollectionViewCell {
 					self.tvShowSeasonImageView.image = image
 				}
 			}
-		}		
+		}
 	}
 
 }
