@@ -47,7 +47,7 @@ final class TVShowListViewViewModel: BaseViewModel<TVShowCollectionViewCell> {
 				self?.tvShows = tvShows.results
 				self?.delegate?.didLoadTVShows()
 			}
-			.store(in: &subscriptions)		
+			.store(in: &subscriptions)
 	}
 
 }
