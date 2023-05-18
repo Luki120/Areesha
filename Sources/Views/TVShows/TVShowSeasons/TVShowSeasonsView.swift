@@ -13,10 +13,8 @@ final class TVShowSeasonsView: UIView {
 		let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(300), heightDimension: .absolute(330))
 		let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
-		seasonsCollectionView.layoutIfNeeded()
-
 		let section = NSCollectionLayoutSection(group: group)
-		section.contentInsets = NSDirectionalEdgeInsets(top: seasonsCollectionView.bounds.size.height / 2 - 182, leading: 70, bottom: 0, trailing: 20)
+		section.contentInsets = NSDirectionalEdgeInsets(top: bounds.size.height / 2 - 182, leading: 70, bottom: 0, trailing: 20)
 		section.visibleItemsInvalidationHandler = { items, offset, environment in
 			items.forEach { item in
 				let distanceFromCenter = abs((item.frame.midX - offset.x) - environment.container.contentSize.width / 2)
@@ -34,7 +32,7 @@ final class TVShowSeasonsView: UIView {
 	}()
 
 	private lazy var seasonsCollectionView: UICollectionView = {
-		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
+		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: compositionalLayout)
 		collectionView.delegate = viewModel
 		collectionView.dataSource = viewModel
 		collectionView.backgroundColor = .systemGroupedBackground
@@ -70,13 +68,7 @@ final class TVShowSeasonsView: UIView {
 
 	override func layoutSubviews() {
 		super.layoutSubviews()
-		NSLayoutConstraint.activate([
-			seasonsCollectionView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
-			seasonsCollectionView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
-			seasonsCollectionView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
-			seasonsCollectionView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor)
-		])
-		seasonsCollectionView.setCollectionViewLayout(compositionalLayout, animated: true)
+		pinViewToAllEdges(seasonsCollectionView)
 	}
 
 }

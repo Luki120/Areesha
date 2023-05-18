@@ -23,16 +23,21 @@ final class TVShowSeasonsVC: UIViewController {
 		super.init(nibName: nil, bundle: nil)
 	}
 
-	override func loadView() { view = tvShowSeasonsView }
-
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		setupUI()
 	}
 
+	override func viewDidLayoutSubviews() {
+		super.viewDidLayoutSubviews()
+		layoutUI()
+	}
+
 	// ! Private
 
 	private func setupUI() {
+		view.addSubview(tvShowSeasonsView)
+
 		navigationItem.titleView = tvShowSeasonsView.titleLabel
 		navigationItem.leftBarButtonItem = UIBarButtonItem(
 			image: UIImage(systemName: "chevron.backward.circle"),
@@ -42,6 +47,16 @@ final class TVShowSeasonsVC: UIViewController {
 		)
 		navigationItem.leftBarButtonItem?.tintColor = .label
 		view.backgroundColor = .systemBackground
+	}
+
+	private func layoutUI() {
+		tvShowSeasonsView.translatesAutoresizingMaskIntoConstraints = false
+		NSLayoutConstraint.activate([
+			tvShowSeasonsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+			tvShowSeasonsView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+			tvShowSeasonsView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+			tvShowSeasonsView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+		])
 	}
 
 	// ! Selectors
