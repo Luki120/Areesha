@@ -15,7 +15,7 @@ final class TVShowSeasonsViewViewModel: NSObject {
 	private var subscriptions = Set<AnyCancellable>()
 	private var viewModels = [TVShowSeasonsCollectionViewCellViewModel]()
 
-	private var seasons = [Seasons]() {
+	private var seasons = [Season]() {
 		didSet {
 			for season in seasons {
 				let imageURLString = "\(Service.Constants.baseImageURL)w500/\(season.posterPath ?? "")"

@@ -12,10 +12,10 @@ struct TVShow: Codable {
 	let posterPath: String?
 	let backdropPath: String?
 	let episodeRunTime: [Int]?
-	let genres: [Genres]?
+	let genres: [Genre]?
 	let lastAirDate: String?
-	let networks: [Networks]?
-	let seasons: [Seasons]?
+	let networks: [Network]?
+	let seasons: [Season]?
 	let status: String?
 	let voteAverage: Double?
 
@@ -35,15 +35,15 @@ struct TVShow: Codable {
 	}
 }
 
-struct Genres: Codable {
+struct Genre: Codable {
 	let name: String
 }
 
-struct Networks: Codable {
+struct Network: Codable {
 	let name: String
 }
 
-struct Seasons: Codable {
+struct Season: Codable {
 	let name: String?
 	let posterPath: String?
 

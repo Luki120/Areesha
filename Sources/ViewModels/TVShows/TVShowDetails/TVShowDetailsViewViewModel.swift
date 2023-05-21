@@ -25,7 +25,7 @@ final class TVShowDetailsViewViewModel: NSObject {
 	}
 
 	private var networksNames = [String]()
-	private var networks = [Networks]() {
+	private var networks = [Network]() {
 		didSet {
 			for network in networks {
 				if !networksNames.contains(network.name) {
