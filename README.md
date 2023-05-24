@@ -10,8 +10,8 @@
 * [x] Add ratings label somewhere in the details view.
 * [x] Add an X button to delete the text from the search text field all at once.
 * [ ] Build settings UI.
-* [ ] Build seasons UI.
-* [ ] Build season's episodes UI.
+* [x] Build seasons UI.
+* [x] Build season's episodes UI.
 * [ ] Build episode details UI.
 * [x] Get rid of class prefixes 💀.
 * [ ] Persist chosen TV shows logic.
