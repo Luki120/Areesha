@@ -36,7 +36,9 @@ final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCel
 	}
 
 	private func fetchSearchedTVShow(withQuery query: String? = nil) {
-		guard let url = URL(string: "\(Service.Constants.searchTVShowBaseURL)&query=\(query ?? "")") else { return }
+		guard let url = URL(string: "\(Service.Constants.searchTVShowBaseURL)&query=\(query ?? "")".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") else {
+			return
+		}
 
 		Service.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)
 			.catch { _ in Just(APIResponse(results: [])) }
