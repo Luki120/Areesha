@@ -1,7 +1,7 @@
 import UIKit
 
-/// View model struct for TVShowSeasonsCollectionViewCell
-struct TVShowSeasonsCollectionViewCellViewModel: Hashable {
+/// View model struct for SeasonsCollectionViewCell
+struct SeasonsCollectionViewCellViewModel: Hashable {
 
 	private let imageURL: URL?
 	private let seasonNameText: String

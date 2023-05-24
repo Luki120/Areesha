@@ -42,10 +42,10 @@ final class ExploreCoordinator: Coordinator {
 				navigationController.pushViewController(searchVC, animated: true)
 
 			case .seasonsButtonTapped(let tvShow):
-				let viewModel = TVShowSeasonsViewViewModel(tvShow: tvShow)
-				let tvShowSeasonsVC = TVShowSeasonsVC(viewModel: viewModel)
-				tvShowSeasonsVC.coordinator = self
-				navigationController.pushViewController(tvShowSeasonsVC, animated: true)
+				let viewModel = SeasonsViewViewModel(tvShow: tvShow)
+				let seasonsVC = SeasonsVC(viewModel: viewModel)
+				seasonsVC.coordinator = self
+				navigationController.pushViewController(seasonsVC, animated: true)
 
 			case .pushedVC: navigationController.navigationBar.isHidden = true
 			case .poppedVC: navigationController.navigationBar.isHidden = false

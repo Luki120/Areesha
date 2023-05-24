@@ -1,13 +1,13 @@
 import UIKit
 
-protocol TVShowSeasonsViewDelegate: AnyObject {
-	func tvShowSeasonsView(_ tvShowSeasonsView: TVShowSeasonsView, didSelect season: Season, from tvShow: TVShow)
+protocol SeasonsViewDelegate: AnyObject {
+	func seasonsView(_ seasonsView: SeasonsView, didSelect season: Season, from tvShow: TVShow)
 }
 
 /// Class to represent the tv show seasons view
-final class TVShowSeasonsView: UIView {
+final class SeasonsView: UIView {
 
-	private let viewModel: TVShowSeasonsViewViewModel
+	private let viewModel: SeasonsViewViewModel
 
 	private lazy var compositionalLayout: UICollectionViewCompositionalLayout = {
 		let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
@@ -16,6 +16,8 @@ final class TVShowSeasonsView: UIView {
 
 		let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(300), heightDimension: .absolute(330))
 		let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+
+		layoutIfNeeded()
 
 		let section = NSCollectionLayoutSection(group: group)
 		section.contentInsets = NSDirectionalEdgeInsets(top: bounds.size.height / 2 - 182, leading: 70, bottom: 0, trailing: 20)
@@ -41,7 +43,7 @@ final class TVShowSeasonsView: UIView {
 		collectionView.dataSource = viewModel
 		collectionView.backgroundColor = .systemGroupedBackground
 		collectionView.showsHorizontalScrollIndicator = false
-		collectionView.register(TVShowSeasonsCollectionViewCell.self, forCellWithReuseIdentifier: TVShowSeasonsCollectionViewCell.identifier)
+		collectionView.register(SeasonsCollectionViewCell.self, forCellWithReuseIdentifier: SeasonsCollectionViewCell.identifier)
 		collectionView.translatesAutoresizingMaskIntoConstraints = false
 		addSubview(collectionView)
 		return collectionView
@@ -55,7 +57,7 @@ final class TVShowSeasonsView: UIView {
 		return label
 	}()
 
-	weak var delegate: TVShowSeasonsViewDelegate?
+	weak var delegate: SeasonsViewDelegate?
 
 	// ! Lifecycle
 
@@ -66,7 +68,7 @@ final class TVShowSeasonsView: UIView {
 	/// Designated initializer
 	/// - Parameters:
 	///     - viewModel: the view model object for this view
-	init(viewModel: TVShowSeasonsViewViewModel) {
+	init(viewModel: SeasonsViewViewModel) {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
 		viewModel.delegate = self
@@ -79,16 +81,16 @@ final class TVShowSeasonsView: UIView {
 
 }
 
-// ! TVShowSeasonsViewViewModelDelegate
+// ! SeasonsViewViewModelDelegate
 
-extension TVShowSeasonsView: TVShowSeasonsViewViewModelDelegate {
+extension SeasonsView: SeasonsViewViewModelDelegate {
 
 	func didLoadTVShowSeasons() {
 		seasonsCollectionView.reloadData()
 	}
 
 	func didSelect(season: Season, from tvShow: TVShow) {
-		delegate?.tvShowSeasonsView(self, didSelect: season, from: tvShow)
+		delegate?.seasonsView(self, didSelect: season, from: tvShow)
 	}
 
 }

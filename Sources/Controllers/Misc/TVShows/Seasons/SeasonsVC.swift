@@ -1,10 +1,10 @@
 import UIKit
 
 /// Controller that'll show the tv show seasons view
-final class TVShowSeasonsVC: UIViewController {
+final class SeasonsVC: UIViewController {
 
-	let tvShowSeasonsViewViewModel: TVShowSeasonsViewViewModel
-	let tvShowSeasonsView: TVShowSeasonsView
+	let seasonsViewViewModel: SeasonsViewViewModel
+	let seasonsView: SeasonsView
 
 	var coordinator: ExploreCoordinator?
 
@@ -17,11 +17,11 @@ final class TVShowSeasonsVC: UIViewController {
 	/// Designated initializer
 	/// - Parameters:
 	///     - viewModel: the view model object for this vc's view
-	init(viewModel: TVShowSeasonsViewViewModel) {
-		self.tvShowSeasonsViewViewModel = viewModel
-		self.tvShowSeasonsView = .init(viewModel: viewModel)
+	init(viewModel: SeasonsViewViewModel) {
+		self.seasonsViewViewModel = viewModel
+		self.seasonsView = .init(viewModel: viewModel)
 		super.init(nibName: nil, bundle: nil)
-		tvShowSeasonsView.delegate = self
+		seasonsView.delegate = self
 	}
 
 	override func viewDidLoad() {
@@ -37,9 +37,9 @@ final class TVShowSeasonsVC: UIViewController {
 	// ! Private
 
 	private func setupUI() {
-		view.addSubview(tvShowSeasonsView)
+		view.addSubview(seasonsView)
 
-		navigationItem.titleView = tvShowSeasonsView.titleLabel
+		navigationItem.titleView = seasonsView.titleLabel
 		navigationItem.leftBarButtonItem = .createBackBarButtonItem(
 			forTarget: self,
 			selector: #selector(didTapBackButton)
@@ -49,8 +49,8 @@ final class TVShowSeasonsVC: UIViewController {
 	}
 
 	private func layoutUI() {
-		tvShowSeasonsView.translatesAutoresizingMaskIntoConstraints = false
-		view.pinViewToSafeAreas(tvShowSeasonsView)
+		seasonsView.translatesAutoresizingMaskIntoConstraints = false
+		view.pinViewToSafeAreas(seasonsView)
 	}
 
 	// ! Selectors
@@ -62,11 +62,11 @@ final class TVShowSeasonsVC: UIViewController {
 
 }
 
-// ! TVShowSeasonsViewDelegate
+// ! SeasonsViewDelegate
 
-extension TVShowSeasonsVC: TVShowSeasonsViewDelegate {
+extension SeasonsVC: SeasonsViewDelegate {
 
-	func tvShowSeasonsView(_ tvShowSeasonsView: TVShowSeasonsView, didSelect season: Season, from tvShow: TVShow) {
+	func seasonsView(_ seasonsView: SeasonsView, didSelect season: Season, from tvShow: TVShow) {
 		coordinator?.eventOccurred(with: .seasonCellTapped(tvShow: tvShow, season: season))
 	}
 

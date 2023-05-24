@@ -1,27 +1,27 @@
 import Combine
 import UIKit
 
-protocol TVShowSeasonsViewViewModelDelegate: AnyObject {
+protocol SeasonsViewViewModelDelegate: AnyObject {
 	func didLoadTVShowSeasons()
 	func didSelect(season: Season, from tvShow: TVShow)
 }
 
-/// View model class for TVShowSeasonsView
-final class TVShowSeasonsViewViewModel: NSObject {
+/// View model class for SeasonsView
+final class SeasonsViewViewModel: NSObject {
 
 	var title: String { return tvShow.name }
 
 	private let tvShow: TVShow
 
 	private var subscriptions = Set<AnyCancellable>()
-	private var viewModels = [TVShowSeasonsCollectionViewCellViewModel]()
+	private var viewModels = [SeasonsCollectionViewCellViewModel]()
 
 	private var seasons = [Season]() {
 		didSet {
 			for season in seasons {
 				let imageURLString = "\(Service.Constants.baseImageURL)w500/\(season.posterPath ?? "")"
 				guard let url = URL(string: imageURLString), let seasonName = season.name else { return }
-				let viewModel = TVShowSeasonsCollectionViewCellViewModel(imageURL: url, seasonNameText: seasonName)
+				let viewModel = SeasonsCollectionViewCellViewModel(imageURL: url, seasonNameText: seasonName)
 
 				if !viewModels.contains(viewModel) && !seasonName.contains("Specials") {
 					viewModels.append(viewModel)
@@ -30,7 +30,7 @@ final class TVShowSeasonsViewViewModel: NSObject {
 		}
 	}
 
-	weak var delegate: TVShowSeasonsViewViewModelDelegate?
+	weak var delegate: SeasonsViewViewModelDelegate?
 
 	/// Designated initializer
 	/// - Parameters:
@@ -61,7 +61,7 @@ final class TVShowSeasonsViewViewModel: NSObject {
 
 // ! UICollectionView
 
-extension TVShowSeasonsViewViewModel: UICollectionViewDataSource, UICollectionViewDelegate {
+extension SeasonsViewViewModel: UICollectionViewDataSource, UICollectionViewDelegate {
 
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		return viewModels.count
@@ -69,9 +69,9 @@ extension TVShowSeasonsViewViewModel: UICollectionViewDataSource, UICollectionVi
 
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		guard let cell = collectionView.dequeueReusableCell(
-			withReuseIdentifier: TVShowSeasonsCollectionViewCell.identifier,
+			withReuseIdentifier: SeasonsCollectionViewCell.identifier,
 			for: indexPath
-		) as? TVShowSeasonsCollectionViewCell else {
+		) as? SeasonsCollectionViewCell else {
 			return UICollectionViewCell()
 		}
 		cell.configure(with: viewModels[indexPath.item])

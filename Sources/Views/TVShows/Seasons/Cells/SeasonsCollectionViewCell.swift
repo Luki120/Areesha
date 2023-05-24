@@ -1,9 +1,9 @@
 import UIKit
 
 /// Class to represent the tv show seasons collection view cell
-final class TVShowSeasonsCollectionViewCell: UICollectionViewCell {
+final class SeasonsCollectionViewCell: UICollectionViewCell {
 
-	static let identifier = "TVShowSeasonsCollectionViewCell"
+	static let identifier = "SeasonsCollectionViewCell"
 
 	@UsesAutoLayout
 	private var tvShowSeasonImageView: UIImageView = {
@@ -26,7 +26,7 @@ final class TVShowSeasonsCollectionViewCell: UICollectionViewCell {
 		return label
 	}()
 
-	private var activeViewModel: TVShowSeasonsCollectionViewCellViewModel?
+	private var activeViewModel: SeasonsCollectionViewCellViewModel?
 
 	// ! Lifecyle
 
@@ -70,14 +70,14 @@ final class TVShowSeasonsCollectionViewCell: UICollectionViewCell {
 
 }
 
-extension TVShowSeasonsCollectionViewCell {
+extension SeasonsCollectionViewCell {
 
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
 	/// - Parameters:
 	/// 	- with: The cell's view model
-	func configure(with viewModel: TVShowSeasonsCollectionViewCellViewModel) {
+	func configure(with viewModel: SeasonsCollectionViewCellViewModel) {
 		activeViewModel = viewModel
 		seasonNameLabel.text = viewModel.displaySeasonNameText
 
