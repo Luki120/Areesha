@@ -11,6 +11,7 @@ final class ExploreCoordinator: Coordinator {
 		case closeButtonTapped
 		case pushedVC
 		case poppedVC
+		case seasonCellTapped(tvShow: TVShow, season: Season)
 	}
 
 	var navigationController = SwipeableNavigationController()
@@ -48,6 +49,12 @@ final class ExploreCoordinator: Coordinator {
 
 			case .pushedVC: navigationController.navigationBar.isHidden = true
 			case .poppedVC: navigationController.navigationBar.isHidden = false
+
+			case .seasonCellTapped(let tvShow, let season):
+				let viewModel = EpisodesViewViewModel(tvShow: tvShow, season: season)
+				let episodesVC = EpisodesVC(viewModel: viewModel)
+				episodesVC.coordinator = self
+				navigationController.pushViewController(episodesVC, animated: true)
 		}
 	}
 

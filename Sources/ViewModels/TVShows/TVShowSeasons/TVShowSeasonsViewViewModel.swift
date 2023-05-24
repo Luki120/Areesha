@@ -3,6 +3,7 @@ import UIKit
 
 protocol TVShowSeasonsViewViewModelDelegate: AnyObject {
 	func didLoadTVShowSeasons()
+	func didSelect(season: Season, from tvShow: TVShow)
 }
 
 /// View model class for TVShowSeasonsView
@@ -49,7 +50,8 @@ final class TVShowSeasonsViewViewModel: NSObject {
 		Service.sharedInstance.fetchTVShows(withURL: url, expecting: TVShow.self)
 			.receive(on: DispatchQueue.main)
 			.sink(receiveCompletion: { _ in }) { [weak self] tvShow in
-				self?.seasons = tvShow.seasons ?? []
+				guard let seasons = tvShow.seasons else { return }
+				self?.seasons = seasons.filter { $0[keyPath: \.name!].contains("Specials") == false }
 				self?.delegate?.didLoadTVShowSeasons()
 			}
 			.store(in: &subscriptions)
@@ -78,6 +80,7 @@ extension TVShowSeasonsViewViewModel: UICollectionViewDataSource, UICollectionVi
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
+		delegate?.didSelect(season: seasons[indexPath.item], from: tvShow)
 	}
 
 }

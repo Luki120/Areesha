@@ -1,5 +1,9 @@
 import UIKit
 
+protocol TVShowSeasonsViewDelegate: AnyObject {
+	func tvShowSeasonsView(_ tvShowSeasonsView: TVShowSeasonsView, didSelect season: Season, from tvShow: TVShow)
+}
+
 /// Class to represent the tv show seasons view
 final class TVShowSeasonsView: UIView {
 
@@ -51,6 +55,8 @@ final class TVShowSeasonsView: UIView {
 		return label
 	}()
 
+	weak var delegate: TVShowSeasonsViewDelegate?
+
 	// ! Lifecycle
 
 	required init?(coder: NSCoder) {
@@ -79,6 +85,10 @@ extension TVShowSeasonsView: TVShowSeasonsViewViewModelDelegate {
 
 	func didLoadTVShowSeasons() {
 		seasonsCollectionView.reloadData()
+	}
+
+	func didSelect(season: Season, from tvShow: TVShow) {
+		delegate?.tvShowSeasonsView(self, didSelect: season, from: tvShow)
 	}
 
 }
