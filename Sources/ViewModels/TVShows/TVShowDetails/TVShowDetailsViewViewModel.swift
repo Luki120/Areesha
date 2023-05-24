@@ -39,7 +39,6 @@ final class TVShowDetailsViewViewModel: NSObject {
 		}
 	}
 
-	private var animatingDifferences = false
 	private var subscriptions = Set<AnyCancellable>()
 
 	var title: String { return tvShow.name }
@@ -93,50 +92,46 @@ final class TVShowDetailsViewViewModel: NSObject {
 	}
 
 	private func fetchTVShowCast() {
-		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)/credits?api_key=\(Service.Constants.apiKey)&language=en-US"
+		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)/credits?api_key=\(Service.Constants.apiKey)"
 		guard let url = URL(string: urlString) else { return }
 
-		Service.sharedInstance.fetchTVShows(withURL: url, expecting: Credits.self) { isFromCache in
-			self.animatingDifferences = !isFromCache ? true : false
-		}
-		.receive(on: DispatchQueue.main)
-		.sink(receiveCompletion: { _ in }) { [weak self] credits in
-			self?.castCrew = credits.cast
-			self?.reloadSnapshot(self?.animatingDifferences ?? false)
-		}
+		Service.sharedInstance.fetchTVShows(withURL: url, expecting: Credits.self)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveCompletion: { _ in }) { [weak self] credits, isFromCache in
+				self?.castCrew = credits.cast
+				self?.reloadSnapshot(animatingDifferences: !isFromCache)
+			}
 		.store(in: &subscriptions)
 	}
 
 	private func fetchTVShowDetails() {
-		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)?api_key=\(Service.Constants.apiKey)&language=en-US"
+		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)?api_key=\(Service.Constants.apiKey)"
 		guard let url = URL(string: urlString) else { return }
 
-		Service.sharedInstance.fetchTVShows(withURL: url, expecting: TVShow.self) { isFromCache in
-			self.animatingDifferences = !isFromCache ? true : false
-		}
-		.receive(on: DispatchQueue.main)
-		.sink(receiveCompletion: { _ in }) { [weak self] tvShow in
-			guard let self = self else { return }
+		Service.sharedInstance.fetchTVShows(withURL: url, expecting: TVShow.self)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveCompletion: { _ in }) { [weak self] tvShow, isFromCache in
+				guard let self else { return }
 
-			let episodeRunTimes = tvShow.episodeRunTime ?? []
-			let episodeRunTimeValues = episodeRunTimes.map { String($0) }
+				let episodeRunTimes = tvShow.episodeRunTime ?? []
+				let episodeRunTimeValues = episodeRunTimes.map { String($0) }
 
-			let episodeAverageDurationText = episodeRunTimes.isEmpty ? "" : String(describing: episodeRunTimeValues.joined(separator: ", ")) + " min"
+				let episodeAverageDurationText = episodeRunTimes.isEmpty ? "" : String(describing: episodeRunTimeValues.joined(separator: ", ")) + " min"
 
-			let genres = tvShow.genres ?? []
-			let genresNames = genres.map(\.name)
+				let genres = tvShow.genres ?? []
+				let genresNames = genres.map(\.name)
 
-			self.networks = tvShow.networks ?? []
+				self.networks = tvShow.networks ?? []
 
-			self.genreCellViewModel = .init(
-				genreText: genresNames.joined(separator: ", "),
-				episodeAverageDurationText: episodeAverageDurationText,
-				lastAirDateText: tvShow.lastAirDate,
-				statusText: tvShow.status,
-				voteAverageText: String(describing: tvShow.voteAverage?.round(to: 1) ?? 0) + "/10"
-			)
+				self.genreCellViewModel = .init(
+					genreText: genresNames.joined(separator: ", "),
+					episodeAverageDurationText: episodeAverageDurationText,
+					lastAirDateText: tvShow.lastAirDate,
+					statusText: tvShow.status,
+					voteAverageText: String(describing: tvShow.voteAverage?.round(to: 1) ?? 0) + "/10"
+				)
 
-			self.reloadSnapshot(self.animatingDifferences)
+			self.reloadSnapshot(animatingDifferences: !isFromCache)
 		}
 		.store(in: &subscriptions)
 	}
@@ -198,7 +193,7 @@ extension TVShowDetailsViewViewModel {
 		dataSource.apply(snapshot, animatingDifferences: true)
 	}
 
-	private func reloadSnapshot(_ animatingDifferences: Bool) {
+	private func reloadSnapshot(animatingDifferences: Bool) {
 		var snapshot = dataSource.snapshot()
 		snapshot.reconfigureItems(cells)
 
