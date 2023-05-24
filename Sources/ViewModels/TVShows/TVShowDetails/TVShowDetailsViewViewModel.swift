@@ -5,6 +5,7 @@ import UIKit
 final class TVShowDetailsViewViewModel: NSObject {
 
 	let tvShow: TVShow
+	var title: String { return tvShow.name }
 
 	private var headerViewViewModel: TVShowDetailsHeaderViewViewModel!
 	private var genreCellViewModel = TVShowDetailsGenreTableViewCellViewModel()
@@ -12,36 +13,7 @@ final class TVShowDetailsViewViewModel: NSObject {
 	private var castCellViewModel = TVShowDetailsCastTableViewCellViewModel()
 	private var networksCellViewModel = TVShowDetailsNetworksTableViewCellViewModel()
 
-	private var castCrewNames = [String]()
-	private var castCrew = [Cast]() {
-		didSet {
-			for cast in castCrew {
-				if !castCrewNames.contains(cast.name) {
-					castCrewNames.append(cast.name)
-				}
-			}
-			castCellViewModel = .init(castText: "Cast", castCrewText: castCrewNames.joined(separator: ", "))
-		}
-	}
-
-	private var networksNames = [String]()
-	private var networks = [Network]() {
-		didSet {
-			for network in networks {
-				if !networksNames.contains(network.name) {
-					networksNames.append(network.name)
-				}
-			}
-			networksCellViewModel = .init(
-				networksTitleText: "Networks",
-				networksNamesText: networksNames.joined(separator: ", ")
-			)
-		}
-	}
-
 	private var subscriptions = Set<AnyCancellable>()
-
-	var title: String { return tvShow.name }
 
 	// ! UITableViewDiffableDataSource
 
@@ -98,7 +70,7 @@ final class TVShowDetailsViewViewModel: NSObject {
 		Service.sharedInstance.fetchTVShows(withURL: url, expecting: Credits.self)
 			.receive(on: DispatchQueue.main)
 			.sink(receiveCompletion: { _ in }) { [weak self] credits, isFromCache in
-				self?.castCrew = credits.cast
+				self?.updateCastCrewNames(with: credits.cast)
 				self?.reloadSnapshot(animatingDifferences: !isFromCache)
 			}
 		.store(in: &subscriptions)
@@ -121,7 +93,7 @@ final class TVShowDetailsViewViewModel: NSObject {
 				let genres = tvShow.genres ?? []
 				let genresNames = genres.map(\.name)
 
-				self.networks = tvShow.networks ?? []
+				self.updateNetworkNames(with: tvShow.networks ?? [])
 
 				self.genreCellViewModel = .init(
 					genreText: genresNames.joined(separator: ", "),
@@ -134,6 +106,31 @@ final class TVShowDetailsViewViewModel: NSObject {
 			self.reloadSnapshot(animatingDifferences: !isFromCache)
 		}
 		.store(in: &subscriptions)
+	}
+
+	private func updateCastCrewNames(with castCrew: [Cast]) {
+		var castCrewNames = [String]()
+
+		for cast in castCrew {
+			if !castCrewNames.contains(cast.name) {
+				castCrewNames.append(cast.name)
+			}
+		}
+		castCellViewModel = .init(castText: "Cast", castCrewText: castCrewNames.joined(separator: ", "))
+	}
+
+	private func updateNetworkNames(with networks: [Network]) {
+		var networksNames = [String]()
+
+		for network in networks {
+			if !networksNames.contains(network.name) {
+				networksNames.append(network.name)
+			}
+		}
+		networksCellViewModel = .init(
+			networksTitleText: "Networks",
+			networksNamesText: networksNames.joined(separator: ", ")
+		)
 	}
 
 }
@@ -157,7 +154,7 @@ extension TVShowDetailsViewViewModel {
 	///     - tableView: the table view
 	func setupTableView(_ tableView: UITableView) {
 		dataSource = DataSource(tableView: tableView) { [weak self] tableView, indexPath, _ -> UITableViewCell? in
-			guard let self = self else { return nil }
+			guard let self else { return nil }
 
 			switch self.cells[indexPath.row] {
 				case .genre:
