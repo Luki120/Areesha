@@ -41,11 +41,9 @@ final class TVShowDetailsVC: UIViewController {
 
 	private func setupUI() {
 		navigationItem.titleView = tvShowDetailsView.titleLabel
-		navigationItem.leftBarButtonItem = UIBarButtonItem(
-			image: UIImage(systemName: "chevron.backward.circle"),
-			style: .plain,
-			target: self,
-			action: #selector(didTapBackButton)
+		navigationItem.leftBarButtonItem = .createBackBarButtonItem(
+			forTarget: self,
+			selector: #selector(didTapBackButton)
 		)
 		navigationItem.leftBarButtonItem?.tintColor = .label
 		view.backgroundColor = .systemBackground

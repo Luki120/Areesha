@@ -21,6 +21,7 @@ final class TVShowSeasonsVC: UIViewController {
 		self.tvShowSeasonsViewViewModel = viewModel
 		self.tvShowSeasonsView = .init(viewModel: viewModel)
 		super.init(nibName: nil, bundle: nil)
+		tvShowSeasonsView.delegate = self
 	}
 
 	override func viewDidLoad() {
@@ -39,11 +40,9 @@ final class TVShowSeasonsVC: UIViewController {
 		view.addSubview(tvShowSeasonsView)
 
 		navigationItem.titleView = tvShowSeasonsView.titleLabel
-		navigationItem.leftBarButtonItem = UIBarButtonItem(
-			image: UIImage(systemName: "chevron.backward.circle"),
-			style: .plain,
-			target: self,
-			action: #selector(didTapBackButton)
+		navigationItem.leftBarButtonItem = .createBackBarButtonItem(
+			forTarget: self,
+			selector: #selector(didTapBackButton)
 		)
 		navigationItem.leftBarButtonItem?.tintColor = .label
 		view.backgroundColor = .systemBackground
@@ -51,12 +50,7 @@ final class TVShowSeasonsVC: UIViewController {
 
 	private func layoutUI() {
 		tvShowSeasonsView.translatesAutoresizingMaskIntoConstraints = false
-		NSLayoutConstraint.activate([
-			tvShowSeasonsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-			tvShowSeasonsView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-			tvShowSeasonsView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-			tvShowSeasonsView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
-		])
+		view.pinViewToSafeAreas(tvShowSeasonsView)
 	}
 
 	// ! Selectors
@@ -64,6 +58,16 @@ final class TVShowSeasonsVC: UIViewController {
 	@objc
 	private func didTapBackButton() {
 		coordinator?.eventOccurred(with: .backButtonTapped)
-	}	
+	}
+
+}
+
+// ! TVShowSeasonsViewDelegate
+
+extension TVShowSeasonsVC: TVShowSeasonsViewDelegate {
+
+	func tvShowSeasonsView(_ tvShowSeasonsView: TVShowSeasonsView, didSelect season: Season, from tvShow: TVShow) {
+		coordinator?.eventOccurred(with: .seasonCellTapped(tvShow: tvShow, season: season))
+	}
 
 }
