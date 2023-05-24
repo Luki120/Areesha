@@ -27,7 +27,7 @@ final class EpisodeCollectionViewCell: UICollectionViewCell {
 	private var episodeNameLabel, episodeDurationLabel, episodeDescriptionLabel: UILabel!
 
 	private var isChecked = false
-	private weak var activeViewModel: EpisodeCollectionViewCellViewModel?
+	private var activeViewModel: EpisodeCollectionViewCellViewModel?
 
 	// ! Lifecyle
 
@@ -42,6 +42,7 @@ final class EpisodeCollectionViewCell: UICollectionViewCell {
 
 	override func prepareForReuse() {
 		super.prepareForReuse()
+		activeViewModel = nil
 		episodeImageView.image = nil
 		[episodeNameLabel, episodeDurationLabel, episodeDescriptionLabel].forEach { $0.text = nil }
 	}
@@ -136,10 +137,10 @@ extension EpisodeCollectionViewCell {
 		episodeDescriptionLabel.text = viewModel.episodeDescriptionText
 
 		Task.detached(priority: .background) {
-			guard await self.activeViewModel == viewModel else { return }
-
 			let image = try? await viewModel.fetchEpisodeImage()
 			await MainActor.run {
+				guard self.activeViewModel == viewModel else { return }
+
 				UIView.transition(with: self.episodeImageView, duration: 0.5, options: .transitionCrossDissolve) {
 					self.episodeImageView.image = image
 				}

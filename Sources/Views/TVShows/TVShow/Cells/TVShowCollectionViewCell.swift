@@ -17,7 +17,7 @@ final class TVShowCollectionViewCell: UICollectionViewCell {
 
 	private lazy var spinnerView = createSpinnerView(withStyle: .medium, childOf: contentView) 
 
-	private weak var activeViewModel: TVShowCollectionViewCellViewModel?
+	private var activeViewModel: TVShowCollectionViewCellViewModel?
 
 	// ! Lifecyle
 
@@ -73,10 +73,10 @@ extension TVShowCollectionViewCell: Configurable {
 		activeViewModel = viewModel
 
 		Task.detached(priority: .background) {
-			guard await self.activeViewModel == viewModel else { return }
-
 			let image = try? await viewModel.fetchTVShowImage()
 			await MainActor.run {
+				guard self.activeViewModel == viewModel else { return }
+
 				UIView.transition(with: self.tvShowImageView, duration: 0.5, options: .transitionCrossDissolve) {
 					self.tvShowImageView.alpha = 1
 					self.tvShowImageView.image = image

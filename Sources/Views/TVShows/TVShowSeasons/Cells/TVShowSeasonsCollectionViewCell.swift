@@ -26,7 +26,7 @@ final class TVShowSeasonsCollectionViewCell: UICollectionViewCell {
 		return label
 	}()
 
-	private weak var activeViewModel: TVShowSeasonsCollectionViewCellViewModel?
+	private var activeViewModel: TVShowSeasonsCollectionViewCellViewModel?
 
 	// ! Lifecyle
 
@@ -70,9 +70,9 @@ final class TVShowSeasonsCollectionViewCell: UICollectionViewCell {
 
 }
 
-// ! Public
-
 extension TVShowSeasonsCollectionViewCell {
+
+	// ! Public
 
 	/// Function to configure the cell with its respective view model
 	/// - Parameters:
@@ -82,10 +82,10 @@ extension TVShowSeasonsCollectionViewCell {
 		seasonNameLabel.text = viewModel.displaySeasonNameText
 
 		Task.detached(priority: .background) {
-			guard await self.activeViewModel == viewModel else { return }
-
 			let image = try? await viewModel.fetchTVShowSeasonImage()
 			await MainActor.run {
+				guard self.activeViewModel == viewModel else { return }
+
 				UIView.transition(with: self.tvShowSeasonImageView, duration: 0.5, options: .transitionCrossDissolve) {
 					self.tvShowSeasonImageView.alpha = 1
 					self.tvShowSeasonImageView.image = image

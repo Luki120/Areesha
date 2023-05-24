@@ -1,7 +1,7 @@
 import UIKit
 
-/// View model class for EpisodeCollectionViewCell
-final class EpisodeCollectionViewCellViewModel: Hashable {
+/// View model struct for EpisodeCollectionViewCell
+struct EpisodeCollectionViewCellViewModel: Hashable {
 
 	private let imageURL: URL?
 
@@ -28,15 +28,5 @@ final class EpisodeCollectionViewCellViewModel: Hashable {
 		guard let imageURL else { throw URLError(.badURL) }
 		return try await ImageManager.sharedInstance.fetchImageAsync(imageURL)
 	}
-
- 	// ! Hashable
-
-	static func == (lhs: EpisodeCollectionViewCellViewModel, rhs: EpisodeCollectionViewCellViewModel) -> Bool {
-		return lhs.hashValue == rhs.hashValue
-	}
-
-	func hash(into hasher: inout Hasher) {
-		hasher.combine(imageURL)
-	}	
 
 }
