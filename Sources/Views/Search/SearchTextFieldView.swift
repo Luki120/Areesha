@@ -20,8 +20,10 @@ final class SearchTextFieldView: UIView {
 	@UsesAutoLayout
 	private var searchTextField: UITextField = {
 		let textField = UITextField()
-		textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 45, height: textField.frame.height))
+		textField.leftView = UIView(frame: .init(x: 0, y: 0, width: 45, height: textField.frame.height))
+		textField.rightView = UIView(frame: .init(x: 0, y: 0, width: 45, height: textField.frame.height))
 		textField.leftViewMode = .always
+		textField.rightViewMode = .always
 		textField.textColor = .label
 		textField.placeholder = "Search for TV shows"
 		textField.layer.borderColor = UIColor.darkGray.cgColor
@@ -67,38 +69,40 @@ final class SearchTextFieldView: UIView {
 	// ! Private
 
 	private func setupUI() {
-		closeButton = createButton(usesAutoLayout: true)
-		clearAllButton = createButton(withImage: "xmark.circle", tintColor: .darkGray)
+		closeButton = createButton()
+		clearAllButton = createButton(withTintColor: .darkGray)
 		clearAllButton.alpha = 0
 
 		addSubview(textFieldStackView)
 		textFieldStackView.addArrangedSubviews(closeButton, searchTextField)
 
-		searchTextField.addSubviews(searchIconImageView, clearButton)
-		searchTextField.rightView = clearButton
-		searchTextField.rightViewMode = .always
+		searchTextField.addSubviews(searchIconImageView, clearAllButton)
 	}
 
 	private func layoutUI() {
 		pinViewToAllEdges(textFieldStackView)
 
+		[closeButton, clearAllButton].forEach { setupSizeConstraints(forView: $0, width: 30, height: 30) }
 		setupSizeConstraints(forView: searchTextField, width: 350, height: 50)
 
 		searchIconImageView.centerYAnchor.constraint(equalTo: searchTextField.centerYAnchor).isActive = true
 		searchIconImageView.leadingAnchor.constraint(equalTo: searchTextField.leadingAnchor, constant: 15).isActive = true
+
+		clearAllButton.centerYAnchor.constraint(equalTo: searchTextField.centerYAnchor).isActive = true
+		clearAllButton.trailingAnchor.constraint(equalTo: searchTextField.trailingAnchor, constant: -15).isActive = true
 	}
 
 	private func setupButtons() {
 		closeButton.addAction(
 			UIAction { [weak self] _ in
-				guard let self = self else { return }
+				guard let self else { return }
 				self.delegate?.didTapCloseButton(in: self)
 			},
 			for: .touchUpInside
 		)
-		clearButton.addAction(
+		clearAllButton.addAction(
 			UIAction { [weak self] _ in
-				guard let self = self else { return }
+				guard let self else { return }
 				self.delegate?.didTapClearButton(in: self)
 			},
 			for: .touchUpInside
@@ -107,18 +111,21 @@ final class SearchTextFieldView: UIView {
 
 	// ! Reusable
 
-	private func createButton(
-		withImage systemName: String = "xmark.circle",
-		tintColor: UIColor = .label,
-		usesAutoLayout: Bool = false
-	) -> UIButton {
-		var configuration = UIButton.Configuration.plain()
-		configuration.image = UIImage(systemName: systemName) ?? UIImage()
-		configuration.baseForegroundColor = tintColor
-
+	private func createButton(withTintColor tintColor: UIColor = .label) -> UIButton {
 		let button = UIButton()
-		button.configuration = configuration
-		button.translatesAutoresizingMaskIntoConstraints = !usesAutoLayout
+		if #available(iOS 15.0, *) {
+			var configuration: UIButton.Configuration = .plain()
+			configuration.image = UIImage(systemName: "xmark.circle") ?? UIImage()
+			configuration.baseForegroundColor = tintColor
+			button.configuration = configuration
+		}
+		else {
+			let configuration = UIImage.SymbolConfiguration(pointSize: 20)
+
+			button.tintColor = tintColor
+			button.setImage(.init(systemName: "xmark.circle", withConfiguration: configuration) ?? UIImage(), for: .normal)
+		}
+		button.translatesAutoresizingMaskIntoConstraints = false
 		return button
 	}
 

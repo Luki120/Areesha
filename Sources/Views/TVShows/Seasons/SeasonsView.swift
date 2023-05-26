@@ -9,18 +9,25 @@ final class SeasonsView: UIView {
 
 	private let viewModel: SeasonsViewViewModel
 
+	private var isTinyDevice: Bool {
+		if UIScreen.main.nativeBounds.size.height <= 1334 { return true }
+		return false
+	}
+
 	private lazy var compositionalLayout: UICollectionViewCompositionalLayout = {
 		let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
 		let item = NSCollectionLayoutItem(layoutSize: itemSize)
 		item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 50)
 
-		let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(300), heightDimension: .absolute(330))
+		let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(isTinyDevice ? 205 : 300), heightDimension: .absolute(isTinyDevice ? 206 : 330))
 		let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
 		layoutIfNeeded()
 
+		let cellOffset: CGFloat = isTinyDevice ? 120 : 182
+
 		let section = NSCollectionLayoutSection(group: group)
-		section.contentInsets = NSDirectionalEdgeInsets(top: bounds.size.height / 2 - 182, leading: 70, bottom: 0, trailing: 20)
+		section.contentInsets = NSDirectionalEdgeInsets(top: bounds.size.height / 2 - cellOffset, leading: 70, bottom: 0, trailing: 20)
 		section.visibleItemsInvalidationHandler = { items, offset, environment in
 			items.forEach { item in
 				let distanceFromCenter = abs((item.frame.midX - offset.x) - environment.container.contentSize.width / 2)

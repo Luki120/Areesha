@@ -192,7 +192,8 @@ extension TVShowDetailsViewViewModel {
 
 	private func reloadSnapshot(animatingDifferences: Bool) {
 		var snapshot = dataSource.snapshot()
-		snapshot.reconfigureItems(cells)
+		if #available(iOS 15.0, *) { snapshot.reconfigureItems(cells) }
+		else { snapshot.reloadItems(cells) }
 
 		dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
 	}

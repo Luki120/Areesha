@@ -25,12 +25,17 @@ final class TVShowDetailsView: UIView {
 
 	@UsesAutoLayout
 	private var seasonsButton: UIButton = {
-		var configuration: UIButton.Configuration = .plain()
-		configuration.title = "Seasons"
-		configuration.baseForegroundColor = .label
- 
 		let button = UIButton()
-		button.configuration = configuration
+		if #available(iOS 15.0, *) {
+			var configuration: UIButton.Configuration = .plain()
+			configuration.title = "Seasons"
+			configuration.baseForegroundColor = .label
+			button.configuration = configuration
+		}
+		else {
+			button.setTitle("Seasons", for: .normal)
+			button.setTitleColor(.label, for: .normal)
+		}
 		button.backgroundColor = .areeshaPinkColor
 		button.layer.cornerCurve = .continuous
 		button.layer.cornerRadius = 25
@@ -97,7 +102,7 @@ final class TVShowDetailsView: UIView {
 
 		seasonsButton.addAction(
 			UIAction { [weak self] _ in
-				guard let self = self else { return }
+				guard let self else { return }
 				self.delegate?.didTapSeasonsButton(in: self)
 			},
 			for: .touchUpInside

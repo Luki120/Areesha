@@ -18,7 +18,7 @@ class TopRatedTVShowsCollectionViewCell: UICollectionViewCell {
 		let item = NSCollectionLayoutItem(layoutSize: itemSize)
 		item.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 5, bottom: 5, trailing: 5)
 
-		let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(180))
+		let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalWidth(1 / 2))
 		let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
 		let section = NSCollectionLayoutSection(group: group)
