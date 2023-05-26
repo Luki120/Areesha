@@ -13,17 +13,6 @@ final class EpisodeCollectionViewCell: UICollectionViewCell {
 		return imageView
 	}()
 
-	@UsesAutoLayout
-	private var checkmarkButton: UIButton = {
-		var configuration: UIButton.Configuration = .plain()
-		configuration.image = UIImage(systemName: "checkmark.circle") ?? UIImage()
-		configuration.baseForegroundColor = .label
-
-		let button = UIButton()
-		button.configuration = configuration
-		return button
-	}()
-
 	private var episodeNameLabel, episodeDurationLabel, episodeDescriptionLabel: UILabel!
 
 	private var isChecked = false
@@ -53,14 +42,7 @@ final class EpisodeCollectionViewCell: UICollectionViewCell {
 		episodeNameLabel = createLabel()
 		episodeDurationLabel = createLabel(withFontSize: 12, textColor: .secondaryLabel)
 		episodeDescriptionLabel = createLabel(textColor: .secondaryLabel)
-		contentView.addSubviews(
-			episodeImageView,
-			episodeNameLabel,
-			episodeDurationLabel,
-			episodeDescriptionLabel,
-			checkmarkButton
-		)
-		setupButton()		
+		contentView.addSubviews(episodeImageView, episodeNameLabel, episodeDurationLabel, episodeDescriptionLabel)
 
 		layoutUI()
 	}
@@ -72,9 +54,9 @@ final class EpisodeCollectionViewCell: UICollectionViewCell {
 			episodeImageView.widthAnchor.constraint(equalToConstant: 140),
 			episodeImageView.heightAnchor.constraint(equalToConstant: 80),
 
-			episodeNameLabel.leadingAnchor.constraint(equalTo: episodeImageView.trailingAnchor, constant: 10),
 			episodeNameLabel.topAnchor.constraint(equalTo: episodeImageView.topAnchor, constant: 20),
-			episodeNameLabel.trailingAnchor.constraint(equalTo: checkmarkButton.leadingAnchor, constant: -10),
+			episodeNameLabel.leadingAnchor.constraint(equalTo: episodeImageView.trailingAnchor, constant: 10),
+			episodeNameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
 
 			episodeDurationLabel.topAnchor.constraint(equalTo: episodeNameLabel.bottomAnchor, constant: 2.5),
 			episodeDurationLabel.leadingAnchor.constraint(equalTo: episodeNameLabel.leadingAnchor),
@@ -82,31 +64,8 @@ final class EpisodeCollectionViewCell: UICollectionViewCell {
 			episodeDescriptionLabel.topAnchor.constraint(equalTo: episodeImageView.bottomAnchor, constant: 10),
 			episodeDescriptionLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
 			episodeDescriptionLabel.leadingAnchor.constraint(equalTo: episodeImageView.leadingAnchor),
-			episodeDescriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-
-			checkmarkButton.topAnchor.constraint(equalTo: episodeImageView.topAnchor, constant: 20),
-			checkmarkButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-			checkmarkButton.widthAnchor.constraint(equalToConstant: 30),
-			checkmarkButton.heightAnchor.constraint(equalToConstant: 30)
+			episodeDescriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20)
 		])
-	}
-
-	private func setupButton() {
-		checkmarkButton.addAction(
-			UIAction { [weak self] _ in
-				guard let self else { return }
-
-				self.isChecked.toggle()
-
-				if self.isChecked {
-					self.checkmarkButton.configuration?.image = UIImage(systemName: "checkmark.circle.fill") ?? UIImage()
-				}
-				else {
-					self.checkmarkButton.configuration?.image = UIImage(systemName: "checkmark.circle") ?? UIImage()
-				}
-			},
-			for: .touchUpInside
-		)
 	}
 
 	// ! Reusable
