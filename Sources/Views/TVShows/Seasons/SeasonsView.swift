@@ -15,33 +15,38 @@ final class SeasonsView: UIView {
 	}
 
 	private lazy var compositionalLayout: UICollectionViewCompositionalLayout = {
-		let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
-		let item = NSCollectionLayoutItem(layoutSize: itemSize)
-		item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 50)
+		let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, layoutEnvironment -> NSCollectionLayoutSection? in
+			guard let self else { return nil }
 
-		let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(isTinyDevice ? 205 : 300), heightDimension: .absolute(isTinyDevice ? 206 : 330))
-		let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+			let fraction: CGFloat = 1 / 2
+			let cellCenterY: CGFloat = self.isTinyDevice ? 130.75 : 197.25
+			let centerY: CGFloat = layoutEnvironment.container.contentSize.height / 2 - cellCenterY
 
-		layoutIfNeeded()
+			let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
+			let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-		let cellOffset: CGFloat = isTinyDevice ? 120 : 182
+			let groupSize = NSCollectionLayoutSize(widthDimension: self.isTinyDevice ? .fractionalWidth(fraction) : .absolute(250), heightDimension: .fractionalHeight(fraction))
+			let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+			group.edgeSpacing = .init(leading: nil, top: .fixed(centerY), trailing: .fixed(50), bottom: nil)
 
-		let section = NSCollectionLayoutSection(group: group)
-		section.contentInsets = NSDirectionalEdgeInsets(top: bounds.size.height / 2 - cellOffset, leading: 70, bottom: 0, trailing: 20)
-		section.visibleItemsInvalidationHandler = { items, offset, environment in
-			items.forEach { item in
-				let distanceFromCenter = abs((item.frame.midX - offset.x) - environment.container.contentSize.width / 2)
-				let minScale: CGFloat = 0.9
-				let maxScale: CGFloat = 1.2
-				let scale = max(maxScale - (distanceFromCenter / environment.container.contentSize.width), minScale)
-				item.transform = .init(scaleX: scale, y: scale)
+			let section = NSCollectionLayoutSection(group: group)
+			section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 70, bottom: 0, trailing: 0)
+			section.visibleItemsInvalidationHandler = { items, offset, environment in
+				items.forEach { item in
+					let distanceFromCenter = abs((item.frame.midX - offset.x) - environment.container.contentSize.width / 2)
+					let minScale: CGFloat = 0.9
+					let maxScale: CGFloat = 1.2
+					let scale = max(maxScale - (distanceFromCenter / environment.container.contentSize.width), minScale)
+					item.transform = .init(scaleX: scale, y: scale)
+				}
 			}
+			return section
 		}
-
 		let config = UICollectionViewCompositionalLayoutConfiguration()
 		config.scrollDirection = .horizontal
 
-		return UICollectionViewCompositionalLayout(section: section, configuration: config)
+		layout.configuration = config
+		return layout
 	}()
 
 	private lazy var seasonsCollectionView: UICollectionView = {
