@@ -1,6 +1,6 @@
 import UIKit
 
-/// Settings coordinator, which will take care of any navigation events related to ARSettingsVC
+/// Settings coordinator, which will take care of any navigation events related to SettingsVC
 final class SettingsCoordinator: Coordinator {
 
 	enum Event {}

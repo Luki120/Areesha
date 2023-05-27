@@ -1,6 +1,6 @@
 import UIKit
 
-/// Explore coordinator, which will take care of any navigation events related to ARExploreVC
+/// Explore coordinator, which will take care of any navigation events related to ExploreVC
 final class ExploreCoordinator: Coordinator {
 
 	enum Event {

@@ -1,6 +1,6 @@
 import UIKit
 
-/// Explore coordinator, which will take care of any navigation events related to ARTrackedTVShowsVC
+/// Explore coordinator, which will take care of any navigation events related to TrackedTVShowsVC
 final class TrackedTVShowsCoordinator: Coordinator {
 
 	enum Event {}

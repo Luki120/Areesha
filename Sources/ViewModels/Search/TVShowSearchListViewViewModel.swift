@@ -6,7 +6,7 @@ protocol TVShowSearchListViewViewModelDelegate: AnyObject {
 	func didSelect(tvShow: TVShow)
 }
 
-/// View model class for ARTVShowSearchView
+/// View model class for TVShowSearchListView
 final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCell>, ObservableObject {
 
 	let searchQuerySubject = PassthroughSubject<String, Never>()
