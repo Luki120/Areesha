@@ -13,7 +13,7 @@ final class EpisodesView: UIView {
 		let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
 
 		let section = NSCollectionLayoutSection(group: group)
-		section.contentInsets = NSDirectionalEdgeInsets(top: 20, leading: 0, bottom: 20, trailing: 0)	
+		section.contentInsets = NSDirectionalEdgeInsets(top: 20, leading: 0, bottom: 20, trailing: 0)
 		section.interGroupSpacing = 15
 
 		return UICollectionViewCompositionalLayout(section: section)
