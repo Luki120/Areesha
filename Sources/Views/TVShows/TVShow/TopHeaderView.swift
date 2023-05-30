@@ -59,7 +59,6 @@ final class TopHeaderView: UIView {
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		setupUI()
-		viewModel.awake()
 		viewModel.delegate = self
 		topHeaderCollectionView.delegate = viewModel
 		topHeaderCollectionView.setCollectionViewLayout(compositionalLayout, animated: true)

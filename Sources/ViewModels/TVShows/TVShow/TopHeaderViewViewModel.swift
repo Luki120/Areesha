@@ -10,8 +10,7 @@ final class TopHeaderViewViewModel: BaseViewModel<TopHeaderCollectionViewCell> {
 
 	weak var delegate: TopHeaderViewViewModelDelegate?
 
-	/// Function to setup the view model, because for some goddamn reason overriding init doesn't seem to work
-	func awake() {
+	override func awake() {
 		viewModels = [
 			.init(sectionText: "Top rated"),
 			.init(sectionText: "Trending")
@@ -19,7 +18,6 @@ final class TopHeaderViewViewModel: BaseViewModel<TopHeaderCollectionViewCell> {
 		onCellRegistration = { cell, viewModel in
 			cell.configure(with: viewModel)
 		}
-		setupDiffableDataSource()
 	}
 
 }

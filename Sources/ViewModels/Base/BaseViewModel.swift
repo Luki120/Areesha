@@ -30,8 +30,12 @@ class BaseViewModel<Cell: UICollectionViewCell & Configurable>: NSObject {
 	init(collectionView: UICollectionView) {
 		self.collectionView = collectionView
 		super.init()
+		awake()
 		setupCollectionViewDiffableDataSource()
 	}
+
+	/// Function available to subclasses to perform any custom initialization before setting up the data source
+	func awake() {}
 
 	// ! Private
 
@@ -40,7 +44,7 @@ class BaseViewModel<Cell: UICollectionViewCell & Configurable>: NSObject {
 			self.onCellRegistration(cell, viewModel)
 		}
 
-		dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, identifier -> UICollectionViewCell? in
+		dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, identifier in
 			let cell = collectionView.dequeueConfiguredReusableCell(
 				using: cellRegistration,
 				for: indexPath,
@@ -63,11 +67,6 @@ class BaseViewModel<Cell: UICollectionViewCell & Configurable>: NSObject {
 extension BaseViewModel {
 
 	// ! Public
-
-	/// Function to setup the diffable data source
-	func setupDiffableDataSource() {
-		setupCollectionViewDiffableDataSource()
-	}
 
 	/// Function to apply the snapshot to the diffable data source
 	func applySnapshot() {
