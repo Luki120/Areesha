@@ -89,7 +89,7 @@ final class TVShowSearchListView: UIView {
 			self.searchTextFieldView.clearButton.alpha = textField.text?.count ?? 0 > 0 ? 1 : 0	
 		}
 		guard !textToSearch.isEmpty else { return }
-		viewModel.searchQuerySubject.send(textToSearch)
+		viewModel.sendQuerySubject(textToSearch)
 	}
 
 }

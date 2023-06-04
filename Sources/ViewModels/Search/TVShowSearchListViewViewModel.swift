@@ -9,16 +9,11 @@ protocol TVShowSearchListViewViewModelDelegate: AnyObject {
 /// View model class for TVShowSearchListView
 final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCell>, ObservableObject {
 
-	let searchQuerySubject = PassthroughSubject<String, Never>()
-
+	private let searchQuerySubject = PassthroughSubject<String, Never>()
 	private var searchedTVShows = [TVShow]() {
 		didSet {
-			for tvShow in searchedTVShows {
-				let viewModel = TVShowSearchCollectionViewListCellViewModel(tvShowNameText: tvShow.name)
-
-				if !viewModels.contains(viewModel) {
-					viewModels.append(viewModel)
-				}
+			orderedViewModels += searchedTVShows.compactMap { tvShow in
+				return TVShowSearchCollectionViewListCellViewModel(id: tvShow.id, tvShowNameText: tvShow.name)
 			}
 		}
 	}
@@ -45,7 +40,7 @@ final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCel
 			.receive(on: DispatchQueue.main)
 			.sink { [weak self] searchedTVShows in
 				self?.searchedTVShows = searchedTVShows.results
-				self?.applySnapshot()
+				self?.applySnapshot(isOrderedSet: true)
 			}
 			.store(in: &subscriptions)
 	}
@@ -54,10 +49,23 @@ final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCel
 		searchQuerySubject
 			.debounce(for: .seconds(0.8), scheduler: DispatchQueue.main)
 			.sink { [weak self] in
-				self?.viewModels.removeAll()
+				self?.orderedViewModels.removeAll()
 				self?.fetchSearchedTVShow(withQuery: $0)
 			}
 			.store(in: &subscriptions)
+	}
+
+}
+
+extension TVShowSearchListViewViewModel {
+
+	// ! Public
+
+	/// Function to send the query subject
+	/// - Parameters:
+	///     - subject: A string representing the query subject
+	func sendQuerySubject(_ subject: String) {
+		searchQuerySubject.send(subject)
 	}
 
 }
