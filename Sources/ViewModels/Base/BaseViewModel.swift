@@ -21,12 +21,14 @@ class BaseViewModel<Cell: UICollectionViewCell & Configurable>: NSObject {
 	var onCellRegistration: ((Cell, ViewModel) -> Void)!
 	/// Array of view model objects
 	var viewModels = [ViewModel]()
+	/// Ordered set of view model objects
+	var orderedViewModels = OrderedSet<ViewModel>()
 
 	private let collectionView: UICollectionView
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - collectionView: the collection view for which to setup the diffable data source
+	///     - collectionView: The collection view for which to setup the diffable data source
 	init(collectionView: UICollectionView) {
 		self.collectionView = collectionView
 		super.init()
@@ -55,11 +57,11 @@ class BaseViewModel<Cell: UICollectionViewCell & Configurable>: NSObject {
 		applyDiffableDataSourceSnapshot()
 	}
 
-	private func applyDiffableDataSourceSnapshot() {
+	private func applyDiffableDataSourceSnapshot(isOrderedSet: Bool = false) {
 		var snapshot = Snapshot()
 		snapshot.appendSections([.main])
-		snapshot.appendItems(viewModels)
-		dataSource.apply(snapshot, animatingDifferences: true)
+		snapshot.appendItems(isOrderedSet ? Array(orderedViewModels) : viewModels)
+		dataSource.apply(snapshot)
 	}
 
 }
@@ -69,8 +71,10 @@ extension BaseViewModel {
 	// ! Public
 
 	/// Function to apply the snapshot to the diffable data source
-	func applySnapshot() {
-		applyDiffableDataSourceSnapshot()
+	/// - Parameters:
+	///     - isOrderedSet: A boolean to determine wether it's an ordered set or an array
+	func applySnapshot(isOrderedSet: Bool = false) {
+		applyDiffableDataSourceSnapshot(isOrderedSet: isOrderedSet)
 	}
 
 }

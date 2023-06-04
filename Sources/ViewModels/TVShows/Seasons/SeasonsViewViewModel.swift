@@ -1,6 +1,7 @@
 import Combine
 import UIKit
 
+
 protocol SeasonsViewViewModelDelegate: AnyObject {
 	func didLoadTVShowSeasons()
 	func didSelect(season: Season, from tvShow: TVShow)
@@ -14,18 +15,14 @@ final class SeasonsViewViewModel: NSObject {
 	private let tvShow: TVShow
 
 	private var subscriptions = Set<AnyCancellable>()
-	private var viewModels = [SeasonsCollectionViewCellViewModel]()
+	private var viewModels = OrderedSet<SeasonsCollectionViewCellViewModel>()
 
 	private var seasons = [Season]() {
 		didSet {
-			for season in seasons {
+			viewModels += seasons.compactMap { season in
 				let imageURLString = "\(Service.Constants.baseImageURL)w500/\(season.posterPath ?? "")"
-				guard let url = URL(string: imageURLString), let seasonName = season.name else { return }
-				let viewModel = SeasonsCollectionViewCellViewModel(imageURL: url, seasonNameText: seasonName)
-
-				if !viewModels.contains(viewModel) && !seasonName.contains("Specials") {
-					viewModels.append(viewModel)
-				}
+				guard let url = URL(string: imageURLString), let seasonName = season.name else { return nil }
+				return SeasonsCollectionViewCellViewModel(imageURL: url, seasonNameText: seasonName)
 			}
 		}
 	}

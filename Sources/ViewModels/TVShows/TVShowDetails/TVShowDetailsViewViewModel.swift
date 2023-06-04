@@ -2,7 +2,7 @@ import Combine
 import UIKit
 
 /// View model class for TVShowDetailsView
-final class TVShowDetailsViewViewModel: NSObject {
+final class TVShowDetailsViewViewModel {
 
 	let tvShow: TVShow
 	var title: String { return tvShow.name }
@@ -41,7 +41,6 @@ final class TVShowDetailsViewViewModel: NSObject {
 	///     - tvShow: the tv show model object
 	init(tvShow: TVShow) {
 		self.tvShow = tvShow
-		super.init()
 		setupModels()
 		fetchTVShowCast()
 		fetchTVShowDetails()
@@ -93,9 +92,9 @@ final class TVShowDetailsViewViewModel: NSObject {
 				let genres = tvShow.genres ?? []
 				let genresNames = genres.map(\.name)
 
-				self.updateNetworkNames(with: tvShow.networks ?? [])
+				updateNetworkNames(with: tvShow.networks ?? [])
 
-				self.genreCellViewModel = .init(
+				genreCellViewModel = .init(
 					genreText: genresNames.joined(separator: ", "),
 					episodeAverageDurationText: episodeAverageDurationText,
 					lastAirDateText: tvShow.lastAirDate,
@@ -103,30 +102,18 @@ final class TVShowDetailsViewViewModel: NSObject {
 					voteAverageText: String(describing: tvShow.voteAverage?.round(to: 1) ?? 0) + "/10"
 				)
 
-			self.reloadSnapshot(animatingDifferences: !isFromCache)
+			reloadSnapshot(animatingDifferences: !isFromCache)
 		}
 		.store(in: &subscriptions)
 	}
 
 	private func updateCastCrewNames(with castCrew: [Cast]) {
-		var castCrewNames = [String]()
-
-		for cast in castCrew {
-			if !castCrewNames.contains(cast.name) {
-				castCrewNames.append(cast.name)
-			}
-		}
+		let castCrewNames = OrderedSet(castCrew.map(\.name))
 		castCellViewModel = .init(castText: "Cast", castCrewText: castCrewNames.joined(separator: ", "))
 	}
 
 	private func updateNetworkNames(with networks: [Network]) {
-		var networksNames = [String]()
-
-		for network in networks {
-			if !networksNames.contains(network.name) {
-				networksNames.append(network.name)
-			}
-		}
+		let networksNames = OrderedSet(networks.map(\.name))
 		networksCellViewModel = .init(
 			networksTitleText: "Networks",
 			networksNamesText: networksNames.joined(separator: ", ")
@@ -151,15 +138,15 @@ extension TVShowDetailsViewViewModel {
 
 	/// Function to setup the table view's diffable data source
 	/// - Parameters:
-	///     - tableView: the table view
+	///     - tableView: The table view
 	func setupTableView(_ tableView: UITableView) {
-		dataSource = DataSource(tableView: tableView) { [weak self] tableView, indexPath, _ -> UITableViewCell? in
+		dataSource = DataSource(tableView: tableView) { [weak self] tableView, indexPath, _ in
 			guard let self else { return nil }
 
-			switch self.cells[indexPath.row] {
+			switch cells[indexPath.row] {
 				case .genre:
 					let cell: TVShowDetailsGenreTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-					cell.configure(with: self.genreCellViewModel)
+					cell.configure(with: genreCellViewModel)
 					return cell
 
 				case .overview(let overviewCellViewModel):
@@ -169,16 +156,15 @@ extension TVShowDetailsViewViewModel {
 
 				case .cast:
 					let cell: TVShowDetailsCastTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-					cell.configure(with: self.castCellViewModel)
+					cell.configure(with: castCellViewModel)
 					return cell
 
 				case .networks:
 					let cell: TVShowDetailsNetworksTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-					cell.configure(with: self.networksCellViewModel)
+					cell.configure(with: networksCellViewModel)
 					return cell
 			}
 		}
-
 		applySnapshot()
 	}
 
@@ -186,8 +172,7 @@ extension TVShowDetailsViewViewModel {
 		snapshot = Snapshot()
 		snapshot.appendSections([.main])
 		snapshot.appendItems(cells)
-
-		dataSource.apply(snapshot, animatingDifferences: true)
+		dataSource.apply(snapshot)
 	}
 
 	private func reloadSnapshot(animatingDifferences: Bool) {
