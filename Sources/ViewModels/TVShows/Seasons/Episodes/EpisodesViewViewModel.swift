@@ -4,13 +4,17 @@ import UIKit
 /// View model class for EpisodesView
 final class EpisodesViewViewModel: NSObject {
 
-	let tvShow: TVShow
-	let season: Season
-
+	var posterPath: String { return tvShow.posterPath ?? "" }
 	var seasonName: String { return season.name ?? "" }
 
-	private var viewModels = [EpisodeCollectionViewCellViewModel]()
+	private let tvShow: TVShow
+	private let season: Season
+
+	private var episodes = [Episode]()
+	private var viewModels = OrderedSet<EpisodeCollectionViewCellViewModel>()
 	private var subscriptions = Set<AnyCancellable>()
+
+	// ! UICollectionViewDiffableDataSource
 
 	private typealias CellRegistration = UICollectionView.CellRegistration<EpisodeCollectionViewCell, EpisodeCollectionViewCellViewModel>
 	private typealias DataSource = UICollectionViewDiffableDataSource<Sections, EpisodeCollectionViewCellViewModel>
@@ -39,39 +43,46 @@ final class EpisodesViewViewModel: NSObject {
 			return
 		}
 
- 		Service.sharedInstance.fetchTVShows(withURL: url, expecting: Season.self)
+		Service.sharedInstance.fetchTVShows(withURL: url, expecting: Season.self)
 			.receive(on: DispatchQueue.main)
 			.sink(receiveCompletion: { _ in }) { [weak self] season in
-				self?.updateViewModels(with: season.episodes ?? [])
-				self?.applyDiffableDataSourceSnapshot()
+				guard let self else { return }
+				episodes = season.episodes ?? []
+				updateViewModels(with: episodes)
+				applyDiffableDataSourceSnapshot()
 			}
 			.store(in: &subscriptions)
 	}
 
 	private func updateViewModels(with episodes: [Episode]) {
-		for episode in episodes {
+		viewModels += episodes.compactMap { episode in
 			let imageURLString = "\(Service.Constants.baseImageURL)w500/\(episode.stillPath ?? "")"
-			guard let url = URL(string: imageURLString) else { return }
+			guard let url = URL(string: imageURLString) else { return nil }
 
-			let viewModel = EpisodeCollectionViewCellViewModel(
+			return EpisodeCollectionViewCellViewModel(
 				imageURL: url,
 				episodeNameText: "\(episode.episodeNumber ?? 0). \(episode.name ?? "")",
 				episodeDurationText: "\(episode.runtime ?? 0) min",
 				episodeDescriptionText: episode.overview ?? ""
 			)
-
-			if !viewModels.contains(viewModel) {
-				viewModels.append(viewModel)
-			}
 		}
 	}
 
+}
+
+// ! UICollectionView
+
+extension EpisodesViewViewModel: UICollectionViewDelegate {
+
+	/// Function to setup the collection view's diffable data source
+	/// - Parameters:
+	///     - collectionView: The collection view
 	func setupCollectionViewDiffableDataSource(for collectionView: UICollectionView) {
 		let cellRegistration = CellRegistration { cell, _, viewModel in
 			cell.configure(with: viewModel)
 		}
 
-		dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, identifier -> UICollectionViewCell? in
+		dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, identifier in
 			let cell = collectionView.dequeueConfiguredReusableCell(
 				using: cellRegistration,
 				for: indexPath,
@@ -85,18 +96,23 @@ final class EpisodesViewViewModel: NSObject {
 	private func applyDiffableDataSourceSnapshot() {
 		var snapshot = Snapshot()
 		snapshot.appendSections([.main])
-		snapshot.appendItems(viewModels)
-		dataSource.apply(snapshot, animatingDifferences: true)
+		snapshot.appendItems(Array(viewModels))
+		dataSource.apply(snapshot)
 	}
-
-}
-
-// ! UICollectionViewDelegate
-
-extension EpisodesViewViewModel: UICollectionViewDelegate {
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
+
+		let userInfo: [String : Codable] = [
+			"tvShow": tvShow,
+			"season": season,
+			"episode": episodes[indexPath.item]
+		]
+		NotificationCenter.default.post(
+			name: .didSendTrackedTVShowDataNotification,
+			object: nil,
+			userInfo: userInfo
+		)
 	}
 
 }

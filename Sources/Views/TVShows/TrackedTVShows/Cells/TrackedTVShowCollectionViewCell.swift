@@ -1,7 +1,64 @@
 import UIKit
 
-/// Class to represent the tracked tv show collection view cell
-final class TrackedTVShowCollectionViewCell: UICollectionViewCell {
+/// Class to represent the tracked tv show collection view list cell
+final class TrackedTVShowCollectionViewCell: UICollectionViewListCell {
+
+	var viewModel: TrackedTVShowCollectionViewCellViewModel?
+
+	override func updateConfiguration(using state: UICellConfigurationState) {
+		var newConfiguration = TrackedTVShowContentConfiguration().updated(for: state)
+		newConfiguration.tvShowNameText = viewModel?.tvShowNameText
+		newConfiguration.lastSeenText = viewModel?.lastSeenText
+		newConfiguration.viewModel = viewModel
+
+		contentConfiguration = newConfiguration
+	}
+
+}
+
+/// Struct to represent the content configuration for the tracked tv show cell
+struct TrackedTVShowContentConfiguration: UIContentConfiguration, Hashable {
+
+	var tvShowNameText: String?
+	var lastSeenText: String?
+	var viewModel: TrackedTVShowCollectionViewCellViewModel?
+
+	func makeContentView() -> UIView & UIContentView {
+		return TrackedTVShowContentView(configuration: self)
+	}
+
+	func updated(for state: UIConfigurationState) -> TrackedTVShowContentConfiguration {
+		return self
+	}
+
+}
+
+/// Class to represent the content view for the tracked tv show cell
+final class TrackedTVShowContentView: UIView, UIContentView {
+
+	private var currentConfiguration: TrackedTVShowContentConfiguration!
+
+	var configuration: UIContentConfiguration {
+		get { currentConfiguration }
+		set {
+			guard let newConfiguration = newValue as? TrackedTVShowContentConfiguration else { return }
+			apply(configuration: newConfiguration)
+		}
+	}
+
+	private var activeViewModel: TrackedTVShowCollectionViewCellViewModel!
+
+	@UsesAutoLayout
+	private var seasonImageView: UIImageView = {
+		let imageView = UIImageView()
+		imageView.contentMode = .scaleAspectFill
+		imageView.clipsToBounds = true
+		imageView.layer.cornerCurve = .continuous
+		imageView.layer.cornerRadius = 8
+		return imageView
+	}()
+
+	private var tvShowNameLabel, lastSeenLabel: UILabel!
 
 	// ! Lifecyle
 
@@ -9,31 +66,76 @@ final class TrackedTVShowCollectionViewCell: UICollectionViewCell {
 		super.init(coder: coder)
 	}
 
-	override init(frame: CGRect) {
-		super.init(frame: frame)
+	init(configuration: TrackedTVShowContentConfiguration) {
+		super.init(frame: .zero)
+
+		setupUI()
+		layoutUI()
+		self.configuration = configuration
 	}
 
-	override func layoutSubviews() {
-		super.layoutSubviews()
+	// ! Private
+
+	private func setupUI() {
+		tvShowNameLabel = createLabel(weight: .bold)
+		lastSeenLabel = createLabel(textColor: .secondaryLabel)
+
+		addSubviews(seasonImageView, tvShowNameLabel, lastSeenLabel)
 	}
 
-	override func prepareForReuse() {
-		super.prepareForReuse()
+	private func layoutUI() {
+		NSLayoutConstraint.activate([
+			seasonImageView.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+			seasonImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
+			seasonImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+			seasonImageView.widthAnchor.constraint(equalToConstant: 130),
+			seasonImageView.heightAnchor.constraint(equalToConstant: 75),
+
+			tvShowNameLabel.topAnchor.constraint(equalTo: seasonImageView.topAnchor, constant: 20),
+			tvShowNameLabel.leadingAnchor.constraint(equalTo: seasonImageView.trailingAnchor, constant: 20),
+			tvShowNameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+
+			lastSeenLabel.topAnchor.constraint(equalTo: tvShowNameLabel.bottomAnchor, constant: 2.5),
+			lastSeenLabel.leadingAnchor.constraint(equalTo: tvShowNameLabel.leadingAnchor)
+		])
 	}
 
-	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-		super.traitCollectionDidChange(previousTraitCollection)
+	private func apply(configuration: TrackedTVShowContentConfiguration) {
+		guard currentConfiguration != configuration else { return }
+		currentConfiguration = configuration
+
+		guard let viewModel = configuration.viewModel else { return }
+		configure(with: viewModel)
+
+		tvShowNameLabel.text = configuration.tvShowNameText
+		lastSeenLabel.text = configuration.lastSeenText
 	}
 
-}
+	private func configure(with viewModel: TrackedTVShowCollectionViewCellViewModel) {
+		activeViewModel = viewModel
 
-extension TrackedTVShowCollectionViewCell {
+		Task.detached(priority: .background) {
+			let image = try? await viewModel.fetchTVShowSeasonImage()
+			await MainActor.run {
+				guard self.activeViewModel == viewModel else { return }
+				self.seasonImageView.image = image
+			}
+		}
+	}
 
-	// ! Public
+	// ! Reusable
 
-	/// Function to configure the cell with its respective view model
-	/// - Parameters:
-	/// 	- with: The cell's view model
-	func configure(with viewModel: TrackedTVShowCollectionViewCell) {}
+	private func createLabel(
+		withFontSize size: CGFloat = 14,
+		weight: UIFont.Weight = .regular,
+		textColor: UIColor = .label
+	) -> UILabel {
+		let label = UILabel()
+		label.font = .systemFont(ofSize: size, weight: weight)
+		label.textColor = textColor
+		label.numberOfLines = 0
+		label.translatesAutoresizingMaskIntoConstraints = false
+		return label
+	}
 
 }

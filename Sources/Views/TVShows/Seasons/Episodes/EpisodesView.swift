@@ -81,7 +81,7 @@ final class EpisodesView: UIView {
 
 	private func fetchTVShowImage() {
 		Task.detached(priority: .background) {
-			let imageURLString = "\(Service.Constants.baseImageURL)w1280/\(self.viewModel.tvShow.posterPath ?? "")"
+			let imageURLString = "\(Service.Constants.baseImageURL)w1280/\(self.viewModel.posterPath)"
 			guard let imageURL = URL(string: imageURLString) else { return }
 
 			let image = try? await ImageManager.sharedInstance.fetchImageAsync(imageURL)
