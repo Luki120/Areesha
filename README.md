@@ -14,7 +14,7 @@
 * [x] Build season's episodes UI.
 * [ ] Build episode details UI.
 * [x] Get rid of class prefixes 💀.
-* [ ] Persist chosen TV shows logic.
+* [x] Persist chosen TV shows logic.
 * [x] Slide the search text field from top once `ARTVShowSearchVC` appears.
 * [x] Use `CodingKey` protocol for `Codable` models.
 
