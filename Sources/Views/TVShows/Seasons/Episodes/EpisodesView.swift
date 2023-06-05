@@ -3,7 +3,7 @@ import UIKit
 /// Class to represent the episodes view
 final class EpisodesView: UIView {
 
-	let viewModel: EpisodesViewViewModel
+	private let viewModel: EpisodesViewViewModel
 
 	private let compositionalLayout: UICollectionViewCompositionalLayout = {
 		let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(160))
@@ -29,18 +29,20 @@ final class EpisodesView: UIView {
 		return collectionView
 	}()
 
-	@UsesAutoLayout
-	private var tvShowImageView: UIImageView = {
+	private lazy var tvShowImageView: UIImageView = {
 		let imageView = UIImageView()
 		imageView.contentMode = .scaleAspectFill
 		imageView.clipsToBounds = true
+		imageView.translatesAutoresizingMaskIntoConstraints = false
+		insertSubview(imageView, at: 0)
 		return imageView
 	}()
 
-	@UsesAutoLayout
-	private var visualEffectView: UIVisualEffectView = {
+	private lazy var visualEffectView: UIVisualEffectView = {
 		let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemThickMaterialDark))
 		visualEffectView.clipsToBounds = true
+		visualEffectView.translatesAutoresizingMaskIntoConstraints = false
+		tvShowImageView.addSubview(visualEffectView)
 		return visualEffectView
 	}()
 
@@ -60,13 +62,11 @@ final class EpisodesView: UIView {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - viewModel: the view model object for this view
+	///     - viewModel: The view model object for this view
 	init(viewModel: EpisodesViewViewModel) {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
 		viewModel.setupCollectionViewDiffableDataSource(for: episodesCollectionView)
-		insertSubview(tvShowImageView, at: 0)
-		tvShowImageView.addSubview(visualEffectView)
 		fetchTVShowImage()
 	}
 
@@ -80,11 +80,9 @@ final class EpisodesView: UIView {
 	// ! Private
 
 	private func fetchTVShowImage() {
-		Task.detached(priority: .background) {
-			let imageURLString = "\(Service.Constants.baseImageURL)w1280/\(self.viewModel.posterPath)"
-			guard let imageURL = URL(string: imageURLString) else { return }
+		viewModel.fetchTVShowImage { [weak self] image in
+			guard let self else { return }
 
-			let image = try? await ImageManager.sharedInstance.fetchImageAsync(imageURL)
 			await MainActor.run {
 				UIView.transition(with: self.tvShowImageView, duration: 0.5, options: .transitionCrossDissolve) {
 					self.tvShowImageView.image = image

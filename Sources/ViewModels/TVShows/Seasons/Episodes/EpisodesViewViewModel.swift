@@ -4,7 +4,6 @@ import UIKit
 /// View model class for EpisodesView
 final class EpisodesViewViewModel: NSObject {
 
-	var posterPath: String { return tvShow.posterPath ?? "" }
 	var seasonName: String { return season.name ?? "" }
 
 	private let tvShow: TVShow
@@ -29,8 +28,8 @@ final class EpisodesViewViewModel: NSObject {
 
 	/// Designated initializer
 	/// - Parameters:
-	///		- tvShow: the tv show model object
-	///     - season: the season model object
+	///		- tvShow: The tv show model object
+	///     - season: The season model object
 	init(tvShow: TVShow, season: Season) {
 		self.tvShow = tvShow
 		self.season = season
@@ -65,6 +64,27 @@ final class EpisodesViewViewModel: NSObject {
 				episodeDurationText: "\(episode.runtime ?? 0) min",
 				episodeDescriptionText: episode.overview ?? ""
 			)
+		}
+	}
+
+}
+
+extension EpisodesViewViewModel {
+
+	// ! Public
+
+	/// Function to fetch the tv show's poster image
+	/// - Parameters:
+	///     - completion: Escaping closure that takes a UIImage as argument & returns nothing
+	func fetchTVShowImage(completion: @escaping (UIImage) async -> ()) {
+		Task.detached(priority: .background) {
+			let imageURLString = "\(Service.Constants.baseImageURL)w1280/\(self.tvShow.posterPath ?? "")"
+			guard let imageURL = URL(string: imageURLString) else { return }
+
+			let image = try? await ImageManager.sharedInstance.fetchImageAsync(imageURL)
+
+			guard let image else { return }
+			await completion(image)
 		}
 	}
 
