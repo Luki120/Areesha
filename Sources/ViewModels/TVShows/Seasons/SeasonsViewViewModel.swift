@@ -80,4 +80,41 @@ extension SeasonsViewViewModel: UICollectionViewDataSource, UICollectionViewDele
 		delegate?.didSelect(season: seasons[indexPath.item], from: tvShow)
 	}
 
+	func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+		guard let collectionView = scrollView as? UICollectionView else { return }
+		collectionView.focusCenterItem(animated: true)
+	}
+
+	func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+		guard let collectionView = scrollView as? UICollectionView else { return }
+		if !decelerate { // if decelerate, we'll handle in `scrollViewDidEndDecelerating`
+			collectionView.focusCenterItem(animated: true)
+		}
+	}
+}
+
+private extension UICollectionView {
+	func focusCenterItem(animated: Bool) {
+		var contentCenter = contentOffset
+		contentCenter.x += center.x
+		contentCenter.y += center.y
+
+		// try to get the cell in the center,
+		// if there's not one then find the closest cell
+		guard let indexPath = indexPathForItem(at: contentCenter) ?? {
+			indexPathsForVisibleItems
+				.compactMap { indexPath -> (indexPath: IndexPath, distance: Double)? in
+					guard let cell = cellForItem(at: indexPath),
+						  let cellSuperview = cell.superview else { return nil }
+					let relative = convert(cell.center, from: cellSuperview)
+					// distance from the center of the cell to the center of the scroll view
+					return (indexPath, abs(relative.x - contentCenter.x))
+				}
+				.min { lhs, rhs in
+					lhs.distance < rhs.distance
+				}
+				.map(\.indexPath)
+		}() else { return }
+		scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
+	}
 }
