@@ -25,8 +25,8 @@ final class SeasonsView: UIView {
 			let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
 			let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-			let interSpacing: CGFloat = 35
-			let normalItemWidth: CGFloat = 250
+			let interSpacing: CGFloat = 24
+			let normalItemWidth: CGFloat = 252
 			let groupSize = NSCollectionLayoutSize(widthDimension: self.isTinyDevice ? .fractionalWidth(fraction) : .absolute(normalItemWidth), heightDimension: .fractionalHeight(fraction))
 			let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 			group.edgeSpacing = .init(leading: .fixed(interSpacing), top: .fixed(centerY), trailing: .fixed(interSpacing), bottom: nil)
