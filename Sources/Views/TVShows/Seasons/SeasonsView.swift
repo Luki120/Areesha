@@ -9,31 +9,31 @@ final class SeasonsView: UIView {
 
 	private let viewModel: SeasonsViewViewModel
 
-	private var isTinyDevice: Bool {
-		if UIScreen.main.nativeBounds.size.height <= 1334 { return true }
-		return false
-	}
-
 	private lazy var compositionalLayout: UICollectionViewCompositionalLayout = {
 		let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, layoutEnvironment -> NSCollectionLayoutSection? in
 			guard let self else { return nil }
 
-			let fraction: CGFloat = 1 / 2
-			let cellCenterY: CGFloat = self.isTinyDevice ? 130.75 : 197.25
-			let centerY: CGFloat = layoutEnvironment.container.contentSize.height / 2 - cellCenterY
+			let effectiveContainerSize = layoutEnvironment.container.effectiveContentSize
+
+			let widthFraction: CGFloat = 3 / 5 // ratio of cell width to collection view width
+			let heightFraction: CGFloat = 1 / 2 // ratio of cell height to collection view height
+			
+			let layoutContainerEffectiveHeight = effectiveContainerSize.height
+			let itemHeight = layoutContainerEffectiveHeight * heightFraction
+			let verticalSpacing: CGFloat = (layoutEnvironment.container.contentSize.height - itemHeight) / 2
 
 			let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
 			let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
 			let interSpacing: CGFloat = 24
 			let normalItemWidth: CGFloat = 252
-			let groupSize = NSCollectionLayoutSize(widthDimension: self.isTinyDevice ? .fractionalWidth(fraction) : .absolute(normalItemWidth), heightDimension: .fractionalHeight(fraction))
+			let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(widthFraction), heightDimension: .fractionalHeight(heightFraction))
 			let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-			group.edgeSpacing = .init(leading: .fixed(interSpacing), top: .fixed(centerY), trailing: .fixed(interSpacing), bottom: nil)
+			group.edgeSpacing = .init(leading: .fixed(interSpacing), top: .fixed(verticalSpacing), trailing: .fixed(interSpacing), bottom: nil)
 
-			let layoutContainerEffectiveWidth = layoutEnvironment.container.effectiveContentSize.width
-			let itemWidth = self.isTinyDevice ? layoutContainerEffectiveWidth * fraction : normalItemWidth
-			let horizontalSpacing = (layoutContainerEffectiveWidth - itemWidth) / 2 - interSpacing
+			let layoutContainerEffectiveWidth = effectiveContainerSize.width
+			let itemWidth = layoutContainerEffectiveWidth * widthFraction
+			let horizontalSpacing = (layoutEnvironment.container.contentSize.width - itemWidth) / 2 - interSpacing
 
 			let section = NSCollectionLayoutSection(group: group)
 			section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: horizontalSpacing, bottom: 0, trailing: horizontalSpacing)
