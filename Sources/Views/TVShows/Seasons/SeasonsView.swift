@@ -25,12 +25,18 @@ final class SeasonsView: UIView {
 			let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
 			let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-			let groupSize = NSCollectionLayoutSize(widthDimension: self.isTinyDevice ? .fractionalWidth(fraction) : .absolute(250), heightDimension: .fractionalHeight(fraction))
+			let interSpacing: CGFloat = 24
+			let normalItemWidth: CGFloat = 252
+			let groupSize = NSCollectionLayoutSize(widthDimension: self.isTinyDevice ? .fractionalWidth(fraction) : .absolute(normalItemWidth), heightDimension: .fractionalHeight(fraction))
 			let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-			group.edgeSpacing = .init(leading: nil, top: .fixed(centerY), trailing: .fixed(50), bottom: nil)
+			group.edgeSpacing = .init(leading: .fixed(interSpacing), top: .fixed(centerY), trailing: .fixed(interSpacing), bottom: nil)
+
+			let layoutContainerEffectiveWidth = layoutEnvironment.container.effectiveContentSize.width
+			let itemWidth = self.isTinyDevice ? layoutContainerEffectiveWidth * fraction : normalItemWidth
+			let horizontalSpacing = (layoutContainerEffectiveWidth - itemWidth) / 2 - interSpacing
 
 			let section = NSCollectionLayoutSection(group: group)
-			section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 70, bottom: 0, trailing: 0)
+			section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: horizontalSpacing, bottom: 0, trailing: horizontalSpacing)
 			section.visibleItemsInvalidationHandler = { items, offset, environment in
 				items.forEach { item in
 					let distanceFromCenter = abs((item.frame.midX - offset.x) - environment.container.contentSize.width / 2)
