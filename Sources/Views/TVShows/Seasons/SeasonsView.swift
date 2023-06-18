@@ -15,7 +15,7 @@ final class SeasonsView: UIView {
 
 			let containerSize = layoutEnvironment.container.effectiveContentSize
 			let effectiveContainerSize = layoutEnvironment.container.effectiveContentSize
-			
+
 			let heightFraction: CGFloat = 0.6 // ratio of cell height to collection view height
 			// the poster images have an aspect ratio of about 3:2
 			let widthFraction: CGFloat = heightFraction * 2/3 // ratio of cell width to collection view height
