@@ -13,27 +13,33 @@ final class SeasonsView: UIView {
 		let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, layoutEnvironment -> NSCollectionLayoutSection? in
 			guard let self else { return nil }
 
+			let containerSize = layoutEnvironment.container.effectiveContentSize
 			let effectiveContainerSize = layoutEnvironment.container.effectiveContentSize
-
-			let widthFraction: CGFloat = 3 / 5 // ratio of cell width to collection view width
-			let heightFraction: CGFloat = 1 / 2 // ratio of cell height to collection view height
 			
+			let heightFraction: CGFloat = 0.6 // ratio of cell height to collection view height
+			// the poster images have an aspect ratio of about 3:2
+			let widthFraction: CGFloat = heightFraction * 2/3 // ratio of cell width to collection view height
+
 			let layoutContainerEffectiveHeight = effectiveContainerSize.height
-			let itemHeight = layoutContainerEffectiveHeight * heightFraction
-			let verticalSpacing: CGFloat = (layoutEnvironment.container.contentSize.height - itemHeight) / 2
+			let derivedCellSize = CGSize(
+				width: layoutContainerEffectiveHeight * widthFraction,
+				height: layoutContainerEffectiveHeight * heightFraction
+			)
 
 			let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
 			let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
+			// the space on each side of a cell;
+			// the total space between two cells would be twice this value
 			let interSpacing: CGFloat = 24
-			let normalItemWidth: CGFloat = 252
-			let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(widthFraction), heightDimension: .fractionalHeight(heightFraction))
+			// the spacing needed above the group such that the the group appears vertically centered
+			let verticalSpacing: CGFloat = (containerSize.height - derivedCellSize.height) / 2
+			// the spacing needed on each of the horizontal edges so that edge cells may be horizontally centered in the group
+			let horizontalSpacing = (containerSize.width - derivedCellSize.width) / 2 - interSpacing
+
+			let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalHeight(widthFraction), heightDimension: .fractionalHeight(heightFraction))
 			let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 			group.edgeSpacing = .init(leading: .fixed(interSpacing), top: .fixed(verticalSpacing), trailing: .fixed(interSpacing), bottom: nil)
-
-			let layoutContainerEffectiveWidth = effectiveContainerSize.width
-			let itemWidth = layoutContainerEffectiveWidth * widthFraction
-			let horizontalSpacing = (layoutEnvironment.container.contentSize.width - itemWidth) / 2 - interSpacing
 
 			let section = NSCollectionLayoutSection(group: group)
 			section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: horizontalSpacing, bottom: 0, trailing: horizontalSpacing)
