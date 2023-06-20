@@ -10,13 +10,13 @@ final class SeasonsView: UIView {
 	private let viewModel: SeasonsViewViewModel
 
 	private lazy var compositionalLayout: UICollectionViewCompositionalLayout = {
-		let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, layoutEnvironment -> NSCollectionLayoutSection? in
+		let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, layoutEnvironment in
 			guard let self else { return nil }
 
 			let containerSize = layoutEnvironment.container.contentSize
 			let effectiveContainerSize = layoutEnvironment.container.effectiveContentSize
-
 			let effectiveContainerHeight = effectiveContainerSize.height
+
 			// the space on each side of a cell;
 			// the total space between two cells would be twice this value
 			let interSpacing: CGFloat = 24
@@ -46,9 +46,9 @@ final class SeasonsView: UIView {
 			let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
 			let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-			// the spacing needed above the group such that the the group appears vertically centered
+			// the spacing needed above the group such that it appears vertically centered
 			let verticalSpacing: CGFloat = (containerSize.height - derivedCellSize.height) / 2
-			// the spacing needed on each of the horizontal edges so that edge cells may be horizontally centered in the group
+			// the spacing needed on each of the horizontal edges so that edge cells are horizontally centered in the group
 			let horizontalSpacing = (containerSize.width - derivedCellSize.width) / 2 - interSpacing
 
 			let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalHeight(widthFraction), heightDimension: .fractionalHeight(heightFraction))
