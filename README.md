@@ -6,17 +6,8 @@
 
 ## To do
 
-* [x] Add a top header collection view to switch between trending & top rated with a horizontal scrolling indicator, similar to the ones of Instagram, Twitter, etc.
-* [x] Add ratings label somewhere in the details view.
-* [x] Add an X button to delete the text from the search text field all at once.
 * [ ] Build settings UI.
-* [x] Build seasons UI.
-* [x] Build season's episodes UI.
 * [ ] Build episode details UI.
-* [x] Get rid of class prefixes 💀.
-* [x] Persist chosen TV shows logic.
-* [x] Slide the search text field from top once `ARTVShowSearchVC` appears.
-* [x] Use `CodingKey` protocol for `Codable` models.
 
 ## Socials
 
