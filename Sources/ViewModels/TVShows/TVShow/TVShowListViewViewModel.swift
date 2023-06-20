@@ -35,7 +35,7 @@ final class TVShowListViewViewModel: BaseViewModel<TVShowCollectionViewCell> {
 	}
 
 	private func fetchTVShows(withURL url: URL?) {
-		guard let url = url else { return }
+		guard let url else { return }
 
 		Service.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)
 			.catch { _ in Just(APIResponse(results: [])) }

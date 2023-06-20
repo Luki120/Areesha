@@ -9,7 +9,7 @@ struct TopHeaderCollectionViewCellViewModel: Hashable {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - sectionText: a string to display the section text
+	///     - sectionText: A string to display the section text
 	init(sectionText: String) {
 		self.sectionText = sectionText
 	}

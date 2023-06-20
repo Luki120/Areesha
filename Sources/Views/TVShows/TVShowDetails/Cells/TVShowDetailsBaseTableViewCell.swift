@@ -14,10 +14,12 @@ class TVShowDetailsBaseTableViewCell: UITableViewCell {
 		setupUI()
 	}
 
+	/// Function available to subclasses to setup the cell's UI
 	func setupUI() {
 		layoutUI()
 	}
 
+	/// Function available to subclasses to lay out the cell's UI
 	func layoutUI() {}
 
 }

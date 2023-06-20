@@ -31,7 +31,7 @@ final class SeasonsViewViewModel: NSObject {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - tvShow: the tv show model object
+	///     - tvShow: The tv show model object
 	init(tvShow: TVShow) {
 		self.tvShow = tvShow
 		super.init()

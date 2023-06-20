@@ -17,11 +17,11 @@ struct TVShowDetailsGenreTableViewCellViewModel: Hashable {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - genreText: a nullable string to represent the genre text
-	///		- episodeAverageDurationText: a nullable string to represent the episode average duration text
-	///     - lastAirDateText: a nullable string to represent the last air date text
-	///		- statusText: a nullable string to represent the status text
-	///		- voteAverageText: a nullable string to represent the vote average text
+	///     - genreText: A nullable string to represent the genre text
+	///		- episodeAverageDurationText: A nullable string to represent the episode average duration text
+	///     - lastAirDateText: A nullable string to represent the last air date text
+	///		- statusText: A nullable string to represent the status text
+	///		- voteAverageText: A nullable string to represent the vote average text
 	init(
 		genreText: String? = nil,
 		episodeAverageDurationText: String? = nil,

@@ -4,7 +4,7 @@ import UIKit
 final class SeasonsVC: UIViewController {
 
 	let seasonsViewViewModel: SeasonsViewViewModel
-	let seasonsView: SeasonsView
+	private let seasonsView: SeasonsView
 
 	var coordinator: ExploreCoordinator?
 
@@ -16,7 +16,7 @@ final class SeasonsVC: UIViewController {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - viewModel: the view model object for this vc's view
+	///     - viewModel: The view model object for this vc's view
 	init(viewModel: SeasonsViewViewModel) {
 		self.seasonsViewViewModel = viewModel
 		self.seasonsView = .init(viewModel: viewModel)

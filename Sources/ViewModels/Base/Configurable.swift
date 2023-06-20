@@ -6,6 +6,6 @@ protocol Configurable {
 	associatedtype ViewModel: Hashable
 	/// Function that'll configure the collection view's cells with the specified view model
 	/// - Parameters:
-	///		- with: the cell's view model
+	///		- with: The cell's view model
 	func configure(with viewModel: ViewModel)
 }

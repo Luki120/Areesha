@@ -9,7 +9,7 @@ struct TVShowDetailsOverviewTableViewCellViewModel: Hashable {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - overviewText: a string to represent the overview text
+	///     - overviewText: A string to represent the overview text
 	init(overviewText: String) {
 		self.overviewText = overviewText
 	}

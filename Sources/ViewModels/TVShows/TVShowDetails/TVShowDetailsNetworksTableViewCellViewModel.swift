@@ -11,8 +11,8 @@ struct TVShowDetailsNetworksTableViewCellViewModel: Hashable {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - networksTitleText: a nullable string to represent the networks title text
-	///		- networksNamesText: a nullable string to represent the networks names text
+	///     - networksTitleText: A nullable string to represent the networks title text
+	///		- networksNamesText: A nullable string to represent the networks names text
 	init(networksTitleText: String? = nil, networksNamesText: String? = nil) {
 		self.networksTitleText = networksTitleText
 		self.networksNamesText = networksNamesText

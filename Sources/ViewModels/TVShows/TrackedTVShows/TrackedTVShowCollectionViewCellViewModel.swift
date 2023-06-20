@@ -9,9 +9,9 @@ struct TrackedTVShowCollectionViewCellViewModel: Codable, Hashable {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - imageURL: an optional url to represent the image's url
-	///     - tvShowNameText: a string to represent the tv show's name
-	///     - lastSeenText: a string to represent the last seen text
+	///     - imageURL: An optional url to represent the image's url
+	///     - tvShowNameText: A string to represent the tv show's name
+	///     - lastSeenText: A string to represent the last seen text
 	init(imageURL: URL?, tvShowNameText: String, lastSeenText: String) {
 		self.imageURL = imageURL
 		self.tvShowNameText = tvShowNameText

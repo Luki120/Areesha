@@ -11,8 +11,8 @@ struct TVShowDetailsCastTableViewCellViewModel: Hashable {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - castText: a nullable string to represent the cast text
-	///		- castCrewText: a nullable string to represent the cast crew text
+	///     - castText: A nullable string to represent the cast text
+	///		- castCrewText: A nullable string to represent the cast crew text
 	init(castText: String? = nil, castCrewText: String? = nil) {
 		self.castText = castText
 		self.castCrewText = castCrewText

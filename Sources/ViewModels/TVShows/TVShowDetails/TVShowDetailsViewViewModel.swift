@@ -38,7 +38,7 @@ final class TVShowDetailsViewViewModel {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - tvShow: the tv show model object
+	///     - tvShow: The tv show model object
 	init(tvShow: TVShow) {
 		self.tvShow = tvShow
 		setupModels()
@@ -128,7 +128,7 @@ extension TVShowDetailsViewViewModel {
 
 	/// Function to setup the table view's header
 	/// - Parameters:
-	///     - view: the view that owns the table view, therefore the header
+	///     - view: The view that owns the table view, therefore the header
 	func setupHeaderView(forView view: UIView) -> TVShowDetailsHeaderView {
 		let headerView = TVShowDetailsHeaderView()
 		headerView.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 160)

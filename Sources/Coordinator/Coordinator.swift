@@ -8,6 +8,6 @@ protocol Coordinator {
 	var navigationController: SwipeableNavigationController { get set }
 	/// Function that'll handle the specific event
 	/// - Parameters:
-	///		- with: the type of Event on which to act on
+	///		- with: The type of Event on which to act on
 	func eventOccurred(with event: Event)
 }

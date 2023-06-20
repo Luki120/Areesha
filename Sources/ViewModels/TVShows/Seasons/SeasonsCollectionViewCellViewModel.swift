@@ -10,8 +10,8 @@ struct SeasonsCollectionViewCellViewModel: Hashable {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - imageURL: an optional url to represent the image's url
-	///     - seasonText: a string to represent the season name
+	///     - imageURL: An optional url to represent the image's url
+	///     - seasonText: A string to represent the season name
 	init(imageURL: URL?, seasonNameText: String) {
 		self.imageURL = imageURL
 		self.seasonNameText = seasonNameText

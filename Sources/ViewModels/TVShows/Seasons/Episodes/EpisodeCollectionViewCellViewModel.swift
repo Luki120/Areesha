@@ -11,10 +11,10 @@ struct EpisodeCollectionViewCellViewModel: Hashable {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - imageURL: an optional url to represent the image's url
-	///     - episodeNameText: a string to represent the episode's name
-	///     - episodeDurationText: a string to represent the episode's duration
-	///     - episodeDescriptionText: a string to represent the episode's description
+	///     - imageURL: An optional url to represent the image's url
+	///     - episodeNameText: A string to represent the episode's name
+	///     - episodeDurationText: A string to represent the episode's duration
+	///     - episodeDescriptionText: A string to represent the episode's description
 	init(imageURL: URL?, episodeNameText: String, episodeDurationText: String, episodeDescriptionText: String) {
 		self.imageURL = imageURL
 		self.episodeNameText = episodeNameText

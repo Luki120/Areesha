@@ -7,7 +7,7 @@ struct TVShowDetailsHeaderViewViewModel {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - imageURL: an optional url to represent the image's url
+	///     - imageURL: An optional url to represent the image's url
 	init(imageURL: URL?) {
 		self.imageURL = imageURL
 	}

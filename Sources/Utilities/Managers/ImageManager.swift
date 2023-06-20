@@ -10,7 +10,7 @@ final class ImageManager {
  
 	/// Function that'll handle the image fetching data task
 	/// - Parameters:
-	///		- url: the image's url, optional as it may be nil
+	///		- url: The image's url, optional as it may be nil
 	/// - Returns: A UIImage
 	func fetchImageAsync(_ url: URL?) async throws -> UIImage {
 		guard let url else { throw URLError(.badURL) }

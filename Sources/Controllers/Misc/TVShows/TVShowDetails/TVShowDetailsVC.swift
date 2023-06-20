@@ -4,7 +4,7 @@ import UIKit
 final class TVShowDetailsVC: UIViewController {
 
 	let tvShowDetailsViewViewModel: TVShowDetailsViewViewModel
-	let tvShowDetailsView: TVShowDetailsView
+	private let tvShowDetailsView: TVShowDetailsView
 
 	var coordinator: ExploreCoordinator?
 
@@ -16,7 +16,7 @@ final class TVShowDetailsVC: UIViewController {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - viewModel: the view model object for this vc's view
+	///     - viewModel: The view model object for this vc's view
 	init(viewModel: TVShowDetailsViewViewModel) {
 		self.tvShowDetailsViewViewModel = viewModel
 		self.tvShowDetailsView = .init(viewModel: viewModel)
