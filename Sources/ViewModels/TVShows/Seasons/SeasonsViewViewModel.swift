@@ -58,7 +58,7 @@ final class SeasonsViewViewModel: NSObject {
 
 // ! UICollectionView
 
-extension SeasonsViewViewModel: UICollectionViewDataSource, UICollectionViewDelegate {
+extension SeasonsViewViewModel: UICollectionViewDataSource {
 
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		return viewModels.count
@@ -74,6 +74,10 @@ extension SeasonsViewViewModel: UICollectionViewDataSource, UICollectionViewDele
 		cell.configure(with: viewModels[indexPath.item])
 		return cell
 	}
+
+}
+
+extension SeasonsViewViewModel: UICollectionViewDelegate {
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
@@ -91,9 +95,11 @@ extension SeasonsViewViewModel: UICollectionViewDataSource, UICollectionViewDele
 			collectionView.focusCenterItem(animated: true)
 		}
 	}
+
 }
 
 private extension UICollectionView {
+
 	func focusCenterItem(animated: Bool) {
 		var contentCenter = contentOffset
 		contentCenter.x += center.x
@@ -117,4 +123,5 @@ private extension UICollectionView {
 		}() else { return }
 		scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
 	}
+
 }
