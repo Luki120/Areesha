@@ -9,31 +9,51 @@ final class SeasonsView: UIView {
 
 	private let viewModel: SeasonsViewViewModel
 
-	private var isTinyDevice: Bool {
-		if UIScreen.main.nativeBounds.size.height <= 1334 { return true }
-		return false
-	}
-
 	private lazy var compositionalLayout: UICollectionViewCompositionalLayout = {
 		let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, layoutEnvironment -> NSCollectionLayoutSection? in
 			guard let self else { return nil }
 
-			let fraction: CGFloat = 1 / 2
-			let cellCenterY: CGFloat = self.isTinyDevice ? 130.75 : 197.25
-			let centerY: CGFloat = layoutEnvironment.container.contentSize.height / 2 - cellCenterY
+			let containerSize = layoutEnvironment.container.contentSize
+			let effectiveContainerSize = layoutEnvironment.container.effectiveContentSize
+
+			let effectiveContainerHeight = effectiveContainerSize.height
+			// the space on each side of a cell;
+			// the total space between two cells would be twice this value
+			let interSpacing: CGFloat = 24
+			let cellAspectRatio: CGFloat = 3/2 // the poster images have an aspect ratio of about 3:2
+			let neighborVisibleRatio: CGFloat = 0.15 // how much of the neighboring cells we should see
+			// the horizontal layout should look (at the minimum) as follows:
+			//   1. `cellWidth * neighborVisibleRatio` of the leading cell
+			//   2. `interSpacing * 2` padding
+			//   3. `cellWidth` of the center cell
+			//   4. `interSpacing * 2` padding
+			//   5. `cellWidth * neighborVisibleRatio` of the trailing cell
+			// to satisfy this, we describe the following constraint:
+			//   ((cellWidth * neighborVisibleRatio) * 2 + (interSpacing * 2) * 2 + cellWidth) <= effectiveContainerSize.width
+			// to solve for `cellWidth`:
+			//   cellWidth <= (effectiveContainerSize.width - interSpacing * 4) / (neighborVisibleRatio * 2 + 1)
+
+			let maxCellWidth: CGFloat = (effectiveContainerSize.width - interSpacing * 4) / (neighborVisibleRatio * 2 + 1)
+			let maxCellRatio: CGFloat = maxCellWidth / effectiveContainerHeight
+			let widthFraction: CGFloat = min(0.4, maxCellRatio) // ratio of cell width to collection view height
+			let heightFraction: CGFloat = widthFraction * cellAspectRatio // ratio of cell height to collection view height
+
+			let derivedCellSize = CGSize(
+				width: effectiveContainerHeight * widthFraction,
+				height: effectiveContainerHeight * heightFraction
+			)
 
 			let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
 			let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-			let interSpacing: CGFloat = 24
-			let normalItemWidth: CGFloat = 252
-			let groupSize = NSCollectionLayoutSize(widthDimension: self.isTinyDevice ? .fractionalWidth(fraction) : .absolute(normalItemWidth), heightDimension: .fractionalHeight(fraction))
-			let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-			group.edgeSpacing = .init(leading: .fixed(interSpacing), top: .fixed(centerY), trailing: .fixed(interSpacing), bottom: nil)
+			// the spacing needed above the group such that the the group appears vertically centered
+			let verticalSpacing: CGFloat = (containerSize.height - derivedCellSize.height) / 2
+			// the spacing needed on each of the horizontal edges so that edge cells may be horizontally centered in the group
+			let horizontalSpacing = (containerSize.width - derivedCellSize.width) / 2 - interSpacing
 
-			let layoutContainerEffectiveWidth = layoutEnvironment.container.effectiveContentSize.width
-			let itemWidth = self.isTinyDevice ? layoutContainerEffectiveWidth * fraction : normalItemWidth
-			let horizontalSpacing = (layoutContainerEffectiveWidth - itemWidth) / 2 - interSpacing
+			let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalHeight(widthFraction), heightDimension: .fractionalHeight(heightFraction))
+			let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+			group.edgeSpacing = .init(leading: .fixed(interSpacing), top: .fixed(verticalSpacing), trailing: .fixed(interSpacing), bottom: nil)
 
 			let section = NSCollectionLayoutSection(group: group)
 			section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: horizontalSpacing, bottom: 0, trailing: horizontalSpacing)
