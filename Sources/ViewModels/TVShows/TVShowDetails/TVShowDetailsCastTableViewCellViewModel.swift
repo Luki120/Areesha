@@ -3,11 +3,8 @@ import Foundation
 /// View model struct for TVShowDetailsCastTableViewCell
 struct TVShowDetailsCastTableViewCellViewModel: Hashable {
 
-	private let castText: String?
-	private let castCrewText: String?
-
-	var displayCastText: String { return castText ?? "" }
-	var displayCastCrewText: String { return castCrewText ?? "" }
+	let castText: String?
+	let castCrewText: String?
 
 	/// Designated initializer
 	/// - Parameters:

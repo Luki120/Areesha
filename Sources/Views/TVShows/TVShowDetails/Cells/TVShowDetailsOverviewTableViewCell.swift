@@ -45,7 +45,7 @@ extension TVShowDetailsOverviewTableViewCell {
 	/// - Parameters:
 	/// 	- with: The cell's view model
 	func configure(with viewModel: TVShowDetailsOverviewTableViewCellViewModel) {
-		overviewLabel.text = viewModel.displayOverviewText
+		overviewLabel.text = viewModel.overviewText
 	}
 
 }

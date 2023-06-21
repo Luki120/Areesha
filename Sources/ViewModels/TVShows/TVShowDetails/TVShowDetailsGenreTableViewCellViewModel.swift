@@ -3,17 +3,11 @@ import Foundation
 /// View model struct for TVShowDetailsGenreTableViewCell
 struct TVShowDetailsGenreTableViewCellViewModel: Hashable {
 
-	private let genreText: String?
-	private let episodeAverageDurationText: String?
-	private let lastAirDateText: String?
-	private let statusText: String?
-	private let voteAverageText: String?
-
-	var displayGenreText: String { return genreText ?? "" }
-	var displayEpisodeAverageDurationText: String { return episodeAverageDurationText ?? "" }
-	var displayLastAirDateText: String { return lastAirDateText ?? "" }
-	var displayStatusText: String { return statusText ?? "" }
-	var displayVoteAverageText: String { return voteAverageText ?? "" }
+	let genreText: String?
+	let episodeAverageDurationText: String?
+	let lastAirDateText: String?
+	let statusText: String?
+	let voteAverageText: String?
 
 	/// Designated initializer
 	/// - Parameters:

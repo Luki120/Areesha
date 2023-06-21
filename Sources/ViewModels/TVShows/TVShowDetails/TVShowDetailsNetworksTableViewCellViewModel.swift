@@ -3,11 +3,8 @@ import Foundation
 /// View model struct for TVShowDetailsNetworksTableViewCell
 struct TVShowDetailsNetworksTableViewCellViewModel: Hashable {
 
-	private let networksTitleText: String?
-	private let networksNamesText: String?
-
-	var displayNetworksTitleText: String { return networksTitleText ?? "" }
-	var displayNetworksNamesText: String { return networksNamesText ?? "" }
+	let networksTitleText: String?
+	let networksNamesText: String?
 
 	/// Designated initializer
 	/// - Parameters:

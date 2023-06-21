@@ -55,8 +55,8 @@ extension TVShowDetailsCastTableViewCell {
 	/// - Parameters:
 	/// 	- with: The cell's view model
 	func configure(with viewModel: TVShowDetailsCastTableViewCellViewModel) {
-		castLabel.text = viewModel.displayCastText
-		castCrewLabel.text = viewModel.displayCastCrewText
+		castLabel.text = viewModel.castText
+		castCrewLabel.text = viewModel.castCrewText
 	}
 
 }

@@ -79,7 +79,7 @@ extension SeasonsCollectionViewCell {
 	/// 	- with: The cell's view model
 	func configure(with viewModel: SeasonsCollectionViewCellViewModel) {
 		activeViewModel = viewModel
-		seasonNameLabel.text = viewModel.displaySeasonNameText
+		seasonNameLabel.text = viewModel.seasonNameText
 
 		Task.detached(priority: .background) {
 			let image = try? await viewModel.fetchTVShowSeasonImage()

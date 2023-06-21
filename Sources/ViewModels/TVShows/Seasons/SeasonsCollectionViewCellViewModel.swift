@@ -4,9 +4,7 @@ import UIKit
 struct SeasonsCollectionViewCellViewModel: Hashable {
 
 	private let imageURL: URL?
-	private let seasonNameText: String
-
-	var displaySeasonNameText: String { return seasonNameText }
+	let seasonNameText: String
 
 	/// Designated initializer
 	/// - Parameters:

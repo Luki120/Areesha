@@ -18,9 +18,9 @@ final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCel
 		}
 	}
 
-	weak var delegate: TVShowSearchListViewViewModelDelegate?
-
 	private var subscriptions = Set<AnyCancellable>()
+
+	weak var delegate: TVShowSearchListViewViewModelDelegate?
 
 	override init(collectionView: UICollectionView) {
 		super.init(collectionView: collectionView)
@@ -31,9 +31,10 @@ final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCel
 	}
 
 	private func fetchSearchedTVShow(withQuery query: String? = nil) {
-		guard let url = URL(string: "\(Service.Constants.searchTVShowBaseURL)&query=\(query ?? "")".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") else {
-			return
-		}
+		guard let query,
+			let urlString = "\(Service.Constants.searchTVShowBaseURL)&query=\(query)"
+				.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+			let url = URL(string: urlString) else { return }
 
 		Service.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)
 			.catch { _ in Just(APIResponse(results: [])) }
@@ -76,7 +77,7 @@ extension UICollectionViewListCell: Configurable {
 
 	func configure(with viewModel: TVShowSearchCollectionViewListCellViewModel) {
 		var content = defaultContentConfiguration()
-		content.text = viewModel.displayTVShowNameText
+		content.text = viewModel.tvShowNameText
 		content.textProperties.font = .systemFont(ofSize: 18, weight: .semibold)
 
 		contentConfiguration = content

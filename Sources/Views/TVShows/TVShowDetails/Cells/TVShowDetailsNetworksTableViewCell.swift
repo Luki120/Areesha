@@ -55,8 +55,8 @@ extension TVShowDetailsNetworksTableViewCell {
 	/// - Parameters:
 	/// 	- with: The cell's view model
 	func configure(with viewModel: TVShowDetailsNetworksTableViewCellViewModel) {
-		networksTitleLabel.text = viewModel.displayNetworksTitleText
-		networksNamesLabel.text = viewModel.displayNetworksNamesText
+		networksTitleLabel.text = viewModel.networksTitleText
+		networksNamesLabel.text = viewModel.networksNamesText
 	}
 
 }

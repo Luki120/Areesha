@@ -4,9 +4,7 @@ import Foundation
 struct TVShowSearchCollectionViewListCellViewModel: Hashable {
 
 	private let id: Int
-	private let tvShowNameText: String
-
-	var displayTVShowNameText: String { return tvShowNameText }
+	let tvShowNameText: String
 
 	/// Designated initializer
 	/// - Parameters:
