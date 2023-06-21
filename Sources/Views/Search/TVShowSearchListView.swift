@@ -63,7 +63,7 @@ final class TVShowSearchListView: UIView {
 		Task {
 			try await Task.sleep(seconds: 0.20)
 			UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 1) {
-	 			self.searchTextFieldView.alpha = 1
+				self.searchTextFieldView.alpha = 1
 				self.searchTextFieldView.transform = .init(translationX: 0, y: 0)
 			}
 		}
@@ -106,6 +106,17 @@ extension TVShowSearchListView {
 	/// Function to resign the text field's first responder when needed
 	func resignTextFieldFirstResponder() {
 		searchTextFieldView.textField.resignFirstResponder()
+	}
+
+	/// Function to fade out the text field when the view disappears
+	func fadeOutTextField() {
+		Task {
+			try await Task.sleep(seconds: 0.05)
+			UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 1) {
+				self.searchTextFieldView.alpha = 0
+				self.searchTextFieldView.transform = .init(translationX: 0, y: -50)
+			}
+		}
 	}
 
 }

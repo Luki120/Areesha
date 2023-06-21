@@ -27,6 +27,7 @@ final class TVShowSearchVC: UIViewController {
  	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
 		coordinator?.eventOccurred(with: .poppedVC)
+		tvShowSearchListView.fadeOutTextField()
 		tvShowSearchListView.resignTextFieldFirstResponder()
 	}
 
