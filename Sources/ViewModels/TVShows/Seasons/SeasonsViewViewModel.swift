@@ -15,14 +15,14 @@ final class SeasonsViewViewModel: NSObject {
 	private let tvShow: TVShow
 
 	private var subscriptions = Set<AnyCancellable>()
-	private var viewModels = OrderedSet<SeasonsCollectionViewCellViewModel>()
+	private var viewModels = OrderedSet<SeasonCollectionViewCellViewModel>()
 
 	private var seasons = [Season]() {
 		didSet {
 			viewModels += seasons.compactMap { season in
 				let imageURLString = "\(Service.Constants.baseImageURL)w500/\(season.posterPath ?? "")"
 				guard let url = URL(string: imageURLString), let seasonName = season.name else { return nil }
-				return SeasonsCollectionViewCellViewModel(imageURL: url, seasonNameText: seasonName)
+				return SeasonCollectionViewCellViewModel(imageURL: url, seasonNameText: seasonName)
 			}
 		}
 	}
@@ -66,9 +66,9 @@ extension SeasonsViewViewModel: UICollectionViewDataSource {
 
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		guard let cell = collectionView.dequeueReusableCell(
-			withReuseIdentifier: SeasonsCollectionViewCell.identifier,
+			withReuseIdentifier: SeasonCollectionViewCell.identifier,
 			for: indexPath
-		) as? SeasonsCollectionViewCell else {
+		) as? SeasonCollectionViewCell else {
 			return UICollectionViewCell()
 		}
 		cell.configure(with: viewModels[indexPath.item])

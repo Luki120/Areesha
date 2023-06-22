@@ -81,7 +81,7 @@ final class SeasonsView: UIView {
 		collectionView.dataSource = viewModel
 		collectionView.backgroundColor = .systemGroupedBackground
 		collectionView.showsHorizontalScrollIndicator = false
-		collectionView.register(SeasonsCollectionViewCell.self, forCellWithReuseIdentifier: SeasonsCollectionViewCell.identifier)
+		collectionView.register(SeasonCollectionViewCell.self, forCellWithReuseIdentifier: SeasonCollectionViewCell.identifier)
 		collectionView.translatesAutoresizingMaskIntoConstraints = false
 		addSubview(collectionView)
 		return collectionView
