@@ -59,7 +59,9 @@ final class TVShowDetailsViewViewModel {
 		guard let url = URL(string: "\(Service.Constants.baseImageURL)w1280/\(tvShow.backdropPath ?? "")") else {
 			return
 		}
-		headerViewViewModel = .init(imageURL: url)
+
+		let ratingsText = String(describing: tvShow.voteAverage?.round(to: 1) ?? 0) + "/10"
+		headerViewViewModel = .init(imageURL: url, tvShowNameText: tvShow.name, ratingsText: ratingsText)
 	}
 
 	private func fetchTVShowCast() {
@@ -98,8 +100,7 @@ final class TVShowDetailsViewViewModel {
 					genreText: genresNames.joined(separator: ", "),
 					episodeAverageDurationText: episodeAverageDurationText,
 					lastAirDateText: tvShow.lastAirDate,
-					statusText: tvShow.status,
-					voteAverageText: String(describing: tvShow.voteAverage?.round(to: 1) ?? 0) + "/10"
+					statusText: tvShow.status
 				)
 
 			reloadSnapshot(animatingDifferences: !isFromCache)
@@ -109,7 +110,9 @@ final class TVShowDetailsViewViewModel {
 
 	private func updateCastCrewNames(with castCrew: [Cast]) {
 		let castCrewNames = OrderedSet(castCrew.map(\.name))
-		castCellViewModel = .init(castText: "Cast", castCrewText: castCrewNames.joined(separator: ", "))
+		let castCrewText = castCrewNames.isEmpty ? "Unknown" : castCrewNames.joined(separator: ", ")
+
+		castCellViewModel = .init(castText: "Cast", castCrewText: castCrewText)
 	}
 
 	private func updateNetworkNames(with networks: [Network]) {

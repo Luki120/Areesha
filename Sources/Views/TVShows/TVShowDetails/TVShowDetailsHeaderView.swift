@@ -17,6 +17,7 @@ final class TVShowDetailsHeaderView: UIView {
 		return imageView
 	}()
 
+	private var tvShowNameLabel, ratingsLabel: UILabel!
 	private var containerViewHeightConstraint: NSLayoutConstraint!
 	private var tvShowHeaderImageViewBottomConstraint: NSLayoutConstraint!
 	private var tvShowHeaderImageViewHeightConstraint: NSLayoutConstraint!
@@ -29,12 +30,20 @@ final class TVShowDetailsHeaderView: UIView {
 
 	override init(frame: CGRect) {
 		super.init(frame: frame)
-		addSubview(containerView)
-		containerView.addSubview(tvShowHeaderImageView)
-		layoutUI()
+		setupUI()
 	}
 
 	// ! Private
+
+	private func setupUI() {
+		tvShowNameLabel = createLabel(withFontWeight: .heavy)
+		tvShowNameLabel.numberOfLines = 0
+		ratingsLabel = createLabel()
+
+		addSubview(containerView)
+		containerView.addSubviews(tvShowHeaderImageView, tvShowNameLabel, ratingsLabel)
+		layoutUI()
+	}
 
 	private func layoutUI() {
 		containerView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
@@ -48,6 +57,29 @@ final class TVShowDetailsHeaderView: UIView {
 
 		tvShowHeaderImageViewBottomConstraint = tvShowHeaderImageView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
 		tvShowHeaderImageViewBottomConstraint.isActive = true
+
+		tvShowNameLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -10).isActive = true
+		tvShowNameLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10).isActive = true
+		tvShowNameLabel.trailingAnchor.constraint(equalTo: ratingsLabel.leadingAnchor, constant: -10).isActive = true
+
+		tvShowNameLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+
+		ratingsLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -10).isActive = true
+		ratingsLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10).isActive = true
+
+		ratingsLabel.setContentHuggingPriority(.required, for: .horizontal)
+		ratingsLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+	}
+
+	// ! Reusable
+
+	private func createLabel(withFontWeight weight: UIFont.Weight = .bold) -> UILabel {
+		let label = UILabel()
+		label.font = .systemFont(ofSize: 24, weight: weight)
+		label.alpha = 0
+		label.textColor = .white
+		label.translatesAutoresizingMaskIntoConstraints = false
+		return label
 	}
 
 }
@@ -60,11 +92,17 @@ extension TVShowDetailsHeaderView {
 	/// - Parameters:
 	/// 	- with: The view's view model
 	func configure(with viewModel: TVShowDetailsHeaderViewViewModel) {
+		tvShowNameLabel.text = viewModel.tvShowNameText
+		ratingsLabel.text = viewModel.ratingsText
+
 		Task.detached(priority: .background) {
 			let image = try? await viewModel.fetchTVShowHeaderImage()
 			await MainActor.run {
 				UIView.transition(with: self.tvShowHeaderImageView, duration: 0.5, options: .transitionCrossDissolve) {
 					self.tvShowHeaderImageView.image = image
+				}
+				UIView.animate(withDuration: 0.5, delay: 0, options: .transitionCrossDissolve) {
+					[self.tvShowNameLabel, self.ratingsLabel].forEach { $0.alpha = 1 }
 				}
 			}
 		}

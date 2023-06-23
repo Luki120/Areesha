@@ -91,16 +91,15 @@ extension TVShowDetailsGenreTableViewCell {
 	func configure(with viewModel: TVShowDetailsGenreTableViewCellViewModel) {
 		guard let genreText = viewModel.genreText,
 			let episodeAverageDurationText = viewModel.episodeAverageDurationText,
-			let statusText = viewModel.statusText,
 			let lastAirDateText = viewModel.lastAirDateText,
-			let voteAverageText = viewModel.voteAverageText else { return }
+			let statusText = viewModel.statusText else { return }
 
 		let date = dateFormatter.date(from: lastAirDateText) ?? Date()
 
 		genreLabel.text = genreText
 		episodeAverageDurationLabel.text = episodeAverageDurationText
 		lastAirDateLabel.text = "Last aired: \(shortDateFormatter.string(from: date))"
-		statusLabel.text = "\(statusText), \(voteAverageText)"
+		statusLabel.text = statusText
 
 		separatorView.isHidden = episodeAverageDurationText.isEmpty ? true : false
 	}
