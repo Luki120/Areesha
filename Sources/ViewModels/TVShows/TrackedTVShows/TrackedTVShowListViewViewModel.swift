@@ -4,13 +4,13 @@ import UIKit
 /// View model class for TrackedTVShowListView
 final class TrackedTVShowListViewViewModel: NSObject {
 
-	private var viewModels = OrderedSet<TrackedTVShowCollectionViewCellViewModel>()
+	private var viewModels = OrderedSet<TrackedTVShowCollectionViewListCellViewModel>()
 
 	// ! UICollectionViewDiffableDataSource
 
-	private typealias CellRegistration = UICollectionView.CellRegistration<TrackedTVShowCollectionViewCell, TrackedTVShowCollectionViewCellViewModel>
-	private typealias DataSource = UICollectionViewDiffableDataSource<Sections, TrackedTVShowCollectionViewCellViewModel>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, TrackedTVShowCollectionViewCellViewModel>
+	private typealias CellRegistration = UICollectionView.CellRegistration<TrackedTVShowCollectionViewListCell, TrackedTVShowCollectionViewListCellViewModel>
+	private typealias DataSource = UICollectionViewDiffableDataSource<Sections, TrackedTVShowCollectionViewListCellViewModel>
+	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, TrackedTVShowCollectionViewListCellViewModel>
 
 	private var dataSource: DataSource!
 	private var snapshot: Snapshot!
@@ -29,7 +29,7 @@ final class TrackedTVShowListViewViewModel: NSObject {
 		)
 
 		guard let data = UserDefaults.standard.object(forKey: "viewModels") as? Data,
-			let decodedViewModels = try? JSONDecoder().decode(OrderedSet<TrackedTVShowCollectionViewCellViewModel>.self, from: data) else {
+			let decodedViewModels = try? JSONDecoder().decode(OrderedSet<TrackedTVShowCollectionViewListCellViewModel>.self, from: data) else {
 				viewModels = []
 				return
 			}
@@ -55,7 +55,7 @@ final class TrackedTVShowListViewViewModel: NSObject {
 		let cleanSeasonNumber = isSeasonInDesiredRange ? "0\(seasonNumber)" : "\(seasonNumber)"
 		let cleanSeasonEpisode = isEpisodeInDesiredRange ? "0\(episodeNumber)" : "\(episodeNumber)"
 
-		let viewModel = TrackedTVShowCollectionViewCellViewModel(
+		let viewModel = TrackedTVShowCollectionViewListCellViewModel(
 			imageURL: url,
 			tvShowNameText: tvShow.name,
 			lastSeenText: "Last seen: S\(cleanSeasonNumber)E\(cleanSeasonEpisode)"
