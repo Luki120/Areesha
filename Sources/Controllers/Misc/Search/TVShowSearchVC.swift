@@ -21,6 +21,7 @@ final class TVShowSearchVC: UIViewController {
  	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		coordinator?.eventOccurred(with: .pushedVC)
+		tvShowSearchListView.fadeInTextField()
 		tvShowSearchListView.becomeTextFieldFirstResponder()
 	}
 

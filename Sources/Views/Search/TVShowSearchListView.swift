@@ -40,7 +40,7 @@ final class TVShowSearchListView: UIView {
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		setupStuff()
-		setupUI()
+		addSubviews(searchTextFieldView, listCollectionView)
 	}
 
 	override func layoutSubviews() {
@@ -56,17 +56,6 @@ final class TVShowSearchListView: UIView {
 		searchTextFieldView.textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
 		viewModel.delegate = self
 		listCollectionView.delegate = viewModel
-	}
-
-	private func setupUI() {
-		addSubviews(searchTextFieldView, listCollectionView)
-		Task {
-			try await Task.sleep(seconds: 0.20)
-			UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 1) {
-				self.searchTextFieldView.alpha = 1
-				self.searchTextFieldView.transform = .init(translationX: 0, y: 0)
-			}
-		}
 	}
 
 	private func layoutUI() {
@@ -106,6 +95,17 @@ extension TVShowSearchListView {
 	/// Function to resign the text field's first responder when needed
 	func resignTextFieldFirstResponder() {
 		searchTextFieldView.textField.resignFirstResponder()
+	}
+
+	/// Function to fade in the text field when the view appears
+	func fadeInTextField() {
+		Task {
+			try await Task.sleep(seconds: 0.20)
+			UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 1) {
+				self.searchTextFieldView.alpha = 1
+				self.searchTextFieldView.transform = .init(translationX: 0, y: 0)
+			}
+		}
 	}
 
 	/// Function to fade out the text field when the view disappears
