@@ -1,22 +1,8 @@
-import UIKit.UIImage
+import Foundation
 
-/// View model struct for TVShowSearchListView
-struct TVShowCollectionViewCellViewModel: Hashable {
+/// View model struct for TVShowCollectionViewCell
+struct TVShowCollectionViewCellViewModel: Hashable, ImageFetching {
 
-	private let imageURL: URL?
-
-	/// Designated initializer
-	/// - Parameters:
-	///     - imageURL: An optional url to represent the image's url
-	init(imageURL: URL?) {
-		self.imageURL = imageURL
-	}
-
-	/// Function to retrieve the tv show image either from the cache or the network
-	/// - Returns: A UIImage
-	func fetchTVShowImage() async throws -> UIImage {
-		guard let imageURL else { throw URLError(.badURL) }
-		return try await ImageManager.sharedInstance.fetchImageAsync(imageURL)
-	}
+	let imageURL: URL?
 
 }

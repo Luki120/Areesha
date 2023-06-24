@@ -73,7 +73,7 @@ extension TVShowCollectionViewCell: Configurable {
 		activeViewModel = viewModel
 
 		Task.detached(priority: .background) {
-			let image = try? await viewModel.fetchTVShowImage()
+			let image = try? await viewModel.fetchImage()
 			await MainActor.run {
 				guard self.activeViewModel == viewModel else { return }
 

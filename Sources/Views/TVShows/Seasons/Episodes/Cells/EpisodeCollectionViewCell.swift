@@ -96,7 +96,7 @@ extension EpisodeCollectionViewCell {
 		episodeDescriptionLabel.text = viewModel.episodeDescriptionText
 
 		Task.detached(priority: .background) {
-			let image = try? await viewModel.fetchEpisodeImage()
+			let image = try? await viewModel.fetchImage()
 			await MainActor.run {
 				guard self.activeViewModel == viewModel else { return }
 

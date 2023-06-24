@@ -77,7 +77,7 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 	// ! Private
 
 	private func setupUI() {
-		tvShowNameLabel = createLabel(weight: .bold)
+		tvShowNameLabel = createLabel(withFontWeight: .bold)
 		lastSeenLabel = createLabel(textColor: .secondaryLabel)
 
 		addSubviews(seasonImageView, tvShowNameLabel, lastSeenLabel)
@@ -115,7 +115,7 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 		activeViewModel = viewModel
 
 		Task.detached(priority: .background) {
-			let image = try? await viewModel.fetchTVShowSeasonImage()
+			let image = try? await viewModel.fetchImage()
 			await MainActor.run {
 				guard self.activeViewModel == viewModel else { return }
 				self.seasonImageView.image = image
@@ -126,12 +126,11 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 	// ! Reusable
 
 	private func createLabel(
-		withFontSize size: CGFloat = 14,
-		weight: UIFont.Weight = .regular,
+		withFontWeight weight: UIFont.Weight = .regular,
 		textColor: UIColor = .label
 	) -> UILabel {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: size, weight: weight)
+		label.font = .systemFont(ofSize: 14, weight: weight)
 		label.textColor = textColor
 		label.numberOfLines = 0
 		label.translatesAutoresizingMaskIntoConstraints = false

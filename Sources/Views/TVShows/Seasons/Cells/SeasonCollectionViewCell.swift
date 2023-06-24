@@ -82,7 +82,7 @@ extension SeasonCollectionViewCell {
 		seasonNameLabel.text = viewModel.seasonNameText
 
 		Task.detached(priority: .background) {
-			let image = try? await viewModel.fetchTVShowSeasonImage()
+			let image = try? await viewModel.fetchImage()
 			await MainActor.run {
 				guard self.activeViewModel == viewModel else { return }
 
