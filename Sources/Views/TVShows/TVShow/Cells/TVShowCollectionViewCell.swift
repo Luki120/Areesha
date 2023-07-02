@@ -52,7 +52,7 @@ final class TVShowCollectionViewCell: UICollectionViewCell {
 	private func setupUI() {
 		contentView.layer.shadowColor = UIColor.label.cgColor
 		contentView.layer.shadowOffset = CGSize(width: 0, height: 1)
-		contentView.layer.shadowOpacity = 0.5
+		contentView.layer.shadowOpacity = 0.2
 		contentView.layer.shadowRadius = 4
 		contentView.addSubview(tvShowImageView)
 

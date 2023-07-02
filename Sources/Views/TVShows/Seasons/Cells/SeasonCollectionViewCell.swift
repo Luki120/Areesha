@@ -19,9 +19,9 @@ final class SeasonCollectionViewCell: UICollectionViewCell {
 	@UsesAutoLayout
 	private var seasonNameLabel: UILabel = {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: 20, weight: .bold)
+		label.font = .systemFont(ofSize: 18, weight: .bold)
 		label.textColor = .label
-		label.numberOfLines = 0
+		label.numberOfLines = 2
 		label.textAlignment = .center
 		return label
 	}()
@@ -43,8 +43,9 @@ final class SeasonCollectionViewCell: UICollectionViewCell {
 		super.layoutSubviews()
 		contentView.pinViewToAllEdges(tvShowSeasonImageView)
 
-		seasonNameLabel.centerXAnchor.constraint(equalTo: tvShowSeasonImageView.centerXAnchor).isActive = true
 		seasonNameLabel.topAnchor.constraint(equalTo: tvShowSeasonImageView.bottomAnchor, constant: 10).isActive = true
+		seasonNameLabel.leadingAnchor.constraint(equalTo: tvShowSeasonImageView.leadingAnchor).isActive = true
+		seasonNameLabel.trailingAnchor.constraint(equalTo: tvShowSeasonImageView.trailingAnchor).isActive = true
 	}
 
 	override func prepareForReuse() {
@@ -63,7 +64,7 @@ final class SeasonCollectionViewCell: UICollectionViewCell {
 
 	private func setupUI() {
 		contentView.layer.shadowColor = UIColor.label.cgColor
-		contentView.layer.shadowOpacity = 0.4
+		contentView.layer.shadowOpacity = 0.2
 		contentView.layer.shadowRadius = 15
 		contentView.addSubviews(tvShowSeasonImageView, seasonNameLabel)
 	}

@@ -41,7 +41,7 @@ final class TVShowDetailsView: UIView {
 		button.layer.cornerRadius = 25
 		button.layer.shadowColor = UIColor.label.cgColor
 		button.layer.shadowOffset = .init(width: 0, height: 0.5)
-		button.layer.shadowOpacity = 0.5
+		button.layer.shadowOpacity = 0.2
 		button.layer.shadowRadius = 4
 		return button
 	}()
