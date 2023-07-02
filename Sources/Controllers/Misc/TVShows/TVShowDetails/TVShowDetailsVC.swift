@@ -1,12 +1,14 @@
 import UIKit
 
 /// Controller that'll show the tv show details view
-final class TVShowDetailsVC: UIViewController {
+final class TVShowDetailsVC: BaseVC {
 
 	let tvShowDetailsViewViewModel: TVShowDetailsViewViewModel
 	private let tvShowDetailsView: TVShowDetailsView
 
-	var coordinator: ExploreCoordinator?
+	override var titleView: UIView {
+		return tvShowDetailsView.titleLabel
+	}
 
 	// ! Lifecycle
 
@@ -27,33 +29,9 @@ final class TVShowDetailsVC: UIViewController {
 
 	override func loadView() { view = tvShowDetailsView }
 
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		setupUI()
-	}
-
  	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
 		tvShowDetailsView.titleLabel.isHidden = true
-	}
-
-	// ! Private
-
-	private func setupUI() {
-		navigationItem.titleView = tvShowDetailsView.titleLabel
-		navigationItem.leftBarButtonItem = .createBackBarButtonItem(
-			forTarget: self,
-			selector: #selector(didTapBackButton)
-		)
-		navigationItem.leftBarButtonItem?.tintColor = .label
-		view.backgroundColor = .systemBackground
-	}
-
-	// ! Selectors
-
-	@objc
-	private func didTapBackButton() {
-		coordinator?.eventOccurred(with: .backButtonTapped)
 	}
 
 }

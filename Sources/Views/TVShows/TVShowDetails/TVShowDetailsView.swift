@@ -46,14 +46,7 @@ final class TVShowDetailsView: UIView {
 		return button
 	}()
 
-	private(set) lazy var titleLabel: UILabel = {
-		let label = UILabel()
-		label.font = .systemFont(ofSize: 16, weight: .semibold)
-		label.text = viewModel.title
-		label.isHidden = true
-		label.numberOfLines = 0
-		return label
-	}()
+	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: viewModel.title, isHidden: true)
 
 	weak var delegate: TVShowDetailsViewDelegate?
 

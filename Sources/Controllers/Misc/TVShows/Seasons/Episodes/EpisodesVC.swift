@@ -1,12 +1,14 @@
 import UIKit
 
 /// Controller that'll show the episodes view
-final class EpisodesVC: UIViewController {
+final class EpisodesVC: BaseVC {
 
 	let episodesViewViewModel: EpisodesViewViewModel
 	private let episodesView: EpisodesView
 
-	var coordinator: ExploreCoordinator?
+	override var titleView: UIView {
+		return episodesView.titleLabel
+	}
 
 	// ! Lifecycle
 
@@ -24,29 +26,5 @@ final class EpisodesVC: UIViewController {
 	}
 
 	override func loadView() { view = episodesView }
-
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		setupUI()
-	}
-
-	// ! Private
-
-	private func setupUI() {
-		navigationItem.titleView = episodesView.titleLabel
-		navigationItem.leftBarButtonItem = .createBackBarButtonItem(
-			forTarget: self,
-			selector: #selector(didTapBackButton)
-		)
-		navigationItem.leftBarButtonItem?.tintColor = .label
-		view.backgroundColor = .systemBackground
-	}
-
-	// ! Selectors
-
-	@objc
-	private func didTapBackButton() {
-		coordinator?.eventOccurred(with: .backButtonTapped)
-	}
 
 }

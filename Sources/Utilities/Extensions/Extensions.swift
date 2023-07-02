@@ -34,6 +34,17 @@ extension UIColor {
 	static let areeshaPinkColor = UIColor(red: 0.78, green: 0.64, blue: 0.83, alpha: 1.0)
 }
 
+extension UILabel {
+	static func createTitleLabel(withTitle title: String, isHidden: Bool = false) -> UILabel {
+		let label = UILabel()
+		label.font = .systemFont(ofSize: 16, weight: .semibold)
+		label.text = title
+		label.isHidden = isHidden
+		label.numberOfLines = 0
+		return label
+	}
+}
+
 extension UIStackView {
 	func addArrangedSubviews(_ views: UIView ...) {
 		views.forEach { addArrangedSubview($0) }

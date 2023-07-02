@@ -1,12 +1,14 @@
 import UIKit
 
 /// Controller that'll show the tv show seasons view
-final class SeasonsVC: UIViewController {
+final class SeasonsVC: BaseVC {
 
 	let seasonsViewViewModel: SeasonsViewViewModel
 	private let seasonsView: SeasonsView
 
-	var coordinator: ExploreCoordinator?
+	override var titleView: UIView {
+		return seasonsView.titleLabel
+	}
 
 	// ! Lifecycle
 
@@ -24,9 +26,9 @@ final class SeasonsVC: UIViewController {
 		seasonsView.delegate = self
 	}
 
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		setupUI()
+	override func setupUI() {
+		view.addSubview(seasonsView)
+		super.setupUI()
 	}
 
 	override func viewDidLayoutSubviews() {
@@ -36,28 +38,9 @@ final class SeasonsVC: UIViewController {
 
 	// ! Private
 
-	private func setupUI() {
-		view.addSubview(seasonsView)
-
-		navigationItem.titleView = seasonsView.titleLabel
-		navigationItem.leftBarButtonItem = .createBackBarButtonItem(
-			forTarget: self,
-			selector: #selector(didTapBackButton)
-		)
-		navigationItem.leftBarButtonItem?.tintColor = .label
-		view.backgroundColor = .systemBackground
-	}
-
 	private func layoutUI() {
 		seasonsView.translatesAutoresizingMaskIntoConstraints = false
 		view.pinViewToSafeAreas(seasonsView)
-	}
-
-	// ! Selectors
-
-	@objc
-	private func didTapBackButton() {
-		coordinator?.eventOccurred(with: .backButtonTapped)
 	}
 
 }
