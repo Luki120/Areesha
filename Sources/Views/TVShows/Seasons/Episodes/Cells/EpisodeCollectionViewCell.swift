@@ -15,7 +15,6 @@ final class EpisodeCollectionViewCell: UICollectionViewCell {
 
 	private var episodeNameLabel, episodeDurationLabel, episodeDescriptionLabel: UILabel!
 
-	private var isChecked = false
 	private var activeViewModel: EpisodeCollectionViewCellViewModel?
 
 	// ! Lifecyle

@@ -39,7 +39,7 @@ final class EpisodesView: UIView {
 	}()
 
 	private lazy var visualEffectView: UIVisualEffectView = {
-		let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemThickMaterialDark))
+		let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial))
 		visualEffectView.clipsToBounds = true
 		visualEffectView.translatesAutoresizingMaskIntoConstraints = false
 		tvShowImageView.addSubview(visualEffectView)
