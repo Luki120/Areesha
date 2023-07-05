@@ -123,15 +123,10 @@ extension EpisodesViewViewModel: UICollectionViewDelegate {
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
 
-		let userInfo: [String : Codable] = [
-			"tvShow": tvShow,
-			"season": season,
-			"episode": episodes[indexPath.item]
-		]
-		NotificationCenter.default.post(
-			name: .didSendTrackedTVShowDataNotification,
-			object: nil,
-			userInfo: userInfo
+		TrackedTVShowManager.sharedInstance.track(
+			tvShow: tvShow,
+			season: season,
+			episode: episodes[indexPath.item]
 		)
 	}
 
