@@ -6,9 +6,6 @@ final class EpisodesViewViewModel: NSObject {
 
 	var seasonName: String { return season.name ?? "" }
 
-	private let tvShow: TVShow
-	private let season: Season
-
 	private var episodes = [Episode]()
 	private var viewModels = OrderedSet<EpisodeCollectionViewCellViewModel>()
 	private var subscriptions = Set<AnyCancellable>()
@@ -20,11 +17,13 @@ final class EpisodesViewViewModel: NSObject {
 	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, EpisodeCollectionViewCellViewModel>
 
 	private var dataSource: DataSource!
-	private var snapshot: Snapshot!
 
 	@frozen private enum Sections {
 		case main
 	}
+
+	private let tvShow: TVShow
+	private let season: Season
 
 	/// Designated initializer
 	/// - Parameters:
@@ -55,8 +54,7 @@ final class EpisodesViewViewModel: NSObject {
 
 	private func updateViewModels(with episodes: [Episode]) {
 		viewModels += episodes.compactMap { episode in
-			let imageURLString = "\(Service.Constants.baseImageURL)w500/\(episode.stillPath ?? "")"
-			guard let url = URL(string: imageURLString) else { return nil }
+			guard let url = Service.imageURL(.episodeStill(episode)) else { return nil }
 
 			return EpisodeCollectionViewCellViewModel(
 				imageURL: url,
@@ -78,8 +76,7 @@ extension EpisodesViewViewModel {
 	///     - completion: Escaping closure that takes a UIImage as argument & returns nothing
 	func fetchTVShowImage(completion: @escaping (UIImage) async -> ()) {
 		Task.detached(priority: .background) {
-			let imageURLString = "\(Service.Constants.baseImageURL)w1280/\(self.tvShow.posterPath ?? "")"
-			guard let imageURL = URL(string: imageURLString) else { return }
+			guard let imageURL = Service.imageURL(.showPoster(self.tvShow), size: "w1280") else { return }
 
 			let image = try? await ImageManager.sharedInstance.fetchImageAsync(imageURL)
 

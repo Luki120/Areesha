@@ -13,9 +13,7 @@ final class TVShowListViewViewModel: BaseViewModel<TVShowCollectionViewCell> {
 	private var tvShows = [TVShow]() {
 		didSet {
 			viewModels += tvShows.compactMap { tvShow in
-				let imageURLString = "\(Service.Constants.baseImageURL)w500/\(tvShow.posterPath ?? "")"
-				guard let url = URL(string: imageURLString) else { return nil }
-
+				guard let url = Service.imageURL(.showPoster(tvShow)) else { return nil }
 				return TVShowCollectionViewCellViewModel(imageURL: url)
 			}
 		}

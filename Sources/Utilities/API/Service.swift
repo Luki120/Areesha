@@ -9,6 +9,7 @@ final class Service {
 
 	private var apiCache = [String:Data]()
 
+	/// Enum to represent useful constant values
 	enum Constants {
 		static let apiKey = _Constants.apiKey
 		static let baseURL = "https://api.themoviedb.org/3/"
@@ -59,6 +60,36 @@ final class Service {
 		fetchTVShows(withURL: url, expecting: T.self)
 			.map(\.0)
 			.eraseToAnyPublisher()
+	}
+
+}
+
+extension Service {
+
+	/// Enum to represent the different types of images
+	enum ImageFetch {
+		case showPoster(TVShow)
+		case showBackdrop(TVShow)
+		case seasonPoster(Season)
+		case episodeStill(Episode)
+
+		var path: String? {
+			switch self {
+				case .showPoster(let show): return show.posterPath
+				case .showBackdrop(let show): return show.backdropPath
+				case .seasonPoster(let season): return season.posterPath
+				case .episodeStill(let episode): return episode.stillPath
+			}
+		}
+	}
+
+	/// Function to get the requested image url
+	/// - Parameters:
+	///     - image: The image object
+	///     - size: A string representing the size of the image
+	static func imageURL(_ image: ImageFetch, size: String = "w500") -> URL? {
+		guard let path = image.path else { return nil }
+		return URL(string: "\(Constants.baseImageURL)\(size)/\(path)")
 	}
 
 }

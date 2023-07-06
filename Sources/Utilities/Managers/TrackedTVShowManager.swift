@@ -35,8 +35,7 @@ extension TrackedTVShowManager {
 	///		- season: The season object
 	///		- episode: The episode object
 	func track(tvShow: TVShow, season: Season, episode: Episode) {
-		let urlString = "\(Service.Constants.baseImageURL)w500/\(episode.stillPath ?? "")"
-		guard let url = URL(string: urlString),
+		guard let url = Service.imageURL(.episodeStill(episode)),
 			  let seasonNumber = season.seasonNumber,
 			  let episodeNumber = episode.episodeNumber else { return }
 
@@ -53,7 +52,7 @@ extension TrackedTVShowManager {
 		trackedTVShows.insert(trackedTVShow)
 	}
 
-	/// Function to delete a tracked tv show at a given index
+	/// Function to delete a tracked tv show at the given index
 	/// - Parameters:
 	///		- at: The index for the tv show
 	func removeTrackedTVShow(at index: Int) {

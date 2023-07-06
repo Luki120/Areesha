@@ -4,7 +4,6 @@ import UIKit
 /// View model class for TVShowDetailsView
 final class TVShowDetailsViewViewModel {
 
-	let tvShow: TVShow
 	var title: String { return tvShow.name }
 
 	private var headerViewViewModel: TVShowDetailsHeaderViewViewModel!
@@ -34,7 +33,8 @@ final class TVShowDetailsViewViewModel {
 	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, CellType>
 
 	private var dataSource: DataSource!
-	private var snapshot: Snapshot!
+
+	let tvShow: TVShow
 
 	/// Designated initializer
 	/// - Parameters:
@@ -56,9 +56,7 @@ final class TVShowDetailsViewViewModel {
 			.networks(viewModel: networksCellViewModel)
 		]
 
-		guard let url = URL(string: "\(Service.Constants.baseImageURL)w1280/\(tvShow.backdropPath ?? "")") else {
-			return
-		}
+		guard let url = Service.imageURL(.showBackdrop(tvShow), size: "w1280") else { return }
 
 		let ratingsText = String(describing: tvShow.voteAverage?.round(to: 1) ?? 0) + "/10"
 		headerViewViewModel = .init(imageURL: url, tvShowNameText: tvShow.name, ratingsText: ratingsText)
@@ -172,7 +170,7 @@ extension TVShowDetailsViewViewModel {
 	}
 
 	private func applySnapshot() {
-		snapshot = Snapshot()
+		var snapshot = Snapshot()
 		snapshot.appendSections([.main])
 		snapshot.appendItems(cells)
 		dataSource.apply(snapshot)

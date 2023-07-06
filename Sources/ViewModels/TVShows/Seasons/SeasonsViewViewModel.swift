@@ -12,22 +12,22 @@ final class SeasonsViewViewModel: NSObject {
 
 	var title: String { return tvShow.name }
 
-	private let tvShow: TVShow
-
 	private var subscriptions = Set<AnyCancellable>()
 	private var viewModels = OrderedSet<SeasonCollectionViewCellViewModel>()
 
 	private var seasons = [Season]() {
 		didSet {
 			viewModels += seasons.compactMap { season in
-				let imageURLString = "\(Service.Constants.baseImageURL)w500/\(season.posterPath ?? "")"
-				guard let url = URL(string: imageURLString), let seasonName = season.name else { return nil }
+				guard let url = Service.imageURL(.seasonPoster(season)),
+					let seasonName = season.name else { return nil }
 				return SeasonCollectionViewCellViewModel(imageURL: url, seasonNameText: seasonName)
 			}
 		}
 	}
 
 	weak var delegate: SeasonsViewViewModelDelegate?
+
+	private let tvShow: TVShow
 
 	/// Designated initializer
 	/// - Parameters:
