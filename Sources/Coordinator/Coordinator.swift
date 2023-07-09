@@ -1,7 +1,7 @@
 import UIKit
 
 /// Basic Coordinator protocol to which coordinator classes will conform
-protocol Coordinator {
+protocol Coordinator: AnyObject {
 	/// Enum to represent the possible navigation events each coordinator will handle
 	associatedtype Event
 	/// Navigation controller instance used for either presenting, push or pop a view controller

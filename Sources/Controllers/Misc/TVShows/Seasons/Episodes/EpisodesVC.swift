@@ -6,6 +6,8 @@ final class EpisodesVC: BaseVC {
 	let episodesViewViewModel: EpisodesViewViewModel
 	private let episodesView: EpisodesView
 
+	var coordinator: TVShowDetailsCoordinator?
+
 	override var titleView: UIView {
 		return episodesView.titleLabel
 	}
@@ -26,5 +28,9 @@ final class EpisodesVC: BaseVC {
 	}
 
 	override func loadView() { view = episodesView }
+
+	override func didTapLeftBarButton() {
+		coordinator?.eventOccurred(with: .backButtonTapped)
+	}
 
 }

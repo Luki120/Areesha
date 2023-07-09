@@ -6,6 +6,8 @@ final class SeasonsVC: BaseVC {
 	let seasonsViewViewModel: SeasonsViewViewModel
 	private let seasonsView: SeasonsView
 
+	var coordinator: TVShowDetailsCoordinator?
+
 	override var titleView: UIView {
 		return seasonsView.titleLabel
 	}
@@ -34,6 +36,10 @@ final class SeasonsVC: BaseVC {
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
 		layoutUI()
+	}
+
+	override func didTapLeftBarButton() {
+		coordinator?.eventOccurred(with: .backButtonTapped)
 	}
 
 	// ! Private

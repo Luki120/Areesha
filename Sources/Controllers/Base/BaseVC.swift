@@ -3,8 +3,6 @@ import UIKit
 /// Base view controller to provide a reusable navigation bar button & title view
 class BaseVC: UIViewController {
 
-	var coordinator: ExploreCoordinator?
-
 	/// Variable available to subclasses to represent the title view
 	var titleView: UIView { return UIView() }
 
@@ -24,11 +22,8 @@ class BaseVC: UIViewController {
 		view.backgroundColor = .systemBackground
 	}
 
-	// ! Private
-
+	/// Function available to subclasses to perform an action when the left bar button is tapped
 	@objc
-	private func didTapLeftBarButton() {
-		coordinator?.eventOccurred(with: .backButtonTapped)
-	}
+	func didTapLeftBarButton() {}
 
 }

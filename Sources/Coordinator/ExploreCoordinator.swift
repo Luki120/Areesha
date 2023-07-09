@@ -1,28 +1,35 @@
 import UIKit
 
 /// Explore coordinator, which will take care of any navigation events related to ExploreVC
-final class ExploreCoordinator: Coordinator {
+final class ExploreCoordinator: NSObject, Coordinator {
 
 	enum Event {
 		case tvShowCellTapped(tvShow: TVShow)
 		case backButtonTapped
 		case searchButtonTapped
-		case seasonsButtonTapped(tvShow: TVShow)
 		case closeButtonTapped
 		case pushedVC
 		case poppedVC
-		case seasonCellTapped(tvShow: TVShow, season: Season)
 	}
 
 	var navigationController = SwipeableNavigationController()
+	private var childCoordinators: [any Coordinator] = []
 
-	init() {
+	override init() {
+		super.init()
+
 		let exploreVC = ExploreVC()
 		exploreVC.title = "Explore"
 		exploreVC.coordinator = self
 		exploreVC.tabBarItem = UITabBarItem(title: "Explore", image: UIImage(systemName: "magnifyingglass"), tag: 0)
 
+		navigationController.delegate = navigationController
 		navigationController.viewControllers = [exploreVC]
+
+		navigationController.completion = { [weak self] fromVC in
+			guard let seasonsVC = fromVC as? SeasonsVC else { return }
+			self?.childDidFinish(seasonsVC.coordinator)
+		}
 	}
 
 	func eventOccurred(with event: Event) {
@@ -41,21 +48,21 @@ final class ExploreCoordinator: Coordinator {
 				searchVC.coordinator = self
 				navigationController.pushViewController(searchVC, animated: true)
 
-			case .seasonsButtonTapped(let tvShow):
-				let viewModel = SeasonsViewViewModel(tvShow: tvShow)
-				let seasonsVC = SeasonsVC(viewModel: viewModel)
-				seasonsVC.coordinator = self
-				navigationController.pushViewController(seasonsVC, animated: true)
-
 			case .pushedVC: navigationController.navigationBar.isHidden = true
 			case .poppedVC: navigationController.navigationBar.isHidden = false
-
-			case .seasonCellTapped(let tvShow, let season):
-				let viewModel = EpisodesViewViewModel(tvShow: tvShow, season: season)
-				let episodesVC = EpisodesVC(viewModel: viewModel)
-				episodesVC.coordinator = self
-				navigationController.pushViewController(episodesVC, animated: true)
 		}
+	}
+
+	func pushSeasonsVC(for tvShow: TVShow) {
+		let child = TVShowDetailsCoordinator()
+		child.navigationController = navigationController
+		childCoordinators.append(child)
+		child.eventOccurred(with: .seasonsButtonTapped(tvShow: tvShow))
+	}
+
+	private func childDidFinish(_ child: (any Coordinator)?) {
+		guard let index = childCoordinators.firstIndex(where: { $0 === child }) else { return }
+		childCoordinators.remove(at: index)
 	}
 
 }
@@ -63,6 +70,7 @@ final class ExploreCoordinator: Coordinator {
 /// Custom UINavigationController subclass to reenable swipe behavior with custom push/pop transitions
 final class SwipeableNavigationController: UINavigationController {
 
+	var completion: ((UIViewController) -> Void)!
 	private var isPushAnimation = false
 
 	// ! Lifecycle
@@ -111,6 +119,14 @@ extension SwipeableNavigationController: UINavigationControllerDelegate {
 	func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
 		guard let swipeableNavigationController = navigationController as? SwipeableNavigationController else { return }
 		swipeableNavigationController.isPushAnimation = false
+
+		guard let fromViewController = swipeableNavigationController.transitionCoordinator?.viewController(forKey: .from) else {
+			return
+		}
+
+		guard !swipeableNavigationController.viewControllers.contains(fromViewController) else { return }
+
+		completion(fromViewController)
 	}
 
 	func navigationController(

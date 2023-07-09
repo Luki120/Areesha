@@ -6,6 +6,8 @@ final class TVShowDetailsVC: BaseVC {
 	let tvShowDetailsViewViewModel: TVShowDetailsViewViewModel
 	private let tvShowDetailsView: TVShowDetailsView
 
+	var coordinator: ExploreCoordinator?
+
 	override var titleView: UIView {
 		return tvShowDetailsView.titleLabel
 	}
@@ -34,6 +36,10 @@ final class TVShowDetailsVC: BaseVC {
 		tvShowDetailsView.titleLabel.isHidden = true
 	}
 
+	override func didTapLeftBarButton() {
+		coordinator?.eventOccurred(with: .backButtonTapped)
+	}
+
 }
 
 // ! TVShowDetailsViewDelegate
@@ -41,7 +47,7 @@ final class TVShowDetailsVC: BaseVC {
 extension TVShowDetailsVC: TVShowDetailsViewDelegate {
 
 	func didTapSeasonsButton(in tvShowDetailsView: TVShowDetailsView) {
-		coordinator?.eventOccurred(with: .seasonsButtonTapped(tvShow: tvShowDetailsViewViewModel.tvShow))
+		coordinator?.pushSeasonsVC(for: tvShowDetailsViewViewModel.tvShow)
 	}
 
 }
