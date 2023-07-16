@@ -41,7 +41,7 @@ final class SeasonsViewViewModel: NSObject {
 	// ! Private
 
 	private func fetchTVShowSeasons() {
-		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)?api_key=\(Service.Constants.apiKey)"
+		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)?\(Service.Constants.apiKey)"
 		guard let url = URL(string: urlString) else { return }	
 
 		Service.sharedInstance.fetchTVShows(withURL: url, expecting: TVShow.self)

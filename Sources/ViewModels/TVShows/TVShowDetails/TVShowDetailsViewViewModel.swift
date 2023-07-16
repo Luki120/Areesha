@@ -63,7 +63,7 @@ final class TVShowDetailsViewViewModel {
 	}
 
 	private func fetchTVShowCast() {
-		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)/credits?api_key=\(Service.Constants.apiKey)"
+		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)/credits?\(Service.Constants.apiKey)"
 		guard let url = URL(string: urlString) else { return }
 
 		Service.sharedInstance.fetchTVShows(withURL: url, expecting: Credits.self)
@@ -76,7 +76,7 @@ final class TVShowDetailsViewViewModel {
 	}
 
 	private func fetchTVShowDetails() {
-		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)?api_key=\(Service.Constants.apiKey)"
+		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)?\(Service.Constants.apiKey)"
 		guard let url = URL(string: urlString) else { return }
 
 		Service.sharedInstance.fetchTVShows(withURL: url, expecting: TVShow.self)

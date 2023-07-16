@@ -37,7 +37,7 @@ final class EpisodesViewViewModel: NSObject {
 	}
 
 	private func fetchSeasonDetails() {
-		guard let url = URL(string: "\(Service.Constants.baseURL)tv/\(tvShow.id)/season/\(season.seasonNumber ?? 0)?api_key=\(Service.Constants.apiKey)") else {
+		guard let url = URL(string: "\(Service.Constants.baseURL)tv/\(tvShow.id)/season/\(season.seasonNumber ?? 0)?\(Service.Constants.apiKey)") else {
 			return
 		}
 
@@ -76,11 +76,9 @@ extension EpisodesViewViewModel {
 	///     - completion: Escaping closure that takes a UIImage as argument & returns nothing
 	func fetchTVShowImage(completion: @escaping (UIImage) async -> ()) {
 		Task.detached(priority: .background) {
-			guard let imageURL = Service.imageURL(.showPoster(self.tvShow), size: "w1280") else { return }
+			guard let imageURL = Service.imageURL(.showPoster(self.tvShow), size: "w1280"),
+				let image = try? await ImageManager.sharedInstance.fetchImageAsync(imageURL) else { return }
 
-			let image = try? await ImageManager.sharedInstance.fetchImageAsync(imageURL)
-
-			guard let image else { return }
 			await completion(image)
 		}
 	}

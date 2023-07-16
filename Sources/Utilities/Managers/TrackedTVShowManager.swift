@@ -13,7 +13,7 @@ final class TrackedTVShowManager: ObservableObject {
 		}
 	}
 
-	init() {
+	private init() {
 		guard let data = UserDefaults.standard.object(forKey: "viewModels") as? Data,
 			let decodedViewModels = try? JSONDecoder().decode(OrderedSet<TrackedTVShow>.self, from: data) else {
 				trackedTVShows = []
