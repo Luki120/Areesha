@@ -25,12 +25,23 @@ final class EpisodesVC: BaseVC {
 		self.episodesViewViewModel = viewModel
 		self.episodesView = .init(viewModel: viewModel)
 		super.init(nibName: nil, bundle: nil)
+		episodesView.delegate = self
 	}
 
 	override func loadView() { view = episodesView }
 
 	override func didTapLeftBarButton() {
 		coordinator?.eventOccurred(with: .backButtonTapped)
+	}
+
+}
+
+// ! EpisodesViewDelegate
+
+extension EpisodesVC: EpisodesViewDelegate {
+
+	func didShowToastView(in episodesView: EpisodesView) {
+		episodesView.fadeInOutToastView()
 	}
 
 }

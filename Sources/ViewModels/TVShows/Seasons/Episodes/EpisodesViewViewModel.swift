@@ -1,6 +1,10 @@
 import Combine
 import UIKit
 
+protocol EpisodesViewViewModelDelegate: AnyObject {
+	func didShowToastView()
+}
+
 /// View model class for EpisodesView
 final class EpisodesViewViewModel: NSObject {
 
@@ -9,6 +13,8 @@ final class EpisodesViewViewModel: NSObject {
 	private var episodes = [Episode]()
 	private var viewModels = OrderedSet<EpisodeCollectionViewCellViewModel>()
 	private var subscriptions = Set<AnyCancellable>()
+
+	weak var delegate: EpisodesViewViewModelDelegate?
 
 	// ! UICollectionViewDiffableDataSource
 
@@ -122,7 +128,9 @@ extension EpisodesViewViewModel: UICollectionViewDelegate {
 			tvShow: tvShow,
 			season: season,
 			episode: episodes[indexPath.item]
-		)
+		) { isTracked in
+			if !isTracked { self.delegate?.didShowToastView() }
+		}
 	}
 
 }

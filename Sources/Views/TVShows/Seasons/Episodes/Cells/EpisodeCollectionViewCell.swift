@@ -3,6 +3,12 @@ import UIKit
 /// Class to represent the episode collection view cell
 final class EpisodeCollectionViewCell: UICollectionViewCell {
 
+ 	override var isHighlighted: Bool {
+		didSet {
+			contentView.backgroundColor = isHighlighted ? .systemGray3 : .clear
+		}
+	}
+
 	@UsesAutoLayout
 	private var episodeImageView: UIImageView = {
 		let imageView = UIImageView()

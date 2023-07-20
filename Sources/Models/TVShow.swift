@@ -58,6 +58,7 @@ struct Season: Codable {
 }
 
 struct Episode: Codable {
+	let id: Int
 	let airDate: String?
 	let episodeNumber: Int?
 	let name: String?
@@ -66,6 +67,7 @@ struct Episode: Codable {
 	let stillPath: String?
 
 	enum CodingKeys: String, CodingKey {
+		case id
 		case airDate = "air_date"
 		case episodeNumber = "episode_number"
 		case name

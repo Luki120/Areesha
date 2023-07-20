@@ -1,5 +1,9 @@
 import UIKit
 
+protocol EpisodesViewDelegate: AnyObject {
+	func didShowToastView(in episodesView: EpisodesView)
+}
+
 /// Class to represent the episodes view
 final class EpisodesView: UIView {
 
@@ -23,6 +27,7 @@ final class EpisodesView: UIView {
 		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: compositionalLayout)
 		collectionView.delegate = viewModel
 		collectionView.backgroundColor = .clear
+		collectionView.delaysContentTouches = false
 		collectionView.showsVerticalScrollIndicator = false
 		collectionView.translatesAutoresizingMaskIntoConstraints = false
 		addSubview(collectionView)
@@ -46,7 +51,38 @@ final class EpisodesView: UIView {
 		return visualEffectView
 	}()
 
+	private lazy var trackedEpisodeToastView: UIView = {
+		let view = UIView()
+		view.alpha = 0
+		view.transform = .init(scaleX: 0.1, y: 0.1)
+		view.backgroundColor = .areeshaPinkColor
+		view.translatesAutoresizingMaskIntoConstraints = false
+		view.layer.cornerCurve = .continuous
+		view.layer.cornerRadius = 20
+		view.layer.shadowColor = UIColor.label.cgColor
+		view.layer.shadowOffset = .init(width: 0, height: 0.5)
+		view.layer.shadowOpacity = 0.2
+		view.layer.shadowRadius = 4
+		episodesCollectionView.addSubview(view)
+		return view
+	}()
+
+	private lazy var toastViewLabel: UILabel = {
+		let label = UILabel()
+		label.font = .systemFont(ofSize: 14)
+		label.text = "Episode tracked."
+		label.textColor = .label
+		label.numberOfLines = 0
+		label.textAlignment = .center
+		label.adjustsFontSizeToFitWidth = true
+		label.translatesAutoresizingMaskIntoConstraints = false
+		trackedEpisodeToastView.addSubview(label)
+		return label
+	}()
+
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: viewModel.seasonName)
+
+	weak var delegate: EpisodesViewDelegate?
 
 	// ! Lifecycle
 
@@ -60,6 +96,7 @@ final class EpisodesView: UIView {
 	init(viewModel: EpisodesViewViewModel) {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
+		viewModel.delegate = self
 		viewModel.setupCollectionViewDiffableDataSource(for: episodesCollectionView)
 		fetchTVShowImage()
 	}
@@ -69,6 +106,16 @@ final class EpisodesView: UIView {
 		pinViewToSafeAreas(episodesCollectionView)
 		pinViewToAllEdges(tvShowImageView)
 		tvShowImageView.pinViewToAllEdges(visualEffectView)
+
+		NSLayoutConstraint.activate([
+			trackedEpisodeToastView.centerXAnchor.constraint(equalTo: centerXAnchor),
+			trackedEpisodeToastView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -25),
+			trackedEpisodeToastView.widthAnchor.constraint(equalToConstant: 130),
+			trackedEpisodeToastView.heightAnchor.constraint(equalToConstant: 40)
+		])
+
+		trackedEpisodeToastView.centerViewOnBothAxes(toastViewLabel)
+		trackedEpisodeToastView.setupHorizontalConstraints(forView: toastViewLabel, leadingConstant: 10, trailingConstant: -10)
 	}
 
 	// ! Private
@@ -83,6 +130,38 @@ final class EpisodesView: UIView {
 				}
 			}
 		}
+	}
+
+}
+
+extension EpisodesView {
+
+	// ! Public
+
+	/// Function to fade in & out the toast view
+	func fadeInOutToastView() {
+ 		UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseIn) {
+			self.trackedEpisodeToastView.alpha = 1
+			self.trackedEpisodeToastView.transform = .init(scaleX: 1, y: 1)
+
+			Task {
+				try await Task.sleep(seconds: 2)
+				UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseOut) {
+					self.trackedEpisodeToastView.alpha = 0
+					self.trackedEpisodeToastView.transform = .init(scaleX: 0.1, y: 0.1)
+				}
+			}
+		}
+	}
+
+}
+
+// ! EpisodesViewViewModelDelegate
+
+extension EpisodesView: EpisodesViewViewModelDelegate {
+
+	func didShowToastView() {
+		delegate?.didShowToastView(in: self)
 	}
 
 }
