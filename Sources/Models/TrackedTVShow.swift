@@ -5,6 +5,7 @@ struct TrackedTVShow: Codable, Hashable {
 	let imageURL: URL?
 	let tvShowNameText: String
 	let lastSeenText: String
+	let episode: Episode
 	let episodeID: Int
 
 	func hash(into hasher: inout Hasher) {

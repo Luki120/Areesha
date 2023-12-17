@@ -1,11 +1,17 @@
 import Combine
 import UIKit
 
+protocol TrackedTVShowListViewViewModelDelegate: AnyObject {
+	func didSelect(trackedTVShow: TrackedTVShow)
+}
+
 /// View model class for TrackedTVShowListView
 final class TrackedTVShowListViewViewModel: NSObject {
 
 	private let trackedManager: TrackedTVShowManager = .sharedInstance
 	private var subscriptions: Set<AnyCancellable> = []
+
+	weak var delegate: TrackedTVShowListViewViewModelDelegate?
 
 	// ! UICollectionViewDiffableDataSource
 
@@ -65,6 +71,7 @@ extension TrackedTVShowListViewViewModel: UICollectionViewDelegate {
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
+		delegate?.didSelect(trackedTVShow: trackedManager.trackedTVShows[indexPath.item])
 	}
 
 }

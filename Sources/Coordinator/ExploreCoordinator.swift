@@ -70,7 +70,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 /// Custom UINavigationController subclass to reenable swipe behavior with custom push/pop transitions
 final class SwipeableNavigationController: UINavigationController {
 
-	var completion: ((UIViewController) -> Void)!
+	var completion: ((UIViewController) -> Void)?
 	private var isPushAnimation = false
 
 	// ! Lifecycle
@@ -126,7 +126,7 @@ extension SwipeableNavigationController: UINavigationControllerDelegate {
 
 		guard !swipeableNavigationController.viewControllers.contains(fromViewController) else { return }
 
-		completion(fromViewController)
+		completion?(fromViewController)
 	}
 
 	func navigationController(

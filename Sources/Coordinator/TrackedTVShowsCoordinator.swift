@@ -3,7 +3,10 @@ import UIKit
 /// Explore coordinator, which will take care of any navigation events related to TrackedTVShowsVC
 final class TrackedTVShowsCoordinator: Coordinator {
 
-	enum Event {}
+	enum Event {
+		case backButtonTapped
+		case trackedTVShowCellTapped(trackedTVShow: TrackedTVShow)
+	}
 
 	var navigationController = SwipeableNavigationController()
 
@@ -16,6 +19,17 @@ final class TrackedTVShowsCoordinator: Coordinator {
 		navigationController.viewControllers = [trackedTVShowsVC]
 	}
 
-	func eventOccurred(with event: Event) {}
+	func eventOccurred(with event: Event) {
+		switch event {
+			case .backButtonTapped:
+				navigationController.popViewController(animated: true)
+
+			case .trackedTVShowCellTapped(let trackedTVShow):
+				let viewModel = TrackedTVShowDetailsViewViewModel(trackedTVShow: trackedTVShow)
+				let trackedTVShowDetailsVC = TrackedTVShowDetailsVC(viewModel: viewModel)
+				trackedTVShowDetailsVC.coordinator = self
+				navigationController.pushViewController(trackedTVShowDetailsVC, animated: true)
+		}
+	}
 
 }

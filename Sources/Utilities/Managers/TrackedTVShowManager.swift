@@ -50,6 +50,7 @@ extension TrackedTVShowManager {
 			imageURL: url,
 			tvShowNameText: tvShow.name,
 			lastSeenText: "Last seen: S\(cleanSeasonNumber)E\(cleanSeasonEpisode)",
+			episode: episode,
 			episodeID: episode.id
 		)
 

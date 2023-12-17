@@ -13,7 +13,21 @@ final class TrackedTVShowsVC: UIViewController {
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		view.backgroundColor = .systemBackground
+		trackedTVShowListView.delegate = self
+		trackedTVShowListView.backgroundColor = .systemBackground
+	}
+
+}
+
+// ! TrackedTVShowListViewDelegate
+
+extension TrackedTVShowsVC: TrackedTVShowListViewDelegate {
+
+	func trackedTVShowListView(
+		_ trackedTVShowListView: TrackedTVShowListView,
+		didSelect trackedTVShow: TrackedTVShow
+	) {
+		coordinator?.eventOccurred(with: .trackedTVShowCellTapped(trackedTVShow: trackedTVShow))
 	}
 
 }

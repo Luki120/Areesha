@@ -1,5 +1,13 @@
 import UIKit
 
+
+protocol TrackedTVShowListViewDelegate: AnyObject {
+	func trackedTVShowListView(
+		_ trackedTVShowListView: TrackedTVShowListView,
+		didSelect trackedTVShow: TrackedTVShow
+	)
+}
+
 /// Class to represent the tracked tv shows list view
 final class TrackedTVShowListView: UIView {
 
@@ -24,6 +32,8 @@ final class TrackedTVShowListView: UIView {
 		return collectionView
 	}()
 
+	weak var delegate: TrackedTVShowListViewDelegate?
+
 	// ! Lifecycle
 
 	required init?(coder: NSCoder) {
@@ -32,6 +42,7 @@ final class TrackedTVShowListView: UIView {
 
 	override init(frame: CGRect) {
 		super.init(frame: frame)
+		viewModel.delegate = self
 		viewModel.setupDiffableDataSource(for: trackedTVShowsListCollectionView)
 		addSubview(trackedTVShowsListCollectionView)
 		trackedTVShowsListCollectionView.delegate = viewModel
@@ -40,6 +51,16 @@ final class TrackedTVShowListView: UIView {
 	override func layoutSubviews() {
 		super.layoutSubviews()
 		pinViewToSafeAreas(trackedTVShowsListCollectionView)
+	}
+
+}
+
+// ! TrackedTVShowListViewViewModelDelegate
+
+extension TrackedTVShowListView: TrackedTVShowListViewViewModelDelegate {
+
+	func didSelect(trackedTVShow: TrackedTVShow) {
+		delegate?.trackedTVShowListView(self, didSelect: trackedTVShow)
 	}
 
 }
