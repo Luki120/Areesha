@@ -51,6 +51,7 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 	@UsesAutoLayout
 	private var seasonImageView: UIImageView = {
 		let imageView = UIImageView()
+		imageView.alpha = 0
 		imageView.contentMode = .scaleAspectFill
 		imageView.clipsToBounds = true
 		imageView.layer.cornerCurve = .continuous
@@ -118,7 +119,11 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 			let image = try? await viewModel.fetchImage()
 			await MainActor.run {
 				guard self.activeViewModel == viewModel else { return }
-				self.seasonImageView.image = image
+
+				UIView.transition(with: self.seasonImageView, duration: 0.5, options: .transitionCrossDissolve) {
+					self.seasonImageView.alpha = 1
+					self.seasonImageView.image = image
+				}
 			}
 		}
 	}
