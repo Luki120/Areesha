@@ -49,7 +49,6 @@ final class TrackedTVShowManager: ObservableObject {
 		}
 
 		trackedTVShows = OrderedSet(trackedTVShowsArray)
-		trackedTVShows.insert(trackedTVShow)
 	}
 
 }
