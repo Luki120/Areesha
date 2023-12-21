@@ -57,7 +57,7 @@ extension TrackedTVShowListViewViewModel: UICollectionViewDelegate {
 		applyDiffableDataSourceSnapshot(withModels: trackedManager.trackedTVShows)
 	}
 
-	private func applyDiffableDataSourceSnapshot(withModels models: OrderedSet<TrackedTVShow>) {
+	private func applyDiffableDataSourceSnapshot(withModels models: [TrackedTVShow]) {
 		guard let dataSource else { return }
 
 		let mappedModels = models

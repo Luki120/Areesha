@@ -6,7 +6,7 @@ final class TrackedTVShowManager: ObservableObject {
 
 	static let sharedInstance = TrackedTVShowManager()
 
-	@Published private(set) var trackedTVShows: OrderedSet<TrackedTVShow> {
+	@Published private(set) var trackedTVShows: [TrackedTVShow] {
 		didSet {
 			guard let encodedViewModels = try? JSONEncoder().encode(trackedTVShows) else { return }
 			UserDefaults.standard.set(encodedViewModels, forKey: "viewModels")
@@ -15,7 +15,7 @@ final class TrackedTVShowManager: ObservableObject {
 
 	private init() {
 		guard let data = UserDefaults.standard.object(forKey: "viewModels") as? Data,
-			let decodedViewModels = try? JSONDecoder().decode(OrderedSet<TrackedTVShow>.self, from: data) else {
+			let decodedViewModels = try? JSONDecoder().decode([TrackedTVShow].self, from: data) else {
 				trackedTVShows = []
 				return
 			}
@@ -32,23 +32,19 @@ final class TrackedTVShowManager: ObservableObject {
 		guard let data = UserDefaults.standard.object(forKey: "sortOption") as? Data,
 			let decodedSortOption = try? JSONDecoder().decode(SortOption.self, from: data) else { return }
 
-		var trackedTVShowsArray = Array(trackedTVShows)
-
 		switch decodedSortOption {
 			case .alphabetically:
-				let index = trackedTVShowsArray.insertionIndexOf(trackedTVShow) { $0.tvShowNameText < $1.tvShowNameText }
-				trackedTVShowsArray.insert(trackedTVShow, at: index)
+				let index = trackedTVShows.insertionIndexOf(trackedTVShow) { $0.tvShowNameText < $1.tvShowNameText }
+				trackedTVShows.insert(trackedTVShow, at: index)
 
 			case .leastAdvanced:
-				let index = trackedTVShowsArray.insertionIndexOf(trackedTVShow) { $0.lastSeenText < $1.lastSeenText }
-				trackedTVShowsArray.insert(trackedTVShow, at: index)
+				let index = trackedTVShows.insertionIndexOf(trackedTVShow) { $0.lastSeenText < $1.lastSeenText }
+				trackedTVShows.insert(trackedTVShow, at: index)
 
 			case .moreAdvanced:
-				let index = trackedTVShowsArray.insertionIndexOf(trackedTVShow) { $0.lastSeenText > $1.lastSeenText }
-				trackedTVShowsArray.insert(trackedTVShow, at: index)
+				let index = trackedTVShows.insertionIndexOf(trackedTVShow) { $0.lastSeenText > $1.lastSeenText }
+				trackedTVShows.insert(trackedTVShow, at: index)
 		}
-
-		trackedTVShows = OrderedSet(trackedTVShowsArray)
 	}
 
 }
@@ -100,18 +96,14 @@ extension TrackedTVShowManager {
 	/// - Parameters:
 	///		- withOption: The option
 	func didSortModels(withOption option: SortOption) {
-		var sortedTVShows = Array(trackedTVShows)
-
 		switch option {
-			case .alphabetically: sortedTVShows = trackedTVShows.sorted { $0.tvShowNameText < $1.tvShowNameText }
-			case .leastAdvanced: sortedTVShows = trackedTVShows.sorted { $0.lastSeenText < $1.lastSeenText }
-			case .moreAdvanced: sortedTVShows = trackedTVShows.sorted { $0.lastSeenText > $1.lastSeenText }
+			case .alphabetically: trackedTVShows = trackedTVShows.sorted { $0.tvShowNameText < $1.tvShowNameText }
+			case .leastAdvanced: trackedTVShows = trackedTVShows.sorted { $0.lastSeenText < $1.lastSeenText }
+			case .moreAdvanced: trackedTVShows = trackedTVShows.sorted { $0.lastSeenText > $1.lastSeenText }
 		}
 
-		trackedTVShows = OrderedSet(sortedTVShows)
-
-		guard let encodedOption = try? JSONEncoder().encode(option) else { return }
-		UserDefaults.standard.set(encodedOption, forKey: "sortOption")
+		guard let encodedSortOption = try? JSONEncoder().encode(option) else { return }
+		UserDefaults.standard.set(encodedSortOption, forKey: "sortOption")
 	}
 
 }
