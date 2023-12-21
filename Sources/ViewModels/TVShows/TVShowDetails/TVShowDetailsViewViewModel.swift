@@ -51,7 +51,7 @@ final class TVShowDetailsViewViewModel {
 	private func setupModels() {
 		cells = [
 			.genre(viewModel: genreCellViewModel),
-			.overview(viewModel: .init(overviewText: tvShow.overview ?? "")),
+			.overview(viewModel: .init(overviewText: tvShow.overview)),
 			.cast(viewModel: castCellViewModel),
 			.networks(viewModel: networksCellViewModel)
 		]

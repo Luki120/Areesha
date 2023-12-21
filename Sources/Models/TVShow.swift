@@ -8,9 +8,9 @@ struct APIResponse: Codable {
 struct TVShow: Codable {
 	let id: Int
 	let name: String
-	let overview: String?
-	let posterPath: String?
-	let backdropPath: String?
+	let overview: String
+	let posterPath: String
+	let backdropPath: String
 	let episodeRunTime: [Int]?
 	let genres: [Genre]?
 	let lastAirDate: String?
@@ -44,10 +44,10 @@ struct Network: Codable {
 }
 
 struct Season: Codable {
-	let name: String?
-	let posterPath: String?
+	let name: String
+	let posterPath: String
 	let episodes: [Episode]?
-	let seasonNumber: Int?
+	let seasonNumber: Int
 
 	enum CodingKeys: String, CodingKey {
 		case name
@@ -60,9 +60,9 @@ struct Season: Codable {
 struct Episode: Codable {
 	let id: Int
 	let airDate: String?
-	let episodeNumber: Int?
-	let name: String?
-	let overview: String?
+	let episodeNumber: Int
+	let name: String
+	let overview: String
 	let runtime: Int?
 	let stillPath: String?
 
