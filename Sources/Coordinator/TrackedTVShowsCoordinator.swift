@@ -6,6 +6,7 @@ final class TrackedTVShowsCoordinator: Coordinator {
 	enum Event {
 		case backButtonTapped
 		case trackedTVShowCellTapped(trackedTVShow: TrackedTVShow)
+		case sortButtonTapped(viewModel: TrackedTVShowListViewViewModel, option: TrackedTVShowManager.SortOption)
 	}
 
 	var navigationController = SwipeableNavigationController()
@@ -29,6 +30,9 @@ final class TrackedTVShowsCoordinator: Coordinator {
 				let trackedTVShowDetailsVC = TrackedTVShowDetailsVC(viewModel: viewModel)
 				trackedTVShowDetailsVC.coordinator = self
 				navigationController.pushViewController(trackedTVShowDetailsVC, animated: true)
+
+			case .sortButtonTapped(let viewModel, let sortOption):
+				viewModel.didSortDataSource(withOption: sortOption)
 		}
 	}
 

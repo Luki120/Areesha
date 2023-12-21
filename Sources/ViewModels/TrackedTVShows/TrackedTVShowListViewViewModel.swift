@@ -92,4 +92,16 @@ extension TrackedTVShowListViewViewModel {
 		setupCollectionViewDiffableDataSource(for: collectionView)
 	}
 
+	func didSortDataSource(withOption option: TrackedTVShowManager.SortOption) {
+		trackedManager.didSortModels(withOption: option)
+
+		let mappedModels = trackedManager.trackedTVShows
+			.map(TrackedTVShowCollectionViewListCellViewModel.init(_:))
+
+ 		var snapshot = Snapshot()
+		snapshot.appendSections([.main])
+		snapshot.appendItems(mappedModels)
+		dataSource.apply(snapshot)
+	}
+
 }

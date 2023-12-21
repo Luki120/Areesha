@@ -23,6 +23,35 @@ final class TrackedTVShowManager: ObservableObject {
 		trackedTVShows = decodedViewModels
 	}
 
+	/// Enum to represent the different types of options to sort
+	enum SortOption: Codable {
+		case alphabetically, leastAdvanced, moreAdvanced
+	}
+
+	private func insert(trackedTVShow: TrackedTVShow) {
+		guard let data = UserDefaults.standard.object(forKey: "sortOption") as? Data,
+			let decodedSortOption = try? JSONDecoder().decode(SortOption.self, from: data) else { return }
+
+		var trackedTVShowsArray = Array(trackedTVShows)
+
+		switch decodedSortOption {
+			case .alphabetically:
+				let index = trackedTVShowsArray.insertionIndexOf(trackedTVShow) { $0.tvShowNameText < $1.tvShowNameText }
+				trackedTVShowsArray.insert(trackedTVShow, at: index)
+
+			case .leastAdvanced:
+				let index = trackedTVShowsArray.insertionIndexOf(trackedTVShow) { $0.lastSeenText < $1.lastSeenText }
+				trackedTVShowsArray.insert(trackedTVShow, at: index)
+
+			case .moreAdvanced:
+				let index = trackedTVShowsArray.insertionIndexOf(trackedTVShow) { $0.lastSeenText > $1.lastSeenText }
+				trackedTVShowsArray.insert(trackedTVShow, at: index)
+		}
+
+		trackedTVShows = OrderedSet(trackedTVShowsArray)
+		trackedTVShows.insert(trackedTVShow)
+	}
+
 }
 
 extension TrackedTVShowManager {
@@ -60,7 +89,7 @@ extension TrackedTVShowManager {
 		}
 
 		completion(false)
-		trackedTVShows.insert(trackedTVShow)
+		insert(trackedTVShow: trackedTVShow)
 	}
 
 	/// Function to delete a tracked tv show at the given index
@@ -68,6 +97,24 @@ extension TrackedTVShowManager {
 	///		- at: The index for the tv show
 	func removeTrackedTVShow(at index: Int) {
 		trackedTVShows.remove(at: index)
+	}
+
+	/// Function sort the tv show models according to the given option
+	/// - Parameters:
+	///		- withOption: The option
+	func didSortModels(withOption option: SortOption) {
+		var sortedTVShows = Array(trackedTVShows)
+
+		switch option {
+			case .alphabetically: sortedTVShows = trackedTVShows.sorted { $0.tvShowNameText < $1.tvShowNameText }
+			case .leastAdvanced: sortedTVShows = trackedTVShows.sorted { $0.lastSeenText < $1.lastSeenText }
+			case .moreAdvanced: sortedTVShows = trackedTVShows.sorted { $0.lastSeenText > $1.lastSeenText }
+		}
+
+		trackedTVShows = OrderedSet(sortedTVShows)
+
+		guard let encodedOption = try? JSONEncoder().encode(option) else { return }
+		UserDefaults.standard.set(encodedOption, forKey: "sortOption")
 	}
 
 }

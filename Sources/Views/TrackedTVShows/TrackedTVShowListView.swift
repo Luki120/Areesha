@@ -11,7 +11,7 @@ protocol TrackedTVShowListViewDelegate: AnyObject {
 /// Class to represent the tracked tv shows list view
 final class TrackedTVShowListView: UIView {
 
-	private lazy var viewModel = TrackedTVShowListViewViewModel()
+	private(set) lazy var viewModel = TrackedTVShowListViewViewModel()
 
 	private lazy var trackedTVShowsListCollectionView: UICollectionView = {
 		var layoutConfig = UICollectionLayoutListConfiguration(appearance: .plain)
