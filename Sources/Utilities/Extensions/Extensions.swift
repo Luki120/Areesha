@@ -59,6 +59,18 @@ extension UILabel {
 		label.numberOfLines = 0
 		return label
 	}
+
+	static func createContentUnavailableLabel(withMessage message: String) -> UILabel {
+		let label = UILabel()
+		label.font = .systemFont(ofSize: 16)
+		label.text = message
+		label.alpha = 0
+		label.textColor = .placeholderText
+		label.numberOfLines = 0
+		label.textAlignment = .center
+		label.translatesAutoresizingMaskIntoConstraints = false
+		return label
+	}
 }
 
 extension UIStackView {

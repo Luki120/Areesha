@@ -3,6 +3,7 @@ import UIKit
 
 protocol EpisodesViewViewModelDelegate: AnyObject {
 	func didShowToastView()
+	func shouldAnimateNoEpisodesLabel(isDataSourceEmpty: Bool)
 }
 
 /// View model class for EpisodesView
@@ -54,6 +55,8 @@ final class EpisodesViewViewModel: NSObject {
 				episodes = season.episodes ?? []
 				updateViewModels(with: episodes)
 				applyDiffableDataSourceSnapshot()
+
+				delegate?.shouldAnimateNoEpisodesLabel(isDataSourceEmpty: viewModels.isEmpty)
 			}
 			.store(in: &subscriptions)
 	}

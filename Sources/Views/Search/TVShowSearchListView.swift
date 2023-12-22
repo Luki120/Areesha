@@ -29,6 +29,8 @@ final class TVShowSearchListView: UIView {
 		return collectionView
 	}()
 
+	private var noResultsLabel: UILabel = .createContentUnavailableLabel(withMessage: "No results were found for this query.")
+
 	weak var delegate: TVShowSearchListViewDelegate?
 
 	// ! Lifecycle
@@ -40,7 +42,7 @@ final class TVShowSearchListView: UIView {
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		setupStuff()
-		addSubviews(searchTextFieldView, listCollectionView)
+		addSubviews(searchTextFieldView, listCollectionView, noResultsLabel)
 	}
 
 	override func layoutSubviews() {
@@ -67,6 +69,9 @@ final class TVShowSearchListView: UIView {
 		listCollectionView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor).isActive = true
 		listCollectionView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
 		listCollectionView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+
+		centerViewOnBothAxes(noResultsLabel)
+		setupHorizontalConstraints(forView: noResultsLabel, leadingConstant: 10, trailingConstant: -10)
 	}
 
 	// ! Selectors
@@ -141,6 +146,19 @@ extension TVShowSearchListView: TVShowSearchListViewViewModelDelegate {
 
 	func didSelect(tvShow: TVShow) {
 		delegate?.tvShowSearchListView(self, didSelect: tvShow)
+	}
+
+	func shouldAnimateNoResultsLabel(isDataSourceEmpty: Bool) {
+		UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut) {	
+			if isDataSourceEmpty {
+				self.noResultsLabel.alpha = 1
+				self.listCollectionView.alpha = 0
+			}
+			else {
+				self.noResultsLabel.alpha = 0
+				self.listCollectionView.alpha = 1
+			}
+		}
 	}
 
 }

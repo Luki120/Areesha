@@ -4,6 +4,7 @@ import UIKit
 
 protocol TVShowSearchListViewViewModelDelegate: AnyObject {
 	func didSelect(tvShow: TVShow)
+	func shouldAnimateNoResultsLabel(isDataSourceEmpty: Bool)
 }
 
 /// View model class for TVShowSearchListView
@@ -40,8 +41,11 @@ final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCel
 			.catch { _ in Just(APIResponse(results: [])) }
 			.receive(on: DispatchQueue.main)
 			.sink { [weak self] searchedTVShows in
-				self?.searchedTVShows = searchedTVShows.results
-				self?.applySnapshot(isOrderedSet: true)
+				guard let self else { return }
+				self.searchedTVShows = searchedTVShows.results
+				applySnapshot(isOrderedSet: true)
+
+				delegate?.shouldAnimateNoResultsLabel(isDataSourceEmpty: self.searchedTVShows.isEmpty)
 			}
 			.store(in: &subscriptions)
 	}
@@ -64,7 +68,7 @@ extension TVShowSearchListViewViewModel {
 
 	/// Function to send the query subject
 	/// - Parameters:
-	///     - subject: A string representing the query subject
+	///		- subject: A string representing the query subject
 	func sendQuerySubject(_ subject: String) {
 		searchQuerySubject.send(subject)
 	}

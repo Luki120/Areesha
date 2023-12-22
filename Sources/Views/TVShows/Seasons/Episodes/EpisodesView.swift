@@ -80,6 +80,7 @@ final class EpisodesView: UIView {
 		return label
 	}()
 
+	private var noEpisodesLabel: UILabel = .createContentUnavailableLabel(withMessage: "No episodes for this season yet.")
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: viewModel.seasonName)
 
 	weak var delegate: EpisodesViewDelegate?
@@ -98,11 +99,23 @@ final class EpisodesView: UIView {
 		super.init(frame: .zero)
 		viewModel.delegate = self
 		viewModel.setupCollectionViewDiffableDataSource(for: episodesCollectionView)
-		fetchTVShowImage()
+
+		setupUI()
 	}
 
 	override func layoutSubviews() {
 		super.layoutSubviews()
+		layoutUI()
+	}
+
+	// ! Private
+
+	private func setupUI() {
+		fetchTVShowImage()
+		addSubview(noEpisodesLabel)
+	}
+
+	private func layoutUI() {
 		pinViewToSafeAreas(episodesCollectionView)
 		pinViewToAllEdges(tvShowImageView)
 		tvShowImageView.pinViewToAllEdges(visualEffectView)
@@ -114,11 +127,12 @@ final class EpisodesView: UIView {
 			trackedEpisodeToastView.heightAnchor.constraint(equalToConstant: 40)
 		])
 
+		centerViewOnBothAxes(noEpisodesLabel)
+		setupHorizontalConstraints(forView: noEpisodesLabel, leadingConstant: 10, trailingConstant: -10)
+
 		trackedEpisodeToastView.centerViewOnBothAxes(toastViewLabel)
 		trackedEpisodeToastView.setupHorizontalConstraints(forView: toastViewLabel, leadingConstant: 10, trailingConstant: -10)
 	}
-
-	// ! Private
 
 	private func fetchTVShowImage() {
 		viewModel.fetchTVShowImage { [weak self] image in
@@ -140,7 +154,7 @@ extension EpisodesView {
 
 	/// Function to fade in & out the toast view
 	func fadeInOutToastView() {
- 		UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseIn) {
+		UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseIn) {
 			self.trackedEpisodeToastView.alpha = 1
 			self.trackedEpisodeToastView.transform = .init(scaleX: 1, y: 1)
 
@@ -162,6 +176,19 @@ extension EpisodesView: EpisodesViewViewModelDelegate {
 
 	func didShowToastView() {
 		delegate?.didShowToastView(in: self)
+	}
+
+	func shouldAnimateNoEpisodesLabel(isDataSourceEmpty: Bool) {
+		UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut) {	
+			if isDataSourceEmpty {
+				self.noEpisodesLabel.alpha = 1
+				self.episodesCollectionView.alpha = 0
+			}
+			else {
+				self.noEpisodesLabel.alpha = 0
+				self.episodesCollectionView.alpha = 1
+			}
+		}
 	}
 
 }
