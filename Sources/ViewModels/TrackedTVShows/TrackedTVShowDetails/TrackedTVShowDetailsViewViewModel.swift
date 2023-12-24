@@ -3,7 +3,7 @@ import UIKit
 /// View model class for TrackedTVShowDetailsView
 final class TrackedTVShowDetailsViewViewModel {
 
-	var title: String { return trackedTVShow.episode.name }
+	var title: String { return trackedTVShow.episode.name ?? "" }
 
 	private var headerViewViewModel: TrackedTVShowDetailsEpisodeDetailsHeaderViewViewModel!
 	private var episodeDetailsCellViewModel: TrackedTVShowDetailsEpisodeDetailsTableViewCellViewModel!
@@ -41,16 +41,16 @@ final class TrackedTVShowDetailsViewViewModel {
 		cells = [
 			.episodeDetails(
 				viewModel: .init(
-					episodeNumber: trackedTVShow.episode.episodeNumber,
+					episodeNumber: trackedTVShow.episode.episodeNumber ?? 0,
 					episodeAirDateText: trackedTVShow.episode.airDate ?? ""
 				)
 			),
-			.overview(viewModel: .init(overviewText: trackedTVShow.episode.overview))
+			.overview(viewModel: .init(overviewText: trackedTVShow.episode.overview ?? ""))
 		]
 
 		guard let url = Service.imageURL(.episodeStill(trackedTVShow.episode), size: "w1280") else { return }
 
-		headerViewViewModel = .init(imageURL: url, episodeNameText: trackedTVShow.episode.name)
+		headerViewViewModel = .init(imageURL: url, episodeNameText: trackedTVShow.episode.name ?? "")
 	}
 
 }

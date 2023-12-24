@@ -9,7 +9,7 @@ protocol EpisodesViewViewModelDelegate: AnyObject {
 /// View model class for EpisodesView
 final class EpisodesViewViewModel: NSObject {
 
-	var seasonName: String { return season.name }
+	var seasonName: String { return season.name ?? "" }
 
 	private var episodes = [Episode]()
 	private var viewModels = OrderedSet<EpisodeCollectionViewCellViewModel>()
@@ -35,7 +35,7 @@ final class EpisodesViewViewModel: NSObject {
 	/// Designated initializer
 	/// - Parameters:
 	///		- tvShow: The tv show model object
-	///     - season: The season model object
+	///		- season: The season model object
 	init(tvShow: TVShow, season: Season) {
 		self.tvShow = tvShow
 		self.season = season
@@ -44,7 +44,7 @@ final class EpisodesViewViewModel: NSObject {
 	}
 
 	private func fetchSeasonDetails() {
-		guard let url = URL(string: "\(Service.Constants.baseURL)tv/\(tvShow.id)/season/\(season.seasonNumber)?\(Service.Constants.apiKey)") else {
+		guard let url = URL(string: "\(Service.Constants.baseURL)tv/\(tvShow.id)/season/\(season.seasonNumber ?? 0)?\(Service.Constants.apiKey)") else {
 			return
 		}
 
@@ -67,9 +67,9 @@ final class EpisodesViewViewModel: NSObject {
 
 			return EpisodeCollectionViewCellViewModel(
 				imageURL: url,
-				episodeNameText: "\(episode.episodeNumber). \(episode.name)",
+				episodeNameText: "\(episode.episodeNumber ?? 0). \(episode.name ?? "")",
 				episodeDurationText: "\(episode.runtime ?? 0) min",
-				episodeDescriptionText: episode.overview
+				episodeDescriptionText: episode.overview ?? ""
 			)
 		}
 	}

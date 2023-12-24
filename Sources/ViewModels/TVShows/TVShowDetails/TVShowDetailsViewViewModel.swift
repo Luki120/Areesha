@@ -72,7 +72,7 @@ final class TVShowDetailsViewViewModel {
 				self?.updateCastCrewNames(with: credits.cast)
 				self?.reloadSnapshot(animatingDifferences: !isFromCache)
 			}
-		.store(in: &subscriptions)
+			.store(in: &subscriptions)
 	}
 
 	private func fetchTVShowDetails() {
@@ -101,9 +101,9 @@ final class TVShowDetailsViewViewModel {
 					statusText: tvShow.status
 				)
 
-			reloadSnapshot(animatingDifferences: !isFromCache)
-		}
-		.store(in: &subscriptions)
+				reloadSnapshot(animatingDifferences: !isFromCache)
+			}
+			.store(in: &subscriptions)
 	}
 
 	private func updateCastCrewNames(with castCrew: [Cast]) {

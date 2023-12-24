@@ -19,7 +19,7 @@ final class SeasonsViewViewModel: NSObject {
 		didSet {
 			viewModels += seasons.compactMap { season in
 				guard let url = Service.imageURL(.seasonPoster(season)) else { return nil }
-				return SeasonCollectionViewCellViewModel(imageURL: url, seasonNameText: season.name)
+				return SeasonCollectionViewCellViewModel(imageURL: url, seasonNameText: season.name ?? "")
 			}
 		}
 	}
@@ -30,7 +30,7 @@ final class SeasonsViewViewModel: NSObject {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - tvShow: The tv show model object
+	///		- tvShow: The tv show model object
 	init(tvShow: TVShow) {
 		self.tvShow = tvShow
 		super.init()
@@ -47,7 +47,7 @@ final class SeasonsViewViewModel: NSObject {
 			.receive(on: DispatchQueue.main)
 			.sink(receiveCompletion: { _ in }) { [weak self] tvShow in
 				guard let seasons = tvShow.seasons else { return }
-				self?.seasons = seasons.filter { $0[keyPath: \.name].contains("Specials") == false }
+				self?.seasons = seasons.filter { $0[keyPath: \.name!].contains("Specials") == false }
 				self?.delegate?.didLoadTVShowSeasons()
 			}
 			.store(in: &subscriptions)
