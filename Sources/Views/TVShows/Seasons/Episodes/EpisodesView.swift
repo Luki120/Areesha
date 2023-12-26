@@ -51,34 +51,8 @@ final class EpisodesView: UIView {
 		return visualEffectView
 	}()
 
-	private lazy var trackedEpisodeToastView: UIView = {
-		let view = UIView()
-		view.alpha = 0
-		view.transform = .init(scaleX: 0.1, y: 0.1)
-		view.backgroundColor = .areeshaPinkColor
-		view.translatesAutoresizingMaskIntoConstraints = false
-		view.layer.cornerCurve = .continuous
-		view.layer.cornerRadius = 20
-		view.layer.shadowColor = UIColor.label.cgColor
-		view.layer.shadowOffset = .init(width: 0, height: 0.5)
-		view.layer.shadowOpacity = 0.2
-		view.layer.shadowRadius = 4
-		episodesCollectionView.addSubview(view)
-		return view
-	}()
-
-	private lazy var toastViewLabel: UILabel = {
-		let label = UILabel()
-		label.font = .systemFont(ofSize: 14)
-		label.text = "Episode tracked."
-		label.textColor = .label
-		label.numberOfLines = 0
-		label.textAlignment = .center
-		label.adjustsFontSizeToFitWidth = true
-		label.translatesAutoresizingMaskIntoConstraints = false
-		trackedEpisodeToastView.addSubview(label)
-		return label
-	}()
+	private lazy var trackedEpisodeToastView = createToastView()
+	private lazy var toastViewLabel = createToastViewLabel(withMessage: "Episode tracked.")
 
 	private var noEpisodesLabel: UILabel = .createContentUnavailableLabel(withMessage: "No episodes for this season yet.")
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: viewModel.seasonName)
@@ -112,7 +86,8 @@ final class EpisodesView: UIView {
 
 	private func setupUI() {
 		fetchTVShowImage()
-		addSubview(noEpisodesLabel)
+		addSubviews(trackedEpisodeToastView, noEpisodesLabel)
+		trackedEpisodeToastView.addSubview(toastViewLabel)
 	}
 
 	private func layoutUI() {
@@ -154,18 +129,7 @@ extension EpisodesView {
 
 	/// Function to fade in & out the toast view
 	func fadeInOutToastView() {
-		UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseIn) {
-			self.trackedEpisodeToastView.alpha = 1
-			self.trackedEpisodeToastView.transform = .init(scaleX: 1, y: 1)
-
-			Task {
-				try await Task.sleep(seconds: 2)
-				UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseOut) {
-					self.trackedEpisodeToastView.alpha = 0
-					self.trackedEpisodeToastView.transform = .init(scaleX: 0.1, y: 0.1)
-				}
-			}
-		}
+		animateToastView(trackedEpisodeToastView)
 	}
 
 }
