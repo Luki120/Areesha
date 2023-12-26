@@ -4,26 +4,17 @@ import UIKit
 protocol TrackedTVShowListViewDelegate: AnyObject {
 	func trackedTVShowListView(
 		_ trackedTVShowListView: TrackedTVShowListView,
-		didSelect trackedTVShow: TrackedTVShow
+		didSelectItemAt indexPath: IndexPath
 	)
 }
 
 /// Class to represent the tracked tv shows list view
 final class TrackedTVShowListView: UIView {
 
-	private(set) lazy var viewModel = TrackedTVShowListViewViewModel()
+	private lazy var viewModel = TrackedTVShowListViewViewModel()
 
 	private lazy var trackedTVShowsListCollectionView: UICollectionView = {
-		var layoutConfig = UICollectionLayoutListConfiguration(appearance: .plain)
-		layoutConfig.showsSeparators = false
-		layoutConfig.trailingSwipeActionsConfigurationProvider = { indexPath in
-			let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { _, _, completion in
-				self.viewModel.deleteItem(at: indexPath)
-				completion(true)
-			}
-			return UISwipeActionsConfiguration(actions: [deleteAction])
-		}
-
+		var layoutConfig = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
 		let listLayout = UICollectionViewCompositionalLayout.list(using: layoutConfig)
 		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: listLayout)
 		collectionView.backgroundColor = .systemBackground
@@ -42,15 +33,16 @@ final class TrackedTVShowListView: UIView {
 
 	override init(frame: CGRect) {
 		super.init(frame: frame)
-		viewModel.delegate = self
-		viewModel.setupDiffableDataSource(for: trackedTVShowsListCollectionView)
 		addSubview(trackedTVShowsListCollectionView)
 		trackedTVShowsListCollectionView.delegate = viewModel
+
+		viewModel.delegate = self
+		viewModel.setupCollectionViewDiffableDataSource(for: trackedTVShowsListCollectionView)
 	}
 
 	override func layoutSubviews() {
 		super.layoutSubviews()
-		pinViewToSafeAreas(trackedTVShowsListCollectionView)
+		pinViewToAllEdges(trackedTVShowsListCollectionView)
 	}
 
 }
@@ -59,8 +51,8 @@ final class TrackedTVShowListView: UIView {
 
 extension TrackedTVShowListView: TrackedTVShowListViewViewModelDelegate {
 
-	func didSelect(trackedTVShow: TrackedTVShow) {
-		delegate?.trackedTVShowListView(self, didSelect: trackedTVShow)
+	func didSelectItemAt(indexPath: IndexPath) {
+		delegate?.trackedTVShowListView(self, didSelectItemAt: indexPath)
 	}
 
 }

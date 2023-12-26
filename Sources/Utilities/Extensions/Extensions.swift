@@ -103,6 +103,48 @@ extension UIView {
 		return spinnerView
 	}
 
+	func createToastView() -> UIView {
+		let view = UIView()
+		view.alpha = 0
+		view.transform = .init(scaleX: 0.1, y: 0.1)
+		view.backgroundColor = .areeshaPinkColor
+		view.translatesAutoresizingMaskIntoConstraints = false
+		view.layer.cornerCurve = .continuous
+		view.layer.cornerRadius = 20
+		view.layer.shadowColor = UIColor.label.cgColor
+		view.layer.shadowOffset = .init(width: 0, height: 0.5)
+		view.layer.shadowOpacity = 0.2
+		view.layer.shadowRadius = 4
+		return view
+	}
+
+	func createToastViewLabel(withMessage message: String) -> UILabel {
+		let label = UILabel()
+		label.font = .systemFont(ofSize: 14)
+		label.text = message
+		label.textColor = .label
+		label.numberOfLines = 0
+		label.textAlignment = .center
+		label.adjustsFontSizeToFitWidth = true
+		label.translatesAutoresizingMaskIntoConstraints = false
+		return label
+	}
+
+	func animateToastView(_ toastView: UIView) {
+		UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseIn) {
+			toastView.alpha = 1
+			toastView.transform = .init(scaleX: 1, y: 1)
+
+			Task {
+				try await Task.sleep(seconds: 2)
+				UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseOut) {
+					toastView.alpha = 0
+					toastView.transform = .init(scaleX: 0.1, y: 0.1)
+				}
+			}
+		}
+	}
+
 	func pinViewToAllEdges(
 		_ view: UIView,
 		topConstant: CGFloat = 0,

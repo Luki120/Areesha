@@ -100,7 +100,7 @@ extension EpisodesViewViewModel: UICollectionViewDelegate {
 
 	/// Function to setup the collection view's diffable data source
 	/// - Parameters:
-	///     - collectionView: The collection view
+	///		- collectionView: The collection view
 	func setupCollectionViewDiffableDataSource(for collectionView: UICollectionView) {
 		let cellRegistration = CellRegistration { cell, _, viewModel in
 			cell.configure(with: viewModel)

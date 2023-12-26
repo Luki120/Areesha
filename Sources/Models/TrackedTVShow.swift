@@ -8,6 +8,8 @@ struct TrackedTVShow: Codable, Hashable {
 	let episode: Episode
 	let episodeID: Int
 
+	var isFinished = false
+
 	func hash(into hasher: inout Hasher) {
 		hasher.combine(episodeID)
 	}	

@@ -4,9 +4,13 @@ import UIKit
 final class TrackedTVShowsCoordinator: Coordinator {
 
 	enum Event {
+		case cellTapped(indexPath: IndexPath)
 		case backButtonTapped
 		case trackedTVShowCellTapped(trackedTVShow: TrackedTVShow)
-		case sortButtonTapped(viewModel: TrackedTVShowListViewViewModel, option: TrackedTVShowManager.SortOption)
+		case sortButtonTapped(
+			viewModel: CurrentlyWatchingTrackedTVShowListViewViewModel,
+			option: TrackedTVShowManager.SortOption
+		)
 	}
 
 	var navigationController = SwipeableNavigationController()
@@ -22,6 +26,21 @@ final class TrackedTVShowsCoordinator: Coordinator {
 
 	func eventOccurred(with event: Event) {
 		switch event {
+			case .cellTapped(let indexPath):
+				switch indexPath.item {
+					case 0:
+						let currentlyWatchingTrackedTVShowsVC = CurrentlyWatchingTrackedTVShowsVC()
+						currentlyWatchingTrackedTVShowsVC.coordinator = self
+						navigationController.pushViewController(currentlyWatchingTrackedTVShowsVC, animated: true)
+
+					case 1:
+						let finishedTrackedTVShowsVC = FinishedTrackedTVShowsVC()
+						finishedTrackedTVShowsVC.coordinator = self
+						navigationController.pushViewController(finishedTrackedTVShowsVC, animated: true)
+	
+					default: break
+				}
+
 			case .backButtonTapped:
 				navigationController.popViewController(animated: true)
 

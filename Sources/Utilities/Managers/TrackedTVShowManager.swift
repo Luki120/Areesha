@@ -6,25 +6,34 @@ final class TrackedTVShowManager: ObservableObject {
 
 	static let sharedInstance = TrackedTVShowManager()
 
+	@Published private(set) var filteredTrackedTVShows: [TrackedTVShow] {
+		didSet {
+			encode(models: filteredTrackedTVShows, withKey: "filteredViewModels")
+		}
+	}
+
 	@Published private(set) var trackedTVShows: [TrackedTVShow] {
 		didSet {
-			guard let encodedViewModels = try? JSONEncoder().encode(trackedTVShows) else { return }
-			UserDefaults.standard.set(encodedViewModels, forKey: "viewModels")
+			encode(models: trackedTVShows, withKey: "viewModels")
 		}
 	}
 
 	private init() {
 		guard let data = UserDefaults.standard.object(forKey: "viewModels") as? Data,
-			let decodedViewModels = try? JSONDecoder().decode([TrackedTVShow].self, from: data) else {
+			let filteredData = UserDefaults.standard.object(forKey: "filteredViewModels") as? Data,
+			let decodedViewModels = try? JSONDecoder().decode([TrackedTVShow].self, from: data),
+			let decodedFilteredViewModels = try? JSONDecoder().decode([TrackedTVShow].self, from: filteredData) else {
 				trackedTVShows = []
+				filteredTrackedTVShows = []
 				return
 			}
 
 		trackedTVShows = decodedViewModels
+		filteredTrackedTVShows = decodedFilteredViewModels
 	}
 
 	/// Enum to represent the different types of options to sort
-	enum SortOption: Codable {
+	@frozen enum SortOption: Codable {
 		case alphabetically, leastAdvanced, moreAdvanced
 	}
 
@@ -45,6 +54,11 @@ final class TrackedTVShowManager: ObservableObject {
 				let index = trackedTVShows.insertionIndexOf(trackedTVShow) { $0.lastSeenText > $1.lastSeenText }
 				trackedTVShows.insert(trackedTVShow, at: index)
 		}
+	}
+
+	private func encode(models: [TrackedTVShow], withKey key: String) {
+		guard let encodedViewModels = try? JSONEncoder().encode(models) else { return }
+		UserDefaults.standard.set(encodedViewModels, forKey: key)		
 	}
 
 }
@@ -90,8 +104,30 @@ extension TrackedTVShowManager {
 	/// Function to delete a tracked tv show at the given index
 	/// - Parameters:
 	///		- at: The index for the tv show
-	func removeTrackedTVShow(at index: Int) {
-		trackedTVShows.remove(at: index)
+	func removeTrackedTVShow(at index: Int, isFilteredArray: Bool = false) {
+		if !isFilteredArray { trackedTVShows.remove(at: index) }
+		else { filteredTrackedTVShows.remove(at: index) }
+	}
+
+	/// Function to mark a tv show as finished
+	/// - Parameters:
+	///		- at: The index path for the item
+	///		- completion: Escaping closure that takes a Bool as argument & returns nothing to check if
+	///		the tv show is already in the filteredTrackedTVShows array or not
+	func finishedShow(at index: Int, completion: @escaping (Bool) -> ()) {
+		let isShowAdded = filteredTrackedTVShows.reduce(false, { $0 || trackedTVShows.contains($1) })
+
+		if !isShowAdded {
+			completion(false)
+			trackedTVShows[index].isFinished = true
+
+			filteredTrackedTVShows.append(contentsOf: trackedTVShows.filter { $0.isFinished }) 
+			trackedTVShows = trackedTVShows.filter { $0.isFinished == false }
+		}
+
+		else {
+			completion(true)
+		}
 	}
 
 	/// Function sort the tv show models according to the given option

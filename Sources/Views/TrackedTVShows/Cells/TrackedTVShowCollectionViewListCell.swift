@@ -3,7 +3,7 @@ import UIKit
 /// Class to represent the tracked tv show collection view list cell
 final class TrackedTVShowCollectionViewListCell: UICollectionViewListCell {
 
-	var viewModel: TrackedTVShowCollectionViewListCellViewModel?
+	var viewModel: TrackedTVShowCollectionViewCellViewModel?
 
 	override func updateConfiguration(using state: UICellConfigurationState) {
 		var newConfiguration = TrackedTVShowContentConfiguration().updated(for: state)
@@ -21,7 +21,7 @@ struct TrackedTVShowContentConfiguration: UIContentConfiguration, Hashable {
 
 	var tvShowNameText: String?
 	var lastSeenText: String?
-	var viewModel: TrackedTVShowCollectionViewListCellViewModel?
+	var viewModel: TrackedTVShowCollectionViewCellViewModel?
 
 	func makeContentView() -> UIView & UIContentView {
 		return TrackedTVShowContentView(configuration: self)
@@ -46,7 +46,7 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 		}
 	}
 
-	private var activeViewModel: TrackedTVShowCollectionViewListCellViewModel!
+	private var activeViewModel: TrackedTVShowCollectionViewCellViewModel!
 
 	@UsesAutoLayout
 	private var seasonImageView: UIImageView = {
@@ -112,7 +112,7 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 		lastSeenLabel.text = configuration.lastSeenText
 	}
 
-	private func configure(with viewModel: TrackedTVShowCollectionViewListCellViewModel) {
+	private func configure(with viewModel: TrackedTVShowCollectionViewCellViewModel) {
 		activeViewModel = viewModel
 
 		Task.detached(priority: .background) {
