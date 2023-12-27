@@ -81,14 +81,9 @@ extension UIStackView {
 
 extension UIView {
 	var parentViewController: UIViewController? {
-		var parentResponder: UIResponder? = self
-		while parentResponder != nil {
-			parentResponder = parentResponder?.next
-
-			guard let viewController = parentResponder as? UIViewController else { return nil }
-			return viewController
-		}
-		return nil
+		sequence(first: self) { $0.next }
+			.lazy.compactMap { $0 as? UIViewController }
+			.first
 	}
 
 	func addSubviews(_ views: UIView ...) {
@@ -123,7 +118,7 @@ extension UIView {
 		label.font = .systemFont(ofSize: 14)
 		label.text = message
 		label.textColor = .label
-		label.numberOfLines = 0
+		label.numberOfLines = 1
 		label.textAlignment = .center
 		label.adjustsFontSizeToFitWidth = true
 		label.translatesAutoresizingMaskIntoConstraints = false
