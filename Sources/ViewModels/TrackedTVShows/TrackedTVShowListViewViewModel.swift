@@ -8,6 +8,8 @@ protocol TrackedTVShowListViewViewModelDelegate: AnyObject {
 /// View model struct for TrackedTVShowsListView
 final class TrackedTVShowListViewViewModel: NSObject {
 
+	weak var delegate: TrackedTVShowListViewViewModelDelegate?
+
 	private var cellViewModels: [TrackedTVShowCollectionViewListCellViewModel] {
 		return [
 			.init(text: "Currently watching", imageName: "play"),
@@ -26,8 +28,6 @@ final class TrackedTVShowListViewViewModel: NSObject {
 	@frozen private enum Sections {
 		case main
 	}
-
-	weak var delegate: TrackedTVShowListViewViewModelDelegate?
 
 }
 
