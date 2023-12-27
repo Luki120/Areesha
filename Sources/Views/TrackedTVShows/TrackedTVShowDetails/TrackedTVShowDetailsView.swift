@@ -38,6 +38,8 @@ final class TrackedTVShowDetailsView: UIView {
 		pinViewToAllEdges(trackedTVShowDetailsTableView)
 	}
 
+	// ! Private
+
 	private func setupUI() {
 		headerView = viewModel.setupEpisodeHeaderView(forView: self)
 

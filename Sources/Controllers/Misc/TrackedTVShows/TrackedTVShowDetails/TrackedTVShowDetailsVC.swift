@@ -20,7 +20,7 @@ final class TrackedTVShowDetailsVC: BaseVC {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - viewModel: The view model object for this vc's view
+	///		- viewModel: The view model object for this vc's view
 	init(viewModel: TrackedTVShowDetailsViewViewModel) {
 		self.trackedTVShowDetailsViewViewModel = viewModel
 		self.trackedTVShowDetailsView = .init(viewModel: viewModel)
