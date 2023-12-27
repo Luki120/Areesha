@@ -67,6 +67,10 @@ class BaseHeaderView: UIView {
 
 		nameLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -10).isActive = true
 		nameLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10).isActive = true
+
+		if !addRatingsLabel {
+			nameLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10).isActive = true
+		}
 	}
 
 	// ! Reusable
