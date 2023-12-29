@@ -38,7 +38,7 @@ final class TVShowDetailsViewViewModel {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - tvShow: The tv show model object
+	///		- tvShow: The tv show model object
 	init(tvShow: TVShow) {
 		self.tvShow = tvShow
 		setupModels()
@@ -129,7 +129,7 @@ extension TVShowDetailsViewViewModel {
 
 	/// Function to setup the table view's header
 	/// - Parameters:
-	///     - view: The view that owns the table view, therefore the header
+	///		- view: The view that owns the table view, therefore the header
 	func setupHeaderView(forView view: UIView) -> TVShowDetailsHeaderView {
 		let headerView = TVShowDetailsHeaderView()
 		headerView.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 160)
@@ -139,7 +139,7 @@ extension TVShowDetailsViewViewModel {
 
 	/// Function to setup the table view's diffable data source
 	/// - Parameters:
-	///     - tableView: The table view
+	///		- tableView: The table view
 	func setupTableView(_ tableView: UITableView) {
 		dataSource = DataSource(tableView: tableView) { [weak self] tableView, indexPath, _ in
 			guard let self else { return nil }

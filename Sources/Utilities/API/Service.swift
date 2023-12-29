@@ -20,8 +20,8 @@ final class Service {
 
 	/// Function to make API calls
 	/// - Parameters:
-	///     - withURL: The API call url
-	///     - expecting: The given type that conforms to Codable from which to decode the JSON data
+	///		- withURL: The API call url
+	///		- expecting: The given type that conforms to Codable from which to decode the JSON data
 	/// - Returns: Any type of publisher, taking a tuple & Error
 	func fetchTVShows<T: Codable>(withURL url: URL, expecting type: T.Type) -> AnyPublisher<(T, Bool), Error> {
 		let dataPublisher: AnyPublisher<Data, Error>
@@ -40,7 +40,7 @@ final class Service {
 					self.apiCache[url.absoluteString] = data
 					return data
 				}
-				.eraseToAnyPublisher()	
+				.eraseToAnyPublisher()
 		}
 
 		return dataPublisher
@@ -52,8 +52,8 @@ final class Service {
 
 	/// Function to make API calls without caring about if it's coming from the cache or the network
 	/// - Parameters:
-	///     - withURL: The API call url
-	///     - expecting: The given type that conforms to Codable from which to decode the JSON data
+	///		- withURL: The API call url
+	///		- expecting: The given type that conforms to Codable from which to decode the JSON data
 	/// - Returns: Any type of publisher, taking a generic type T & Error
 	func fetchTVShows<T: Codable>(withURL url: URL, expecting type: T.Type) -> AnyPublisher<T, Error> {
 		fetchTVShows(withURL: url, expecting: T.self)
@@ -84,8 +84,8 @@ extension Service {
 
 	/// Function to get the requested image url
 	/// - Parameters:
-	///     - image: The image object
-	///     - size: A string representing the size of the image
+	///		- image: The image object
+	///		- size: A string representing the size of the image
 	static func imageURL(_ image: ImageFetch, size: String = "w500") -> URL? {
 		guard let path = image.path else { return nil }
 		return URL(string: "https://image.tmdb.org/t/p/\(size)/\(path)")
