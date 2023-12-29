@@ -116,11 +116,17 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 		activeViewModel = viewModel
 
 		Task.detached(priority: .background) {
-			let image = try? await viewModel.fetchImage()
+			guard let (image, isFromNetwork) = try? await viewModel.fetchImage() else { return }
 			await MainActor.run {
 				guard self.activeViewModel == viewModel else { return }
 
-				UIView.transition(with: self.seasonImageView, duration: 0.5, options: .transitionCrossDissolve) {
+				if isFromNetwork {
+					UIView.transition(with: self.seasonImageView, duration: 0.5, options: .transitionCrossDissolve) {
+						self.seasonImageView.alpha = 1
+						self.seasonImageView.image = image
+					}
+				}
+				else {
 					self.seasonImageView.alpha = 1
 					self.seasonImageView.image = image
 				}
