@@ -18,7 +18,7 @@ final class CurrentlyWatchingTrackedTVShowsVC: BaseVC {
 		navigationItem.leftBarButtonItem?.tintColor = .areeshaPinkColor
 		navigationItem.rightBarButtonItem = .init(
 			title: "",
-			image: UIImage(systemName: "line.horizontal.3"),
+			image: UIImage(systemName: "arrow.up.arrow.down"),
 			menu: setupMenu()
 		)
 
