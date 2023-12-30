@@ -6,7 +6,6 @@ final class TVShowDetailsViewViewModel {
 
 	var title: String { return tvShow.name }
 
-	private var headerViewViewModel: TVShowDetailsHeaderViewViewModel!
 	private var genreCellViewModel = TVShowDetailsGenreTableViewCellViewModel()
 	private var overviewCellViewModel: TVShowDetailsOverviewTableViewCellViewModel!
 	private var castCellViewModel = TVShowDetailsCastTableViewCellViewModel()
@@ -25,7 +24,7 @@ final class TVShowDetailsViewViewModel {
 
 	private var cells = [CellType]()
 
-	@frozen private enum Sections: Hashable {
+	@frozen private enum Sections {
 		case main
 	}
 
@@ -55,11 +54,20 @@ final class TVShowDetailsViewViewModel {
 			.cast(viewModel: castCellViewModel),
 			.networks(viewModel: networksCellViewModel)
 		]
+	}
 
-		guard let url = Service.imageURL(.showBackdrop(tvShow), size: "w1280") else { return }
-
+	private func setupHeaderViewModel() -> TVShowDetailsHeaderViewViewModel {
 		let ratingsText = String(describing: tvShow.voteAverage?.round(to: 1) ?? 0) + "/10"
-		headerViewViewModel = .init(imageURL: url, tvShowNameText: tvShow.name, ratingsText: ratingsText)
+
+		guard let url = Service.imageURL(.showBackdrop(tvShow), size: "w1280") else {
+			return .init(
+				imageURL: Bundle.main.url(forResource: "Placeholder", withExtension: "jpg"),
+				tvShowNameText: tvShow.name,
+				ratingsText: ratingsText
+			)
+		}
+
+		return .init(imageURL: url, tvShowNameText: tvShow.name, ratingsText: ratingsText)
 	}
 
 	private func fetchTVShowCast() {
@@ -84,26 +92,28 @@ final class TVShowDetailsViewViewModel {
 			.sink(receiveCompletion: { _ in }) { [weak self] tvShow, isFromCache in
 				guard let self else { return }
 
-				let episodeRunTimes = tvShow.episodeRunTime ?? []
-				let episodeRunTimeValues = episodeRunTimes.map { String($0) }
-
-				let episodeAverageDurationText = episodeRunTimes.isEmpty ? "" : String(describing: episodeRunTimeValues.joined(separator: ", ")) + " min"
-
-				let genres = tvShow.genres ?? []
-				let genresNames = genres.map(\.name)
-
+				updateGenresNames(with: tvShow.genres ?? [], for: tvShow)
 				updateNetworkNames(with: tvShow.networks ?? [])
-
-				genreCellViewModel = .init(
-					genreText: genresNames.joined(separator: ", "),
-					episodeAverageDurationText: episodeAverageDurationText,
-					lastAirDateText: tvShow.lastAirDate,
-					statusText: tvShow.status
-				)
 
 				reloadSnapshot(animatingDifferences: !isFromCache)
 			}
 			.store(in: &subscriptions)
+	}
+
+	private func updateGenresNames(with genres: [Genre], for tvShow: TVShow) {
+		let episodeRunTimes = tvShow.episodeRunTime ?? []
+		let episodeRunTimeValues = episodeRunTimes.map { String($0) }
+
+		let episodeAverageDurationText = episodeRunTimes.isEmpty ? "" : String(describing: episodeRunTimeValues.joined(separator: ", ")) + " min"
+
+		let genresNames = genres.map(\.name)
+
+		genreCellViewModel = .init(
+			genreText: genresNames.joined(separator: ", "),
+			episodeAverageDurationText: episodeAverageDurationText,
+			lastAirDateText: tvShow.lastAirDate,
+			statusText: tvShow.status
+		)
 	}
 
 	private func updateCastCrewNames(with castCrew: [Cast]) {
@@ -115,10 +125,9 @@ final class TVShowDetailsViewViewModel {
 
 	private func updateNetworkNames(with networks: [Network]) {
 		let networksNames = OrderedSet(networks.map(\.name))
-		networksCellViewModel = .init(
-			networksTitleText: "Networks",
-			networksNamesText: networksNames.joined(separator: ", ")
-		)
+		let networksNamesText = networksNames.isEmpty ? "Unknown" : networksNames.joined(separator: ", ")
+
+		networksCellViewModel = .init(networksTitleText: "Networks", networksNamesText: networksNamesText)
 	}
 
 }
@@ -133,7 +142,7 @@ extension TVShowDetailsViewViewModel {
 	func setupHeaderView(forView view: UIView) -> TVShowDetailsHeaderView {
 		let headerView = TVShowDetailsHeaderView()
 		headerView.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 160)
-		headerView.configure(with: headerViewViewModel)
+		headerView.configure(with: setupHeaderViewModel())
 		return headerView
 	}
 
