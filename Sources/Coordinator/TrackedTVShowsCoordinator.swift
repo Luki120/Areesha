@@ -19,7 +19,7 @@ final class TrackedTVShowsCoordinator: Coordinator {
 		let trackedTVShowsVC = TrackedTVShowsVC()
 		trackedTVShowsVC.coordinator = self
 		trackedTVShowsVC.title = "Shows"
-		trackedTVShowsVC.tabBarItem = UITabBarItem(title: "Shows", image: UIImage(named: "Movie"), tag: 2)
+		trackedTVShowsVC.tabBarItem = UITabBarItem(title: "Shows", image: UIImage(asset: .movie), tag: 2)
 
 		navigationController.viewControllers = [trackedTVShowsVC]
 	}

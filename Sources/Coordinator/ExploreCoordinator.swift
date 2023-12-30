@@ -160,5 +160,3 @@ extension SwipeableNavigationController: UINavigationControllerDelegate {
 	}
 
 }
-
-// https://icons8.com/icon/EYpsuynPA2Ra/clapperboard

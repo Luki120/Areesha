@@ -9,8 +9,8 @@ struct TVShow: Codable {
 	let id: Int
 	let name: String
 	let overview: String
-	let posterPath: String
-	let backdropPath: String
+	let posterPath: String?
+	let backdropPath: String?
 	let episodeRunTime: [Int]?
 	let genres: [Genre]?
 	let lastAirDate: String?

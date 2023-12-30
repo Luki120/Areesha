@@ -28,6 +28,19 @@ extension Double {
 	}
 }
 
+extension NSMutableAttributedString {
+	convenience init(fullString: String, fullStringColor: UIColor, subString: String, subStringColor: UIColor) {
+		let rangeOfSubString = (fullString as NSString).range(of: subString)
+		let rangeOfFullString = NSRange(location: 0, length: fullString.count)
+		let attributedString = NSMutableAttributedString(string: fullString)
+
+		attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: fullStringColor, range: rangeOfFullString)
+		attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: subStringColor, range: rangeOfSubString)
+
+		self.init(attributedString: attributedString)
+	}
+}
+
 extension Task where Success == Never, Failure == Never {
 	static func sleep(seconds: Double) async throws {
 		let nanoseconds = UInt64(seconds * 1_000_000_000)
@@ -48,6 +61,17 @@ extension UIBarButtonItem {
 
 extension UIColor {
 	static let areeshaPinkColor = UIColor(red: 0.78, green: 0.64, blue: 0.83, alpha: 1.0)
+}
+
+extension UIImage {
+	enum Asset: String {
+		case movie = "Movie"
+		case tmdb = "TMDB"
+	}
+
+	convenience init?(asset: Asset) {
+		self.init(named: asset.rawValue)
+	}
 }
 
 extension UILabel {
@@ -76,6 +100,34 @@ extension UILabel {
 extension UIStackView {
 	func addArrangedSubviews(_ views: UIView ...) {
 		views.forEach { addArrangedSubview($0) }
+	}
+}
+
+extension UITapGestureRecognizer {
+	func didTapAttributedText(inLabel label: UILabel, inRange targetRange: NSRange) -> Bool {
+		guard let attributedString = label.attributedText else { return false }
+
+		let layoutManager = NSLayoutManager()
+		let textContainer = NSTextContainer(size: .zero)
+		let textStorage = NSTextStorage(attributedString: attributedString)
+
+		layoutManager.addTextContainer(textContainer)
+		textStorage.addLayoutManager(layoutManager)
+
+		textContainer.lineBreakMode = label.lineBreakMode
+		textContainer.lineFragmentPadding = 0
+		textContainer.maximumNumberOfLines = label.numberOfLines
+
+		let labelSize = label.bounds.size
+		textContainer.size = labelSize
+
+		let locationOfTouchInLabel = self.location(in: label)
+		let textBoundingBox = layoutManager.usedRect(for: textContainer)
+		let textContainerOffset = CGPoint(x: (labelSize.width - textBoundingBox.size.width) * 0.5 - textBoundingBox.origin.x, y: (labelSize.height - textBoundingBox.size.height) * 0.5 - textBoundingBox.origin.y)
+		let locationOfTouchInTextContainer = CGPoint(x: locationOfTouchInLabel.x - textContainerOffset.x, y: locationOfTouchInLabel.y - textContainerOffset.y)
+		let indexOfCharacter = layoutManager.characterIndex(for: locationOfTouchInTextContainer, in: textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
+
+		return NSLocationInRange(indexOfCharacter, targetRange)
 	}
 }
 
