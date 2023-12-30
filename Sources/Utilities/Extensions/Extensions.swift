@@ -39,6 +39,19 @@ extension NSMutableAttributedString {
 
 		self.init(attributedString: attributedString)
 	}
+
+	convenience init(fullString: String, subString: String) {
+		let rangeOfSubString = (fullString as NSString).range(of: subString)
+		let rangeOfFullString = NSRange(location: 0, length: fullString.count)
+		let attributedString = NSMutableAttributedString(string: fullString)
+
+		attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.label, range: rangeOfFullString)
+		attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemGray, range: rangeOfSubString)
+		attributedString.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 16), range: rangeOfFullString)
+		attributedString.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 10), range: rangeOfSubString)
+
+		self.init(attributedString: attributedString)
+	}
 }
 
 extension Task where Success == Never, Failure == Never {
