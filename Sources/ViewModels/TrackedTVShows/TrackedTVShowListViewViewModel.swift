@@ -10,12 +10,10 @@ final class TrackedTVShowListViewViewModel: NSObject {
 
 	weak var delegate: TrackedTVShowListViewViewModelDelegate?
 
-	private var cellViewModels: [TrackedTVShowCollectionViewListCellViewModel] {
-		return [
-			.init(text: "Currently watching", imageName: "play"),
-			.init(text: "Finished", imageName: "checkmark")
-		]		
-	}
+	private let cellViewModels: [TrackedTVShowCollectionViewListCellViewModel] = [
+		.init(text: "Currently watching", imageName: "play"),
+		.init(text: "Finished", imageName: "checkmark")
+	]
 
 	// ! UICollectionViewDiffableDataSource
 

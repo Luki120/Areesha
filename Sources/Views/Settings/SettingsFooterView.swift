@@ -21,13 +21,6 @@ final class SettingsFooterView: UIView {
 		return imageView
 	}()
 
-	private lazy var attributedString = NSMutableAttributedString(
-		fullString: viewModel.fullString,
-		fullStringColor: .systemGray,
-		subString: viewModel.subString,
-		subStringColor: .link
-	)
-
 	private var viewModel: SettingsFooterViewViewModel!
 
 	// ! Lifecycle
@@ -81,7 +74,13 @@ extension SettingsFooterView {
 		self.viewModel = viewModel
 
 		tmdbImageView.image = viewModel.image
-		footerLabel.attributedText = attributedString
+
+		footerLabel.attributedText = NSMutableAttributedString(
+			fullString: viewModel.fullString,
+			fullStringColor: .systemGray,
+			subString: viewModel.subString,
+			subStringColor: .link
+		)
 	}
 
 }
