@@ -87,12 +87,18 @@ extension TVShowDetailsGenreTableViewCell {
 
 	/// Function to configure the cell with its respective view model
 	/// - Parameters:
-	///     - with: The cell's view model
+	///		- with: The cell's view model
 	func configure(with viewModel: TVShowDetailsGenreTableViewCellViewModel) {
 		guard let genreText = viewModel.genreText,
 			let episodeAverageDurationText = viewModel.episodeAverageDurationText,
 			let lastAirDateText = viewModel.lastAirDateText,
-			let statusText = viewModel.statusText else { return }
+			let statusText = viewModel.statusText else {
+				genreLabel.text = "Unknown"
+				episodeAverageDurationLabel.text = "0 min"
+				lastAirDateLabel.text = "Last aired: "
+				statusLabel.text = ""
+				return
+			}
 
 		let date = dateFormatter.date(from: lastAirDateText) ?? Date()
 
