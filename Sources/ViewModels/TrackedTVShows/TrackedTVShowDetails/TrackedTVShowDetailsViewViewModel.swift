@@ -5,9 +5,15 @@ final class TrackedTVShowDetailsViewViewModel {
 
 	var title: String { return trackedTVShow.episode.name ?? "" }
 
-	private var headerViewViewModel: TrackedTVShowDetailsEpisodeDetailsHeaderViewViewModel!
-	private var episodeDetailsCellViewModel: TrackedTVShowDetailsEpisodeDetailsTableViewCellViewModel!
-	private var overviewCellViewModel: TrackedTVShowDetailsOverviewTableViewCellViewModel!
+	private var episodeDetailsCellViewModel: TrackedTVShowDetailsEpisodeDetailsTableViewCellViewModel {
+		return .init(
+			episodeNumber: trackedTVShow.episode.episodeNumber ?? 0,
+			episodeAirDateText: trackedTVShow.episode.airDate ?? ""
+		)
+	}
+	private var overviewCellViewModel: TrackedTVShowDetailsOverviewTableViewCellViewModel {
+		return .init(overviewText: trackedTVShow.episode.overview ?? "")
+	}
 
 	// ! UITableViewDiffableDataSource
 
@@ -16,9 +22,14 @@ final class TrackedTVShowDetailsViewViewModel {
 		case overview(viewModel: TrackedTVShowDetailsOverviewTableViewCellViewModel)
 	}
 
-	private var cells = [CellType]()
+	private var cells: [CellType] {
+		return [
+			.episodeDetails(viewModel: episodeDetailsCellViewModel),
+			.overview(viewModel: overviewCellViewModel)
+		]
+	}
 
-	@frozen private enum Sections: Hashable {
+	@frozen private enum Sections {
 		case main
 	}
 
@@ -34,23 +45,12 @@ final class TrackedTVShowDetailsViewViewModel {
 	///		- trackedTVShow: The tracked tv show model object
 	init(trackedTVShow: TrackedTVShow) {
 		self.trackedTVShow = trackedTVShow
-		setupModels()
 	}
 
-	private func setupModels() {
-		cells = [
-			.episodeDetails(
-				viewModel: .init(
-					episodeNumber: trackedTVShow.episode.episodeNumber ?? 0,
-					episodeAirDateText: trackedTVShow.episode.airDate ?? ""
-				)
-			),
-			.overview(viewModel: .init(overviewText: trackedTVShow.episode.overview ?? ""))
-		]
+	private func setupHeaderViewModel() -> TrackedTVShowDetailsEpisodeDetailsHeaderViewViewModel {
+		guard let url = Service.imageURL(.episodeStill(trackedTVShow.episode), size: "w1280") else { fatalError() }
 
-		guard let url = Service.imageURL(.episodeStill(trackedTVShow.episode), size: "w1280") else { return }
-
-		headerViewViewModel = .init(imageURL: url, episodeNameText: trackedTVShow.episode.name ?? "")
+		return .init(imageURL: url, episodeNameText: trackedTVShow.episode.name ?? "")
 	}
 
 }
@@ -61,11 +61,11 @@ extension TrackedTVShowDetailsViewViewModel {
 
 	/// Function to setup the table view's header
 	/// - Parameters:
-	///     - view: The view that owns the table view, therefore the header
+	///		- view: The view that owns the table view, therefore the header
 	func setupEpisodeHeaderView(forView view: UIView) -> TrackedTVShowDetailsEpisodeDetailsHeaderView {
 		let headerView = TrackedTVShowDetailsEpisodeDetailsHeaderView(addRatingsLabel: false)
 		headerView.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 160)
-		headerView.configure(with: headerViewViewModel)
+		headerView.configure(with: setupHeaderViewModel())
 		return headerView
 	}
 
