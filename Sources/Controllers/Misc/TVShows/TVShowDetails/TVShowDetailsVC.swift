@@ -20,7 +20,7 @@ final class TVShowDetailsVC: BaseVC {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - viewModel: The view model object for this vc's view
+	///		- viewModel: The view model object for this vc's view
 	init(viewModel: TVShowDetailsViewViewModel) {
 		self.tvShowDetailsViewViewModel = viewModel
 		self.tvShowDetailsView = .init(viewModel: viewModel)
@@ -31,7 +31,7 @@ final class TVShowDetailsVC: BaseVC {
 
 	override func loadView() { view = tvShowDetailsView }
 
- 	override func viewWillDisappear(_ animated: Bool) {
+	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
 		tvShowDetailsView.titleLabel.isHidden = true
 	}

@@ -3,7 +3,7 @@ import UIKit
 /// Class to represent the episode collection view cell
 final class EpisodeCollectionViewCell: UICollectionViewCell {
 
- 	override var isHighlighted: Bool {
+	override var isHighlighted: Bool {
 		didSet {
 			contentView.backgroundColor = isHighlighted ? .systemGray3 : .clear
 		}
@@ -92,7 +92,7 @@ extension EpisodeCollectionViewCell {
 
 	/// Function to configure the cell with its respective view model
 	/// - Parameters:
-	///     - with: The cell's view model
+	///		- with: The cell's view model
 	func configure(with viewModel: EpisodeCollectionViewCellViewModel) {
 		activeViewModel = viewModel
 

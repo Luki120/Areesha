@@ -58,7 +58,7 @@ final class TVShowDetailsView: UIView {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - viewModel: The view model object for this view
+	///		- viewModel: The view model object for this view
 	init(viewModel: TVShowDetailsViewViewModel) {
 		self.viewModel = viewModel
 		super.init(frame: .zero)

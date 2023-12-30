@@ -20,7 +20,7 @@ final class EpisodesVC: BaseVC {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - viewModel: The view model object for this vc's view
+	///		- viewModel: The view model object for this vc's view
 	init(viewModel: EpisodesViewViewModel) {
 		self.episodesViewViewModel = viewModel
 		self.episodesView = .init(viewModel: viewModel)

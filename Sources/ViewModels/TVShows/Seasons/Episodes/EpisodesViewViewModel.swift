@@ -82,7 +82,7 @@ extension EpisodesViewViewModel {
 
 	/// Function to fetch the tv show's poster image
 	/// - Parameters:
-	///     - completion: Escaping closure that takes a UIImage as argument & returns nothing
+	///		- completion: Escaping closure that takes a UIImage as argument & returns nothing
 	func fetchTVShowImage(completion: @escaping (UIImage) async -> ()) {
 		Task.detached(priority: .background) {
 			guard let imageURL = Service.imageURL(.showPoster(self.tvShow), size: "w1280"),

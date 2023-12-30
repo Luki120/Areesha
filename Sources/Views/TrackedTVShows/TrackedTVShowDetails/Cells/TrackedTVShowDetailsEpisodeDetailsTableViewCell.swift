@@ -61,7 +61,7 @@ extension TrackedTVShowDetailsEpisodeDetailsTableViewCell {
 
 	/// Function to configure the cell with its respective view model
 	/// - Parameters:
-	///     - with: The cell's view model
+	///		- with: The cell's view model
 	func configure(with viewModel: TrackedTVShowDetailsEpisodeDetailsTableViewCellViewModel) {
 		let date = dateFormatter.date(from: viewModel.episodeAirDateText) ?? Date()
 

@@ -11,7 +11,6 @@ class BaseViewModel<Cell: UICollectionViewCell & Configurable>: NSObject {
 	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, ViewModel>
 
 	private var dataSource: DataSource!
-	private var snapshot: Snapshot!
 
 	@frozen private enum Sections {
 		case main
@@ -28,7 +27,7 @@ class BaseViewModel<Cell: UICollectionViewCell & Configurable>: NSObject {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - collectionView: The collection view for which to setup the diffable data source
+	///		- collectionView: The collection view for which to setup the diffable data source
 	init(collectionView: UICollectionView) {
 		self.collectionView = collectionView
 		super.init()
@@ -72,7 +71,7 @@ extension BaseViewModel {
 
 	/// Function to apply the snapshot to the diffable data source
 	/// - Parameters:
-	///     - isOrderedSet: A boolean to determine wether it's an ordered set or an array
+	///		- isOrderedSet: A boolean to determine wether it's an ordered set or an array
 	func applySnapshot(isOrderedSet: Bool = false) {
 		applyDiffableDataSourceSnapshot(isOrderedSet: isOrderedSet)
 	}

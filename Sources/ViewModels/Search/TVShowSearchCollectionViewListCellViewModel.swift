@@ -9,7 +9,7 @@ struct TVShowSearchCollectionViewListCellViewModel: Hashable {
 	/// Designated initializer
 	/// - Parameters:
 	///		- id: A unique integer to represent the TV show id 
-	///     - tvShowNameText: A string to represent the TV show name text
+	///		- tvShowNameText: A string to represent the TV show name text
 	init(id: Int, tvShowNameText: String) {
 		self.id = id
 		self.tvShowNameText = tvShowNameText

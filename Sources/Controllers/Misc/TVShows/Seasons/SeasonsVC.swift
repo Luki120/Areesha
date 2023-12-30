@@ -20,7 +20,7 @@ final class SeasonsVC: BaseVC {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - viewModel: The view model object for this vc's view
+	///		- viewModel: The view model object for this vc's view
 	init(viewModel: SeasonsViewViewModel) {
 		self.seasonsViewViewModel = viewModel
 		self.seasonsView = .init(viewModel: viewModel)

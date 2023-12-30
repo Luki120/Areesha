@@ -67,7 +67,7 @@ final class EpisodesView: UIView {
 
 	/// Designated initializer
 	/// - Parameters:
-	///     - viewModel: The view model object for this view
+	///		- viewModel: The view model object for this view
 	init(viewModel: EpisodesViewViewModel) {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
