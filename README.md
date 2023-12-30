@@ -6,8 +6,8 @@
 
 ## To do
 
-* [ ] Build settings UI.
-* [ ] Build episode details UI.
+* [x] Build settings UI.
+* [x] Build episode details UI.
 
 ## Socials
 
