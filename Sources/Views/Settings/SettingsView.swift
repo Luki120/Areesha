@@ -15,6 +15,12 @@ final class SettingsView: UIView {
 	private var settingsTableView: UITableView = {
 		let tableView = UITableView(frame: .zero, style: .insetGrouped)
 		tableView.backgroundColor = .systemGroupedBackground
+		if #available(iOS 15, *) {
+			tableView.sectionHeaderTopPadding = 0
+		}
+ 		else {
+			tableView.estimatedSectionHeaderHeight = 38
+		}
 		tableView.register(DeveloperTableViewCell.self, forCellReuseIdentifier: DeveloperTableViewCell.identifier)
 		tableView.register(AppTableViewCell.self, forCellReuseIdentifier: AppTableViewCell.identifier)
 		tableView.register(UITableViewCell.self, forCellReuseIdentifier: "VanillaCell")
