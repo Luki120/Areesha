@@ -1,13 +1,8 @@
 ## Areesha
 
-* [Screenshots]
+<img src="https://raw.githubusercontent.com/Luki120/luki120.github.io/master/assets/Apps/Areesha/AreeshaExplore.png" width="200"> &nbsp; <img src="https://raw.githubusercontent.com/Luki120/luki120.github.io/master/assets/Apps/Areesha/AreeshaShowDetails.png" width="200"> &nbsp; <img src="https://raw.githubusercontent.com/Luki120/luki120.github.io/master/assets/Apps/Areesha/AreeshaCurrentlyWatching.png" width="200">
 
-* Built using MVVM-C pattern (Model View ViewModel - Coordinator), combined with a reactive approach using Combine framework. ⇝ No fat VC issue, each of the view controllers in this project have less than 70 loc :tm: + they are isolated & have no knowledge of each other, thanks to the Coordinator pattern.
-
-## To do
-
-* [x] Build settings UI.
-* [x] Build episode details UI.
+* Built using MVVM-C pattern (Model View ViewModel - Coordinator), combined with a reactive approach using Combine framework. ⇝ No fat VC issue, each of the view controllers in this project have less than 80 loc :tm: + they are isolated & have no knowledge of each other, thanks to the Coordinator pattern.
 
 ## Socials
 
