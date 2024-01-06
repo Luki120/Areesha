@@ -6,30 +6,24 @@ final class TrackedTVShowManager: ObservableObject {
 
 	static let sharedInstance = TrackedTVShowManager()
 
-	@Published private(set) var filteredTrackedTVShows: [TrackedTVShow] {
+	@Published private(set) var filteredTrackedTVShows: [TrackedTVShow] = [] {
 		didSet {
-			encode(models: filteredTrackedTVShows, withKey: "filteredViewModels")
+			encode(filteredTrackedTVShows, forKey: "filteredViewModels")
 		}
 	}
 
-	@Published private(set) var trackedTVShows: [TrackedTVShow] {
+	@Published private(set) var trackedTVShows: [TrackedTVShow] = [] {
 		didSet {
-			encode(models: trackedTVShows, withKey: "viewModels")
+			encode(trackedTVShows, forKey: "viewModels")
 		}
 	}
 
 	private init() {
-		guard let data = UserDefaults.standard.object(forKey: "viewModels") as? Data,
-			let filteredData = UserDefaults.standard.object(forKey: "filteredViewModels") as? Data,
-			let decodedViewModels = try? JSONDecoder().decode([TrackedTVShow].self, from: data),
-			let decodedFilteredViewModels = try? JSONDecoder().decode([TrackedTVShow].self, from: filteredData) else {
-				trackedTVShows = []
-				filteredTrackedTVShows = []
-				return
-			}
+		guard let trackedTVShows = decode([TrackedTVShow].self, forKey: "viewModels") else { return }
+		self.trackedTVShows = trackedTVShows
 
-		trackedTVShows = decodedViewModels
-		filteredTrackedTVShows = decodedFilteredViewModels
+		guard let filteredTrackedTVShows = decode([TrackedTVShow].self, forKey: "filteredViewModels") else { return }
+		self.filteredTrackedTVShows = filteredTrackedTVShows
 	}
 
 	/// Enum to represent the different types of options to sort
@@ -38,8 +32,10 @@ final class TrackedTVShowManager: ObservableObject {
 	}
 
 	private func insert(trackedTVShow: TrackedTVShow) {
-		guard let data = UserDefaults.standard.object(forKey: "sortOption") as? Data,
-			let decodedSortOption = try? JSONDecoder().decode(SortOption.self, from: data) else { return }
+		guard let decodedSortOption = decode(SortOption.self, forKey: "sortOption") else {
+			trackedTVShows.append(trackedTVShow)
+			return
+		}
 
 		switch decodedSortOption {
 			case .alphabetically:
@@ -56,9 +52,14 @@ final class TrackedTVShowManager: ObservableObject {
 		}
 	}
 
-	private func encode(models: [TrackedTVShow], withKey key: String) {
-		guard let encodedViewModels = try? JSONEncoder().encode(models) else { return }
-		UserDefaults.standard.set(encodedViewModels, forKey: key)		
+	private func encode<D: Encodable>(_ data: D, forKey key: String) {
+		guard let encodedData = try? JSONEncoder().encode(data) else { return }
+		UserDefaults.standard.set(encodedData, forKey: key)		
+	}
+
+	private func decode<T: Decodable>(_ type: T.Type, forKey key: String) -> T? {
+		guard let data = UserDefaults.standard.object(forKey: key) as? Data else { return nil }
+		return try? JSONDecoder().decode(type.self, from: data)
 	}
 
 }
@@ -139,9 +140,7 @@ extension TrackedTVShowManager {
 			case .leastAdvanced: trackedTVShows = trackedTVShows.sorted { $0.lastSeenText < $1.lastSeenText }
 			case .moreAdvanced: trackedTVShows = trackedTVShows.sorted { $0.lastSeenText > $1.lastSeenText }
 		}
-
-		guard let encodedSortOption = try? JSONEncoder().encode(option) else { return }
-		UserDefaults.standard.set(encodedSortOption, forKey: "sortOption")
+		encode(option, forKey: "sortOption")
 	}
 
 }
