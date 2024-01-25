@@ -8,7 +8,7 @@ protocol TVShowHostViewDelegate: AnyObject {
 /// Class to represent the tv shows host view
 final class TVShowHostView: UIView {
 
-	let viewModel = TVShowHostViewViewModel()
+	private let viewModel = TVShowHostViewViewModel()
 
 	private let compositionalLayout: UICollectionViewCompositionalLayout = {
 		let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
@@ -50,7 +50,6 @@ final class TVShowHostView: UIView {
 		setupCollectionView()
 
 		viewModel.delegate = self
-		viewModel.topHeaderView = topHeaderView
 		topHeaderView.delegate = self
 	}
 
@@ -63,7 +62,7 @@ final class TVShowHostView: UIView {
 
 	private func setupCollectionView() {
 		hostCollectionView.dataSource = viewModel
-		hostCollectionView.delegate = viewModel
+		hostCollectionView.delegate = self
 		hostCollectionView.isPagingEnabled = true
 		hostCollectionView.setCollectionViewLayout(compositionalLayout, animated: true)
 		hostCollectionView.register(TopRatedTVShowsCollectionViewCell.self, forCellWithReuseIdentifier: TopRatedTVShowsCollectionViewCell.identifier)
@@ -107,6 +106,50 @@ extension TVShowHostView: TVShowHostViewViewModelDelegate {
 
 	func didSelect(tvShow: TVShow) {
 		delegate?.tvShowHostView(self, didSelect: tvShow)
+	}
+
+}
+
+// ! UICollectionViewDelegate
+
+extension TVShowHostView: UICollectionViewDelegate {
+
+	func scrollViewDidScroll(_ scrollView: UIScrollView) {
+		topHeaderView.transparentViewLeadingAnchorConstraint.constant = scrollView.contentOffset.x / 2
+	}
+
+	func scrollViewWillEndDragging(
+		_ scrollView: UIScrollView,
+		withVelocity velocity: CGPoint,
+		targetContentOffset: UnsafeMutablePointer<CGPoint>
+	) {
+		let index = targetContentOffset.pointee.x / topHeaderView.frame.width
+		let indexPath = IndexPath(item: Int(index), section: 0)
+		topHeaderView.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+	}
+
+}
+
+extension TVShowHostView {
+
+	// ! Public
+
+	/// Function to scroll the tv shows list collection view to the top when tapping a tab bar item
+	func scrollToTop() {
+		// credits ⇝ https://stackoverflow.com/a/56380938
+		var visibleCells: [UICollectionViewCell] {
+			return hostCollectionView.visibleCells.filter { cell in
+				let cellRect = hostCollectionView.convert(cell.frame, to: hostCollectionView.superview)
+				return hostCollectionView.frame.contains(cellRect)
+			}
+		}
+		visibleCells.forEach {
+			let cell = $0 as? TopRatedTVShowsCollectionViewCell
+			cell?.collectionView.setContentOffset(
+				CGPoint(x: 0, y: -(cell?.collectionView.safeAreaInsets.top ?? 0)),
+				animated: true
+			)
+		}
 	}
 
 }

@@ -59,7 +59,7 @@ extension ExploreVC: UITabBarControllerDelegate {
 				let vc = navVC.viewControllers.first as? ExploreVC,
 				vc.view.window != nil else { return }
 
-			tvShowHostView.viewModel.scrollToTop()
+			tvShowHostView.scrollToTop()
 			isInitiallyInHomeVC = false
 		}
 		previousVC = viewController
