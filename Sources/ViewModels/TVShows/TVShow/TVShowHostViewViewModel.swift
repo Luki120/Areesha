@@ -44,22 +44,12 @@ extension TVShowHostViewViewModel: UICollectionViewDataSource, UICollectionViewD
 		self.collectionView = collectionView
 		switch indexPath.item {
 			case 0:
-				guard let cell = collectionView.dequeueReusableCell(
-					withReuseIdentifier: TopRatedTVShowsCollectionViewCell.identifier,
-					for: indexPath
-				) as? TopRatedTVShowsCollectionViewCell else {
-					return UICollectionViewCell()
-				}
+				let cell: TopRatedTVShowsCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
 				cell.delegate = self
 				return cell
 
 			case 1:
-				guard let cell = collectionView.dequeueReusableCell(
-					withReuseIdentifier: TrendingTVShowsCollectionViewCell.identifier,
-					for: indexPath
-				) as? TrendingTVShowsCollectionViewCell else {
-					return UICollectionViewCell()
-				}
+				let cell: TrendingTVShowsCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
 				cell.delegate = self
 				return cell
 

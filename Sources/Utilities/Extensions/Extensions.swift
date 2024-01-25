@@ -259,7 +259,18 @@ private extension ReusableView {
 	static var reuseIdentifier: String { return String(describing: self) }
 }
 
+extension UICollectionViewCell: ReusableView {}
+
 extension UITableViewCell: ReusableView {}
+
+extension UICollectionView {
+	func dequeueReusableCell<T>(for indexPath: IndexPath) -> T where T: UICollectionViewCell {
+		guard let cell = dequeueReusableCell(withReuseIdentifier: T.reuseIdentifier, for: indexPath) as? T else {
+			fatalError("L")
+		}
+		return cell
+	}
+}
 
 extension UITableView {
 	func dequeueReusableCell<T>(for indexPath: IndexPath) -> T where T: UITableViewCell {

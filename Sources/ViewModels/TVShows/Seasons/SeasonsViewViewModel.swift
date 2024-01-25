@@ -64,12 +64,7 @@ extension SeasonsViewViewModel: UICollectionViewDataSource {
 	}
 
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		guard let cell = collectionView.dequeueReusableCell(
-			withReuseIdentifier: SeasonCollectionViewCell.identifier,
-			for: indexPath
-		) as? SeasonCollectionViewCell else {
-			return UICollectionViewCell()
-		}
+		let cell: SeasonCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
 		cell.configure(with: viewModels[indexPath.item])
 		return cell
 	}
