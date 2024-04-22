@@ -14,5 +14,5 @@ include $(THEOS)/makefiles/common.mk
 include $(THEOS_MAKE_PATH)/application.mk
 
 before-stage::
-	$(ECHO_NOTHING)mkdir -p $(THEOS_STAGING_DIR)/Applications/Areesha.app/Frameworks/$(ECHO_END)
-	$(ECHO_NOTHING)cp $(THEOS)/toolchain/linux/iphone/lib/swift-5.5/iphoneos/libswift_Concurrency.dylib $(THEOS_STAGING_DIR)/Applications/Areesha.app/Frameworks/libswift_Concurrency.dylib$(ECHO_END)
+	@mkdir -p $(THEOS_STAGING_DIR)/Applications/Areesha.app/Frameworks/
+	@cp $(THEOS)/toolchain/linux/iphone/lib/swift-5.5/iphoneos/libswift_Concurrency.dylib $(THEOS_STAGING_DIR)/Applications/Areesha.app/Frameworks/libswift_Concurrency.dylib
