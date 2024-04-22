@@ -2,7 +2,7 @@ import UIKit
 
 
 extension Array {
-	func insertionIndexOf(_ element: Element, isOrderedBefore: (Element, Element) -> Bool) -> Int {
+	func insertionIndex(of element: Element, isOrderedBefore: (Element, Element) -> Bool) -> Int {
 		var low = 0
 		var high = self.count - 1
 
@@ -155,6 +155,29 @@ extension UIView {
 		views.forEach { addSubview($0) }
 	}
 
+	func createSeasonsButton() -> UIButton {
+		let button = UIButton()
+		if #available(iOS 15.0, *) {
+			var configuration: UIButton.Configuration = .plain()
+			configuration.title = "Seasons"
+			configuration.baseForegroundColor = .label
+			button.configuration = configuration
+		}
+		else {
+			button.setTitle("Seasons", for: .normal)
+			button.setTitleColor(.label, for: .normal)
+		}
+		button.backgroundColor = .areeshaPinkColor
+		button.translatesAutoresizingMaskIntoConstraints = false
+		button.layer.cornerCurve = .continuous
+		button.layer.cornerRadius = 25
+		button.layer.shadowColor = UIColor.label.cgColor
+		button.layer.shadowOffset = .init(width: 0, height: 0)
+		button.layer.shadowOpacity = 0.5
+		button.layer.shadowRadius = 4
+		return button
+	}
+
 	func createSpinnerView(withStyle style: UIActivityIndicatorView.Style, childOf view: UIView) -> UIActivityIndicatorView {
 		let spinnerView = UIActivityIndicatorView(style: style)
 		spinnerView.hidesWhenStopped = true
@@ -172,7 +195,7 @@ extension UIView {
 		view.layer.cornerCurve = .continuous
 		view.layer.cornerRadius = 20
 		view.layer.shadowColor = UIColor.label.cgColor
-		view.layer.shadowOffset = .init(width: 0, height: 0.5)
+		view.layer.shadowOffset = .init(width: 0, height: 0)
 		view.layer.shadowOpacity = 0.2
 		view.layer.shadowRadius = 4
 		return view

@@ -23,29 +23,7 @@ final class TVShowDetailsView: UIView {
 		return tableView
 	}()
 
-	@UsesAutoLayout
-	private var seasonsButton: UIButton = {
-		let button = UIButton()
-		if #available(iOS 15.0, *) {
-			var configuration: UIButton.Configuration = .plain()
-			configuration.title = "Seasons"
-			configuration.baseForegroundColor = .label
-			button.configuration = configuration
-		}
-		else {
-			button.setTitle("Seasons", for: .normal)
-			button.setTitleColor(.label, for: .normal)
-		}
-		button.backgroundColor = .areeshaPinkColor
-		button.layer.cornerCurve = .continuous
-		button.layer.cornerRadius = 25
-		button.layer.shadowColor = UIColor.label.cgColor
-		button.layer.shadowOffset = .init(width: 0, height: 0.5)
-		button.layer.shadowOpacity = 0.2
-		button.layer.shadowRadius = 4
-		return button
-	}()
-
+	private lazy var seasonsButton = createSeasonsButton()
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: viewModel.title, isHidden: true)
 
 	weak var delegate: TVShowDetailsViewDelegate?
