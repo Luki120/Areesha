@@ -1,5 +1,10 @@
 import UIKit
 
+
+protocol TrackedTVShowDetailsViewDelegate: AnyObject {
+	func didTapSeasonsButton(in trackedTVShowDetailsTableView: TrackedTVShowDetailsView, tvShow: TVShow)
+}
+
 /// Class to represent the tracked tv show details view
 final class TrackedTVShowDetailsView: UIView {
 
@@ -18,7 +23,10 @@ final class TrackedTVShowDetailsView: UIView {
 		return tableView
 	}()
 
+	private lazy var seasonsButton = createSeasonsButton()
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: viewModel.title, isHidden: true)
+
+	weak var delegate: TrackedTVShowDetailsViewDelegate?
 
 	required init?(coder: NSCoder) {
 		fatalError("L")
@@ -36,6 +44,18 @@ final class TrackedTVShowDetailsView: UIView {
 	override func layoutSubviews() {
 		super.layoutSubviews()
 		pinViewToAllEdges(trackedTVShowDetailsTableView)
+
+		NSLayoutConstraint.activate([
+			seasonsButton.centerXAnchor.constraint(equalTo: centerXAnchor),
+			seasonsButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -25),
+			seasonsButton.widthAnchor.constraint(equalToConstant: 120),
+			seasonsButton.heightAnchor.constraint(equalToConstant: 50)
+		])
+	}
+
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		super.traitCollectionDidChange(previousTraitCollection)
+		seasonsButton.layer.shadowColor = UIColor.label.cgColor
 	}
 
 	// ! Private
@@ -43,11 +63,19 @@ final class TrackedTVShowDetailsView: UIView {
 	private func setupUI() {
 		headerView = viewModel.setupEpisodeHeaderView(forView: self)
 
-		addSubview(trackedTVShowDetailsTableView)
+		addSubviews(trackedTVShowDetailsTableView, seasonsButton)
 		trackedTVShowDetailsTableView.delegate = self
 		trackedTVShowDetailsTableView.tableHeaderView = headerView
 
 		viewModel.setupTrackedTVShowDetailsTableView(trackedTVShowDetailsTableView)
+
+		seasonsButton.addAction(
+			UIAction { [weak self] _ in
+				guard let self else { return }
+				delegate?.didTapSeasonsButton(in: self, tvShow: viewModel.tvShow)
+			},
+			for: .touchUpInside
+		)
 	}
 
 }

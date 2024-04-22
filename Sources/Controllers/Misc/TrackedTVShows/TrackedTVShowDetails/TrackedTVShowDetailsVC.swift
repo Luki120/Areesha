@@ -25,12 +25,23 @@ final class TrackedTVShowDetailsVC: BaseVC {
 		self.trackedTVShowDetailsViewViewModel = viewModel
 		self.trackedTVShowDetailsView = .init(viewModel: viewModel)
 		super.init(nibName: nil, bundle: nil)
+		trackedTVShowDetailsView.delegate = self
 	}
 
 	override func loadView() { view = trackedTVShowDetailsView }
 
 	override func didTapLeftBarButton() {
 		coordinator?.eventOccurred(with: .backButtonTapped)
+	}
+
+}
+
+// ! TrackedTVShowDetailsViewDelegate
+
+extension TrackedTVShowDetailsVC: TrackedTVShowDetailsViewDelegate {
+
+	func didTapSeasonsButton(in trackedTVShowDetailsView: TrackedTVShowDetailsView, tvShow: TVShow) {
+		coordinator?.eventOccurred(with: .episodesButtonTapped(tvShow: tvShow))
 	}
 
 }

@@ -17,14 +17,12 @@ final class TVShowDetailsCoordinator: Coordinator {
 
 			case .seasonsButtonTapped(let tvShow):
 				let viewModel = SeasonsViewViewModel(tvShow: tvShow)
-				let seasonsVC = SeasonsVC(viewModel: viewModel)
-				seasonsVC.coordinator = self
+				let seasonsVC = SeasonsVC(viewModel: viewModel, coordinatorType: .details(self))
 				navigationController.pushViewController(seasonsVC, animated: true)
 
 			case .seasonCellTapped(let tvShow, let season):
 				let viewModel = EpisodesViewViewModel(tvShow: tvShow, season: season)
-				let episodesVC = EpisodesVC(viewModel: viewModel)
-				episodesVC.coordinator = self
+				let episodesVC = EpisodesVC(viewModel: viewModel, coordinatorType: .details(self))
 				navigationController.pushViewController(episodesVC, animated: true)
 		}
 	}

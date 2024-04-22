@@ -4,12 +4,16 @@ import UIKit
 final class SeasonsVC: BaseVC {
 
 	let seasonsViewViewModel: SeasonsViewViewModel
+	let coordinatorType: CoordinatorType
 	private let seasonsView: SeasonsView
-
-	var coordinator: TVShowDetailsCoordinator?
 
 	override var titleView: UIView {
 		return seasonsView.titleLabel
+	}
+
+	@frozen enum CoordinatorType {
+		case details(TVShowDetailsCoordinator)
+		case tracked(TrackedTVShowsCoordinator)
 	}
 
 	// ! Lifecycle
@@ -21,9 +25,11 @@ final class SeasonsVC: BaseVC {
 	/// Designated initializer
 	/// - Parameters:
 	///		- viewModel: The view model object for this vc's view
-	init(viewModel: SeasonsViewViewModel) {
+	///		- coordinatorType: The type of coordinator that'll handle this vc's events
+	init(viewModel: SeasonsViewViewModel, coordinatorType: CoordinatorType) {
 		self.seasonsViewViewModel = viewModel
 		self.seasonsView = .init(viewModel: viewModel)
+		self.coordinatorType = coordinatorType
 		super.init(nibName: nil, bundle: nil)
 		seasonsView.delegate = self
 	}
@@ -39,7 +45,13 @@ final class SeasonsVC: BaseVC {
 	}
 
 	override func didTapLeftBarButton() {
-		coordinator?.eventOccurred(with: .backButtonTapped)
+		switch coordinatorType {
+			case .details(let tvShowDetailsCoordinator):
+				tvShowDetailsCoordinator.eventOccurred(with: .backButtonTapped)
+
+			case .tracked(let trackedTVShowsCoordinator):
+				trackedTVShowsCoordinator.eventOccurred(with: .backButtonTapped)
+		}
 	}
 
 	// ! Private
@@ -56,7 +68,13 @@ final class SeasonsVC: BaseVC {
 extension SeasonsVC: SeasonsViewDelegate {
 
 	func seasonsView(_ seasonsView: SeasonsView, didSelect season: Season, from tvShow: TVShow) {
-		coordinator?.eventOccurred(with: .seasonCellTapped(tvShow: tvShow, season: season))
+		switch coordinatorType {
+			case .details(let tvShowDetailsCoordinator):
+				tvShowDetailsCoordinator.eventOccurred(with: .seasonCellTapped(tvShow: tvShow, season: season))
+
+			case .tracked(let trackedTVShowsCoordinator):
+				trackedTVShowsCoordinator.eventOccurred(with: .seasonCellTapped(tvShow: tvShow, season: season))
+		}
 	}
 
 }

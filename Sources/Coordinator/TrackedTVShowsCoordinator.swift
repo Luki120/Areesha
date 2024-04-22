@@ -11,6 +11,8 @@ final class TrackedTVShowsCoordinator: Coordinator {
 			viewModel: CurrentlyWatchingTrackedTVShowListViewViewModel,
 			option: TrackedTVShowManager.SortOption
 		)
+		case episodesButtonTapped(tvShow: TVShow)
+		case seasonCellTapped(tvShow: TVShow, season: Season)
 	}
 
 	var navigationController = SwipeableNavigationController()
@@ -52,6 +54,16 @@ final class TrackedTVShowsCoordinator: Coordinator {
 
 			case .sortButtonTapped(let viewModel, let sortOption):
 				viewModel.didSortDataSource(withOption: sortOption)
+
+			case .episodesButtonTapped(let tvShow):
+				let viewModel = SeasonsViewViewModel(tvShow: tvShow)
+				let seasonsVC = SeasonsVC(viewModel: viewModel, coordinatorType: .tracked(self))
+				navigationController.pushViewController(seasonsVC, animated: true)
+
+			case .seasonCellTapped(let tvShow, let season):
+				let viewModel = EpisodesViewViewModel(tvShow: tvShow, season: season)
+				let episodesVC = EpisodesVC(viewModel: viewModel, coordinatorType: .tracked(self))
+				navigationController.pushViewController(episodesVC, animated: true)
 		}
 	}
 

@@ -4,6 +4,7 @@ import UIKit
 final class TrackedTVShowDetailsViewViewModel {
 
 	var title: String { return trackedTVShow.episode.name ?? "" }
+	var tvShow: TVShow { return trackedTVShow.tvShow }
 
 	private var episodeDetailsCellViewModel: TrackedTVShowDetailsEpisodeDetailsTableViewCellViewModel {
 		return .init(

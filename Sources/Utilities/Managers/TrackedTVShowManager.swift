@@ -6,13 +6,13 @@ final class TrackedTVShowManager: ObservableObject {
 
 	static let sharedInstance = TrackedTVShowManager()
 
-	@Published private(set) var filteredTrackedTVShows: [TrackedTVShow] = [] {
+	@Published private(set) var filteredTrackedTVShows = [TrackedTVShow]() {
 		didSet {
 			encode(filteredTrackedTVShows, forKey: "filteredViewModels")
 		}
 	}
 
-	@Published private(set) var trackedTVShows: [TrackedTVShow] = [] {
+	@Published private(set) var trackedTVShows = [TrackedTVShow]() {
 		didSet {
 			encode(trackedTVShows, forKey: "viewModels")
 		}
@@ -39,15 +39,15 @@ final class TrackedTVShowManager: ObservableObject {
 
 		switch decodedSortOption {
 			case .alphabetically:
-				let index = trackedTVShows.insertionIndexOf(trackedTVShow) { $0.tvShowNameText < $1.tvShowNameText }
+				let index = trackedTVShows.insertionIndex(of: trackedTVShow) { $0.tvShowNameText < $1.tvShowNameText }
 				trackedTVShows.insert(trackedTVShow, at: index)
 
 			case .leastAdvanced:
-				let index = trackedTVShows.insertionIndexOf(trackedTVShow) { $0.lastSeenText < $1.lastSeenText }
+				let index = trackedTVShows.insertionIndex(of: trackedTVShow) { $0.lastSeenText < $1.lastSeenText }
 				trackedTVShows.insert(trackedTVShow, at: index)
 
 			case .moreAdvanced:
-				let index = trackedTVShows.insertionIndexOf(trackedTVShow) { $0.lastSeenText > $1.lastSeenText }
+				let index = trackedTVShows.insertionIndex(of: trackedTVShow) { $0.lastSeenText > $1.lastSeenText }
 				trackedTVShows.insert(trackedTVShow, at: index)
 		}
 	}
@@ -86,6 +86,7 @@ extension TrackedTVShowManager {
 		let cleanSeasonEpisode = isEpisodeInDesiredRange ? "0\(episodeNumber)" : "\(episodeNumber)"
 
 		let trackedTVShow = TrackedTVShow(
+			tvShow: tvShow,
 			imageURL: url,
 			tvShowNameText: tvShow.name,
 			lastSeenText: "Last seen: S\(cleanSeasonNumber)E\(cleanSeasonEpisode)",
@@ -122,7 +123,7 @@ extension TrackedTVShowManager {
 			completion(false)
 			trackedTVShows[index].isFinished = true
 
-			filteredTrackedTVShows.append(contentsOf: trackedTVShows.filter { $0.isFinished }) 
+			filteredTrackedTVShows.append(contentsOf: trackedTVShows.filter { $0.isFinished })
 			trackedTVShows = trackedTVShows.filter { $0.isFinished == false }
 		}
 

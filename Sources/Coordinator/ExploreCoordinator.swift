@@ -28,7 +28,10 @@ final class ExploreCoordinator: NSObject, Coordinator {
 
 		navigationController.completion = { [weak self] fromVC in
 			guard let seasonsVC = fromVC as? SeasonsVC else { return }
-			self?.childDidFinish(seasonsVC.coordinator)
+			switch seasonsVC.coordinatorType {
+				case .details(let tvShowDetailsCoordinator): self?.childDidFinish(tvShowDetailsCoordinator)
+				case .tracked: break
+			}
 		}
 	}
 

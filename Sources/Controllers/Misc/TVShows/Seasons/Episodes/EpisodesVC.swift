@@ -4,12 +4,16 @@ import UIKit
 final class EpisodesVC: BaseVC {
 
 	let episodesViewViewModel: EpisodesViewViewModel
+	private let coordinatorType: CoordinatorType
 	private let episodesView: EpisodesView
-
-	var coordinator: TVShowDetailsCoordinator?
 
 	override var titleView: UIView {
 		return episodesView.titleLabel
+	}
+
+	@frozen enum CoordinatorType {
+		case details(TVShowDetailsCoordinator)
+		case tracked(TrackedTVShowsCoordinator)
 	}
 
 	// ! Lifecycle
@@ -21,9 +25,11 @@ final class EpisodesVC: BaseVC {
 	/// Designated initializer
 	/// - Parameters:
 	///		- viewModel: The view model object for this vc's view
-	init(viewModel: EpisodesViewViewModel) {
+	///		- coordinatorType: The type of coordinator that'll handle this vc's events
+	init(viewModel: EpisodesViewViewModel, coordinatorType: CoordinatorType) {
 		self.episodesViewViewModel = viewModel
 		self.episodesView = .init(viewModel: viewModel)
+		self.coordinatorType = coordinatorType
 		super.init(nibName: nil, bundle: nil)
 		episodesView.delegate = self
 	}
@@ -31,7 +37,13 @@ final class EpisodesVC: BaseVC {
 	override func loadView() { view = episodesView }
 
 	override func didTapLeftBarButton() {
-		coordinator?.eventOccurred(with: .backButtonTapped)
+		switch coordinatorType {
+			case .details(let tvShowDetailsCoordinator):
+				tvShowDetailsCoordinator.eventOccurred(with: .backButtonTapped)
+
+			case .tracked(let trackedTVShowsCoordinator):
+				trackedTVShowsCoordinator.eventOccurred(with: .backButtonTapped)
+		}
 	}
 
 }
