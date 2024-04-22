@@ -41,7 +41,7 @@ final class TrackedTVShowDetailsVC: BaseVC {
 extension TrackedTVShowDetailsVC: TrackedTVShowDetailsViewDelegate {
 
 	func didTapSeasonsButton(in trackedTVShowDetailsView: TrackedTVShowDetailsView, tvShow: TVShow) {
-		coordinator?.eventOccurred(with: .episodesButtonTapped(tvShow: tvShow))
+		coordinator?.eventOccurred(with: .seasonsButtonTapped(tvShow: tvShow))
 	}
 
 }

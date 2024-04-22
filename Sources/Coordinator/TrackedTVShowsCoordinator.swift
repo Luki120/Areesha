@@ -11,7 +11,7 @@ final class TrackedTVShowsCoordinator: Coordinator {
 			viewModel: CurrentlyWatchingTrackedTVShowListViewViewModel,
 			option: TrackedTVShowManager.SortOption
 		)
-		case episodesButtonTapped(tvShow: TVShow)
+		case seasonsButtonTapped(tvShow: TVShow)
 		case seasonCellTapped(tvShow: TVShow, season: Season)
 	}
 
@@ -55,7 +55,7 @@ final class TrackedTVShowsCoordinator: Coordinator {
 			case .sortButtonTapped(let viewModel, let sortOption):
 				viewModel.didSortDataSource(withOption: sortOption)
 
-			case .episodesButtonTapped(let tvShow):
+			case .seasonsButtonTapped(let tvShow):
 				let viewModel = SeasonsViewViewModel(tvShow: tvShow)
 				let seasonsVC = SeasonsVC(viewModel: viewModel, coordinatorType: .tracked(self))
 				navigationController.pushViewController(seasonsVC, animated: true)
