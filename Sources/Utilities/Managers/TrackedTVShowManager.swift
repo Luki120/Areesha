@@ -117,7 +117,7 @@ extension TrackedTVShowManager {
 	///		- completion: Escaping closure that takes a Bool as argument & returns nothing to check if
 	///		the tv show is already in the filteredTrackedTVShows array or not
 	func finishedShow(at index: Int, completion: @escaping (Bool) -> ()) {
-		let isShowAdded = filteredTrackedTVShows.reduce(false, { $0 || trackedTVShows.contains($1) })
+		let isShowAdded = filteredTrackedTVShows.contains(where: trackedTVShows.contains)
 
 		if !isShowAdded {
 			completion(false)
