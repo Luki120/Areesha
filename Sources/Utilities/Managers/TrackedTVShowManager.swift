@@ -27,7 +27,7 @@ final class TrackedTVShowManager: ObservableObject {
 	}
 
 	/// Enum to represent the different types of options to sort
-	@frozen enum SortOption: Codable {
+	@frozen enum SortOption: String, Codable {
 		case alphabetically, leastAdvanced, moreAdvanced
 	}
 
