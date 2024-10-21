@@ -1,6 +1,6 @@
 # Areesha
 
-<img src="https://raw.githubusercontent.com/Luki120/Areesha/main/Assets/Explore.png" width="200"/> <img src="https://raw.githubusercontent.com/Luki120/Areesha/main/Assets/ShowDetails.png" width="200"/> <img src="https://raw.githubusercontent.com/Luki120/Areesha/main/Assets/CurrentlyWatching.png" width="200"/>
+<img src="Assets/Explore.png" width="200" alt="Areesha explore"/> <img src="Assets/ShowDetails.png" width="200" alt="Areesha show details"/> <img src="Assets/CurrentlyWatching.png" width="200" alt="Areesha currently watching"/>
 
 * Built using MVVM-C pattern (Model View ViewModel - Coordinator), combined with a reactive approach using Combine framework. ⇝ No fat VC issue, each of the view controllers in this project have less than 80 loc :tm: + they are isolated & have no knowledge of each other, thanks to the Coordinator pattern.
 
