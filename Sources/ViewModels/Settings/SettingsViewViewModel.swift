@@ -58,7 +58,7 @@ final class SettingsViewViewModel: NSObject {
 	private func setupFooterViewModel() -> SettingsFooterViewViewModel {
 		return .init(
 			image: UIImage(asset: .tmdb),
-			fullString: "Movie icon by icons8\n\n© 2023-2024 Luki120",
+			fullString: "Movie icon by icons8\n\n© 2023-\(Calendar.current.component(.year, from: Date())) Luki120",
 			subString: "icons8",
 			urlString: "https://icons8.com/icon/EYpsuynPA2Ra/clapperboard"
 		)
