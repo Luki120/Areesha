@@ -56,9 +56,18 @@ final class SettingsViewViewModel: NSObject {
 	private var dataSource: DataSource!
 
 	private func setupFooterViewModel() -> SettingsFooterViewViewModel {
+		var copyrightLabel: String {
+			if #available(iOS 15.0, *) {
+				return "© 2023-\(Date.now.formatted(.dateTime.year())) Luki120"
+			}
+			else {
+				return "© 2023-\(Calendar.current.component(.year, from: Date())) Luki120"
+			}			
+		}
+
 		return .init(
 			image: UIImage(asset: .tmdb),
-			fullString: "Movie icon by icons8\n\n© 2023-\(Calendar.current.component(.year, from: Date())) Luki120",
+			fullString: "Movie icon by icons8\n\n\(copyrightLabel)",
 			subString: "icons8",
 			urlString: "https://icons8.com/icon/EYpsuynPA2Ra/clapperboard"
 		)
