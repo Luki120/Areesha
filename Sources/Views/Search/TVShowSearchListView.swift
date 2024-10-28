@@ -41,18 +41,14 @@ final class TVShowSearchListView: UIView {
 
 	override init(frame: CGRect) {
 		super.init(frame: frame)
-		setupStuff()
+		setupDelegates()
 		addSubviews(searchTextFieldView, listCollectionView, noResultsLabel)
-	}
-
-	override func layoutSubviews() {
-		super.layoutSubviews()
 		layoutUI()
 	}
 
 	// ! Private
 
-	private func setupStuff() {
+	private func setupDelegates() {
 		searchTextFieldView.delegate = self
 		searchTextFieldView.textField.delegate = self
 		searchTextFieldView.textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)

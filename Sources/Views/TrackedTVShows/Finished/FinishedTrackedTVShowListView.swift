@@ -46,12 +46,8 @@ final class FinishedTrackedTVShowListView: UIView {
 		viewModel.delegate = self
 		viewModel.setupDiffableDataSource(for: finishedTrackedTVShowsListCollectionView)
 		addSubview(finishedTrackedTVShowsListCollectionView)
-		finishedTrackedTVShowsListCollectionView.delegate = viewModel
-	}
-
-	override func layoutSubviews() {
-		super.layoutSubviews()
 		pinViewToSafeAreas(finishedTrackedTVShowsListCollectionView)
+		finishedTrackedTVShowsListCollectionView.delegate = viewModel
 	}
 
 }

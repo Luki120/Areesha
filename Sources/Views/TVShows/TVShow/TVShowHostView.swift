@@ -48,14 +48,10 @@ final class TVShowHostView: UIView {
 		super.init(frame: frame)
 		addSubviews(topHeaderView, hostCollectionView)
 		setupCollectionView()
+		layoutUI()
 
 		viewModel.delegate = self
 		topHeaderView.delegate = self
-	}
-
-	override func layoutSubviews() {
-		super.layoutSubviews()
-		layoutUI()
 	}
 
 	// ! Private

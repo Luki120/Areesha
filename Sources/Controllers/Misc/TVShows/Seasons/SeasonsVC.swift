@@ -37,10 +37,7 @@ final class SeasonsVC: BaseVC {
 	override func setupUI() {
 		view.addSubview(seasonsView)
 		super.setupUI()
-	}
 
-	override func viewDidLayoutSubviews() {
-		super.viewDidLayoutSubviews()
 		layoutUI()
 	}
 

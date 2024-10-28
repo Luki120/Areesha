@@ -30,11 +30,6 @@ final class TVShowCollectionViewCell: UICollectionViewCell {
 		setupUI()
 	}
 
-	override func layoutSubviews() {
-		super.layoutSubviews()
-		layoutUI()
-	}
-
 	override func prepareForReuse() {
 		super.prepareForReuse()
 		spinnerView.startAnimating()
@@ -57,6 +52,7 @@ final class TVShowCollectionViewCell: UICollectionViewCell {
 		contentView.addSubview(tvShowImageView)
 
 		spinnerView.startAnimating()
+		layoutUI()
 	}
 
 	private func layoutUI() {

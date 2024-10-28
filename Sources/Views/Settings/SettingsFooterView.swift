@@ -32,10 +32,6 @@ final class SettingsFooterView: UIView {
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		addSubviews(tmdbImageView, footerLabel)
-	}
-
-	override func layoutSubviews() {
-		super.layoutSubviews()
 
 		NSLayoutConstraint.activate([
 			tmdbImageView.topAnchor.constraint(equalTo: topAnchor, constant: 15),

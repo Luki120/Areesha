@@ -39,15 +39,6 @@ final class SeasonCollectionViewCell: UICollectionViewCell {
 		setupUI()
 	}
 
-	override func layoutSubviews() {
-		super.layoutSubviews()
-		contentView.pinViewToAllEdges(tvShowSeasonImageView)
-
-		seasonNameLabel.topAnchor.constraint(equalTo: tvShowSeasonImageView.bottomAnchor, constant: 10).isActive = true
-		seasonNameLabel.leadingAnchor.constraint(equalTo: tvShowSeasonImageView.leadingAnchor).isActive = true
-		seasonNameLabel.trailingAnchor.constraint(equalTo: tvShowSeasonImageView.trailingAnchor).isActive = true
-	}
-
 	override func prepareForReuse() {
 		super.prepareForReuse()
 		activeViewModel = nil
@@ -67,6 +58,16 @@ final class SeasonCollectionViewCell: UICollectionViewCell {
 		contentView.layer.shadowOpacity = 0.2
 		contentView.layer.shadowRadius = 15
 		contentView.addSubviews(tvShowSeasonImageView, seasonNameLabel)
+
+		layoutUI()
+	}
+
+	private func layoutUI() {
+		contentView.pinViewToAllEdges(tvShowSeasonImageView)
+
+		seasonNameLabel.topAnchor.constraint(equalTo: tvShowSeasonImageView.bottomAnchor, constant: 10).isActive = true
+		seasonNameLabel.leadingAnchor.constraint(equalTo: tvShowSeasonImageView.leadingAnchor).isActive = true
+		seasonNameLabel.trailingAnchor.constraint(equalTo: tvShowSeasonImageView.trailingAnchor).isActive = true
 	}
 
 }

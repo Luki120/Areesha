@@ -104,10 +104,6 @@ final class SeasonsView: UIView {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
 		viewModel.delegate = self
-	}
-
-	override func layoutSubviews() {
-		super.layoutSubviews()
 		pinViewToAllEdges(seasonsCollectionView)
 	}
 

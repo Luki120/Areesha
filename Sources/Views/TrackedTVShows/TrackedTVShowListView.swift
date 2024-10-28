@@ -34,15 +34,11 @@ final class TrackedTVShowListView: UIView {
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		addSubview(trackedTVShowsListCollectionView)
+		pinViewToAllEdges(trackedTVShowsListCollectionView)
 		trackedTVShowsListCollectionView.delegate = viewModel
 
 		viewModel.delegate = self
 		viewModel.setupCollectionViewDiffableDataSource(for: trackedTVShowsListCollectionView)
-	}
-
-	override func layoutSubviews() {
-		super.layoutSubviews()
-		pinViewToAllEdges(trackedTVShowsListCollectionView)
 	}
 
 }

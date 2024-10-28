@@ -59,17 +59,14 @@ final class CurrentlyWatchingTrackedTVShowListView: UIView {
 		setupUI()
 	}
 
-	override func layoutSubviews() {
-		super.layoutSubviews()
-		layoutUI()
-	}
-
 	// ! Private
 
 	private func setupUI() {
 		addSubview(currentlyWatchingTrackedTVShowListCollectionView)
 		currentlyWatchingTrackedTVShowListCollectionView.addSubview(toastView)
 		toastView.addSubview(toastViewLabel)
+
+		layoutUI()
 	}
 
 	private func layoutUI() {

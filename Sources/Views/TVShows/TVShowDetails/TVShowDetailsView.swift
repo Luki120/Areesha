@@ -43,18 +43,6 @@ final class TVShowDetailsView: UIView {
 		setupUI()
 	}
 
-	override func layoutSubviews() {
-		super.layoutSubviews()
-		pinViewToAllEdges(tvShowDetailsTableView)
-
-		NSLayoutConstraint.activate([
-			seasonsButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-			seasonsButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -25),
-			seasonsButton.widthAnchor.constraint(equalToConstant: 120),
-			seasonsButton.heightAnchor.constraint(equalToConstant: 50)
-		])
-	}
-
 	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
 		super.traitCollectionDidChange(previousTraitCollection)
 		seasonsButton.layer.shadowColor = UIColor.label.cgColor
@@ -78,6 +66,19 @@ final class TVShowDetailsView: UIView {
 			},
 			for: .touchUpInside
 		)
+
+		layoutUI()
+	}
+
+	private func layoutUI() {
+		pinViewToAllEdges(tvShowDetailsTableView)
+
+		NSLayoutConstraint.activate([
+			seasonsButton.centerXAnchor.constraint(equalTo: centerXAnchor),
+			seasonsButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -25),
+			seasonsButton.widthAnchor.constraint(equalToConstant: 120),
+			seasonsButton.heightAnchor.constraint(equalToConstant: 50)
+		])		
 	}
 
 }

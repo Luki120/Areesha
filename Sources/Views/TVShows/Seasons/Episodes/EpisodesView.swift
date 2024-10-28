@@ -77,17 +77,14 @@ final class EpisodesView: UIView {
 		setupUI()
 	}
 
-	override func layoutSubviews() {
-		super.layoutSubviews()
-		layoutUI()
-	}
-
 	// ! Private
 
 	private func setupUI() {
 		fetchTVShowImage()
 		addSubviews(trackedEpisodeToastView, noEpisodesLabel)
 		trackedEpisodeToastView.addSubview(toastViewLabel)
+
+		layoutUI()
 	}
 
 	private func layoutUI() {

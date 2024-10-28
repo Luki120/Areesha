@@ -38,16 +38,12 @@ final class SettingsView: UIView {
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		addSubview(settingsTableView)
+		pinViewToAllEdges(settingsTableView)
 		settingsTableView.delegate = viewModel
 		settingsTableView.tableFooterView = viewModel.setupFooterView(forView: self)
 
 		viewModel.delegate = self
 		viewModel.setupTableView(settingsTableView)
-	}
-
-	override func layoutSubviews() {
-		super.layoutSubviews()
-		pinViewToAllEdges(settingsTableView)
 	}
 
 }

@@ -61,11 +61,6 @@ final class SearchTextFieldView: UIView {
 		setupButtons()
 	}
 
-	override func layoutSubviews() {
-		super.layoutSubviews()
-		layoutUI()
-	}
-
 	// ! Private
 
 	private func setupUI() {
@@ -77,6 +72,8 @@ final class SearchTextFieldView: UIView {
 		textFieldStackView.addArrangedSubviews(closeButton, searchTextField)
 
 		searchTextField.addSubviews(searchIconImageView, clearAllButton)
+
+		layoutUI()
 	}
 
 	private func layoutUI() {
