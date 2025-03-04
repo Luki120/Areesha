@@ -11,7 +11,7 @@ final class EpisodesVC: BaseVC {
 		return episodesView.titleLabel
 	}
 
-	@frozen enum CoordinatorType {
+	enum CoordinatorType {
 		case details(TVShowDetailsCoordinator)
 		case tracked(TrackedTVShowsCoordinator)
 	}

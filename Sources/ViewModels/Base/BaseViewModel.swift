@@ -12,7 +12,7 @@ class BaseViewModel<Cell: UICollectionViewCell & Configurable>: NSObject {
 
 	private var dataSource: DataSource!
 
-	@frozen private enum Sections {
+	private enum Sections {
 		case main
 	}
 

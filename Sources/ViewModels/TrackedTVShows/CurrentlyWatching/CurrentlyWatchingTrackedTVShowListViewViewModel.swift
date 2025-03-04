@@ -23,7 +23,7 @@ final class CurrentlyWatchingTrackedTVShowListViewViewModel: NSObject {
 
 	private var dataSource: DataSource!
 
-	@frozen private enum Sections {
+	private enum Sections {
 		case main
 	}
 

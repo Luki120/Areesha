@@ -13,7 +13,7 @@ final class TabBarVC: UITabBarController {
 		super.init(coder: coder)
 	}
 
-	override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+	init() {
 		super.init(nibName: nil, bundle: nil)
 		viewControllers = [
 			exploreCoordinator.navigationController,

@@ -30,7 +30,7 @@ final class TrackedTVShowDetailsViewViewModel {
 		]
 	}
 
-	@frozen private enum Sections {
+	private enum Sections {
 		case main
 	}
 

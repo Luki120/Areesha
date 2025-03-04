@@ -24,7 +24,7 @@ final class TVShowDetailsViewViewModel {
 
 	private var cells = [CellType]()
 
-	@frozen private enum Sections {
+	private enum Sections {
 		case main
 	}
 
