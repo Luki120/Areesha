@@ -4,8 +4,8 @@ import Foundation
 struct TrackedTVShow: Codable, Hashable {
 	let tvShow: TVShow
 	let imageURL: URL?
-	let tvShowNameText: String
-	let lastSeenText: String
+	let name: String
+	let lastSeen: String
 	let episode: Episode
 	let episodeID: Int
 

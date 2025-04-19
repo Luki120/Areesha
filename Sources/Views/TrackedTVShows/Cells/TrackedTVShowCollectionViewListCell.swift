@@ -7,8 +7,8 @@ final class TrackedTVShowCollectionViewListCell: UICollectionViewListCell {
 
 	override func updateConfiguration(using state: UICellConfigurationState) {
 		var newConfiguration = TrackedTVShowContentConfiguration().updated(for: state)
-		newConfiguration.tvShowNameText = viewModel?.tvShowNameText
-		newConfiguration.lastSeenText = viewModel?.lastSeenText
+		newConfiguration.name = viewModel?.name
+		newConfiguration.lastSeen = viewModel?.lastSeen
 		newConfiguration.viewModel = viewModel
 
 		contentConfiguration = newConfiguration
@@ -19,8 +19,8 @@ final class TrackedTVShowCollectionViewListCell: UICollectionViewListCell {
 /// Struct to represent the content configuration for the tracked tv show cell
 struct TrackedTVShowContentConfiguration: UIContentConfiguration, Hashable {
 
-	var tvShowNameText: String?
-	var lastSeenText: String?
+	var name: String?
+	var lastSeen: String?
 	var viewModel: TrackedTVShowCollectionViewCellViewModel?
 
 	func makeContentView() -> UIView & UIContentView {
@@ -108,8 +108,8 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 		guard let viewModel = configuration.viewModel else { return }
 		configure(with: viewModel)
 
-		tvShowNameLabel.text = configuration.tvShowNameText
-		lastSeenLabel.text = configuration.lastSeenText
+		tvShowNameLabel.text = configuration.name
+		lastSeenLabel.text = configuration.lastSeen
 	}
 
 	private func configure(with viewModel: TrackedTVShowCollectionViewCellViewModel) {

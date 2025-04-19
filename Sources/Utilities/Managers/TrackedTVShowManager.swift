@@ -39,15 +39,15 @@ final class TrackedTVShowManager: ObservableObject {
 
 		switch decodedSortOption {
 			case .alphabetically:
-				let index = trackedTVShows.insertionIndex(of: trackedTVShow) { $0.tvShowNameText < $1.tvShowNameText }
+				let index = trackedTVShows.insertionIndex(of: trackedTVShow) { $0.name < $1.name }
 				trackedTVShows.insert(trackedTVShow, at: index)
 
 			case .leastAdvanced:
-				let index = trackedTVShows.insertionIndex(of: trackedTVShow) { $0.lastSeenText < $1.lastSeenText }
+				let index = trackedTVShows.insertionIndex(of: trackedTVShow) { $0.lastSeen < $1.lastSeen }
 				trackedTVShows.insert(trackedTVShow, at: index)
 
 			case .moreAdvanced:
-				let index = trackedTVShows.insertionIndex(of: trackedTVShow) { $0.lastSeenText > $1.lastSeenText }
+				let index = trackedTVShows.insertionIndex(of: trackedTVShow) { $0.lastSeen > $1.lastSeen }
 				trackedTVShows.insert(trackedTVShow, at: index)
 		}
 	}
@@ -88,8 +88,8 @@ extension TrackedTVShowManager {
 		let trackedTVShow = TrackedTVShow(
 			tvShow: tvShow,
 			imageURL: url,
-			tvShowNameText: tvShow.name,
-			lastSeenText: "Last seen: S\(cleanSeasonNumber)E\(cleanSeasonEpisode)",
+			name: tvShow.name,
+			lastSeen: "Last seen: S\(cleanSeasonNumber)E\(cleanSeasonEpisode)",
 			episode: episode,
 			episodeID: episode.id
 		)
@@ -147,9 +147,9 @@ extension TrackedTVShowManager {
 	///		- withOption: The option
 	func didSortModels(withOption option: SortOption) {
 		switch option {
-			case .alphabetically: trackedTVShows = trackedTVShows.sorted { $0.tvShowNameText < $1.tvShowNameText }
-			case .leastAdvanced: trackedTVShows = trackedTVShows.sorted { $0.lastSeenText < $1.lastSeenText }
-			case .moreAdvanced: trackedTVShows = trackedTVShows.sorted { $0.lastSeenText > $1.lastSeenText }
+			case .alphabetically: trackedTVShows = trackedTVShows.sorted { $0.name < $1.name }
+			case .leastAdvanced: trackedTVShows = trackedTVShows.sorted { $0.lastSeen < $1.lastSeen }
+			case .moreAdvanced: trackedTVShows = trackedTVShows.sorted { $0.lastSeen > $1.lastSeen }
 		}
 		encode(option, forKey: "sortOption")
 	}
