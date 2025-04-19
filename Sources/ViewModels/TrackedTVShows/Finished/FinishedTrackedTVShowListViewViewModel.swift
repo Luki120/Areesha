@@ -16,12 +16,12 @@ final class FinishedTrackedTVShowListViewViewModel: NSObject {
 	// ! UICollectionViewDiffableDataSource
 
 	private typealias CellRegistration = UICollectionView.CellRegistration<TrackedTVShowCollectionViewListCell, TrackedTVShowCollectionViewCellViewModel>
-	private typealias DataSource = UICollectionViewDiffableDataSource<Sections, TrackedTVShowCollectionViewCellViewModel>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, TrackedTVShowCollectionViewCellViewModel>
+	private typealias DataSource = UICollectionViewDiffableDataSource<Section, TrackedTVShowCollectionViewCellViewModel>
+	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, TrackedTVShowCollectionViewCellViewModel>
 
 	private var dataSource: DataSource!
 
-	private enum Sections {
+	private enum Section {
 		case main
 	}
 
@@ -84,7 +84,7 @@ extension FinishedTrackedTVShowListViewViewModel {
 	/// - Parameters:
 	///		- at: The index path for the item
 	func deleteItem(at indexPath: IndexPath) {
-		TrackedTVShowManager.sharedInstance.removeTrackedTVShow(at: indexPath.item, isFilteredArray: true)
+		TrackedTVShowManager.sharedInstance.deleteTrackedTVShow(at: indexPath.item, isFilteredArray: true)
 	}
 
 	/// Function to setup the diffable data source for the collection view

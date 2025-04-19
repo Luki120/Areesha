@@ -10,6 +10,7 @@ struct TrackedTVShow: Codable, Hashable {
 	let episodeID: Int
 
 	var isFinished = false
+	var isReturningSeries = false
 
 	func hash(into hasher: inout Hasher) {
 		hasher.combine(episodeID)

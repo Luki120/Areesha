@@ -17,14 +17,18 @@ final class CurrentlyWatchingTrackedTVShowListViewViewModel: NSObject {
 
 	// ! UICollectionViewDiffableDataSource
 
+	private typealias HeaderRegistration = UICollectionView.SupplementaryRegistration<UICollectionViewListCell>
 	private typealias CellRegistration = UICollectionView.CellRegistration<TrackedTVShowCollectionViewListCell, TrackedTVShowCollectionViewCellViewModel>
-	private typealias DataSource = UICollectionViewDiffableDataSource<Sections, TrackedTVShowCollectionViewCellViewModel>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, TrackedTVShowCollectionViewCellViewModel>
+	private typealias DataSource = UICollectionViewDiffableDataSource<Section, TrackedTVShowCollectionViewCellViewModel>
+	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, TrackedTVShowCollectionViewCellViewModel>
 
 	private var dataSource: DataSource!
 
-	private enum Sections {
-		case main
+	private enum Section: String {
+		case currentlyWatching = "Currently watching"
+		case returningSeries = "Returning series"
+
+		var title: String { rawValue }
 	}
 
 	override init() {
@@ -35,6 +39,24 @@ final class CurrentlyWatchingTrackedTVShowListViewViewModel: NSObject {
 				applyDiffableDataSourceSnapshot(withModels: trackedTVShows.filter { $0.isFinished == false })
 			}
 			.store(in: &subscriptions)
+	}
+
+	private func getModelIndex(for indexPath: IndexPath) -> Int? {
+		let section = dataSource.snapshot().sectionIdentifiers[indexPath.section]
+		let relevantShows: [TrackedTVShow]
+
+		switch section {
+			case .currentlyWatching:
+				relevantShows = trackedManager.trackedTVShows.filter { $0.isFinished == false && !$0.isReturningSeries }
+
+			case .returningSeries:
+				relevantShows = trackedManager.trackedTVShows.filter { $0.isReturningSeries }
+		}
+
+		guard indexPath.item < relevantShows.count else { return nil }
+
+		let selectedShow = relevantShows[indexPath.item]
+		return trackedManager.trackedTVShows.firstIndex(where: { $0 == selectedShow })
 	}
 
 }
@@ -57,25 +79,62 @@ extension CurrentlyWatchingTrackedTVShowListViewViewModel: UICollectionViewDeleg
 			return cell
 		}
 		applyDiffableDataSourceSnapshot(withModels: trackedManager.trackedTVShows.filter { $0.isFinished == false })
+		setupSupplementaryRegistration()
+	}
+
+	private func setupSupplementaryRegistration() {
+		let headerRegistration = HeaderRegistration(
+			elementKind: UICollectionView.elementKindSectionHeader
+		) { headerView, _, indexPath in
+			let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
+
+			var configuration = headerView.defaultContentConfiguration()
+			var backgroundConfiguration = UIBackgroundConfiguration.listPlainCell()
+
+			backgroundConfiguration.backgroundColor = .clear
+			configuration.text = section.title
+
+			headerView.backgroundConfiguration = backgroundConfiguration
+			headerView.contentConfiguration = configuration
+		}
+
+		dataSource.supplementaryViewProvider = { collectionView, _, indexPath in
+			return collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
+		}
 	}
 
 	private func applyDiffableDataSourceSnapshot(withModels models: [TrackedTVShow]) {
 		guard let dataSource else { return }
 
-		let mappedModels = models
+		let currentlyWatchingModels = models
+			.filter { !$0.isFinished && !$0.isReturningSeries }
+			.map(TrackedTVShowCollectionViewCellViewModel.init(_:))
+
+		let returningShowsModels = models
+			.filter { $0.isReturningSeries }
 			.map(TrackedTVShowCollectionViewCellViewModel.init(_:))
 
 		var snapshot = Snapshot()
-		snapshot.appendSections([.main])
-		snapshot.appendItems(mappedModels)
+		snapshot.appendSections([.currentlyWatching, .returningSeries])
+		snapshot.appendItems(currentlyWatchingModels, toSection: .currentlyWatching)
+		snapshot.appendItems(returningShowsModels, toSection: .returningSeries)
 		dataSource.apply(snapshot)
 	}
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
 
-		let trackedTVShows = trackedManager.trackedTVShows.filter { $0.isFinished == false }
-		delegate?.didSelect(trackedTVShow: trackedTVShows[indexPath.item])
+		switch indexPath.section {
+			case 0:
+				let trackedTVShows = trackedManager.trackedTVShows.filter { !$0.isFinished && !$0.isReturningSeries }
+				delegate?.didSelect(trackedTVShow: trackedTVShows[indexPath.item])
+
+			case 1:
+				let trackedTVShows = trackedManager.trackedTVShows.filter { $0.isReturningSeries }
+				delegate?.didSelect(trackedTVShow: trackedTVShows[indexPath.item])
+
+			default: break
+		}
 	}
 
 }
@@ -88,16 +147,36 @@ extension CurrentlyWatchingTrackedTVShowListViewViewModel {
 	/// - Parameters:
 	///		- at: The index path for the item
 	func deleteItem(at indexPath: IndexPath) {
-		trackedManager.removeTrackedTVShow(at: indexPath.item)
+		guard let index = getModelIndex(for: indexPath),
+			let item = dataSource.itemIdentifier(for: indexPath) else { return }
+
+		trackedManager.deleteTrackedTVShow(at: index)
+
+		var snapshot = dataSource.snapshot()
+		snapshot.deleteItems([item])
+		dataSource.apply(snapshot)
 	}
 
 	/// Function to mark a tv show as finished
 	/// - Parameters:
 	///		- at: The index path for the item
 	func finishedShow(at indexPath: IndexPath) {
-		trackedManager.finishedShow(at: indexPath.item) { isShowAdded in
-			if isShowAdded { self.delegate?.didShowToastView() }
+		guard let index = getModelIndex(for: indexPath) else { return }
+
+		trackedManager.finishedShow(at: index) { [weak self] isShowAdded in
+			if isShowAdded { self?.delegate?.didShowToastView() }
 		}
+	}
+
+	/// Function to mark a currently watching show as returning series
+	/// - Parameters:
+	///		- at: The index path for the tv show
+	///		- toggle: Boolean value to toggle between returning series or currently watching
+	func markShowAsReturningSeries(at indexPath: IndexPath, toggle: Bool = true) {
+		guard let index = getModelIndex(for: indexPath) else { return }
+
+		trackedManager.markShowAsReturningSeries(at: index, toggle: toggle)
+		applyDiffableDataSourceSnapshot(withModels: trackedManager.trackedTVShows)
 	}
 
 	/// Function to setup the diffable data source for the collection view
@@ -105,19 +184,12 @@ extension CurrentlyWatchingTrackedTVShowListViewViewModel {
 		setupCollectionViewDiffableDataSource(for: collectionView)
 	}
 
-	/// Function sort the tv show models according to the given option
+	/// Function to sort the tv show models according to the given option
 	/// - Parameters:
 	///		- withOption: The option
 	func didSortDataSource(withOption option: TrackedTVShowManager.SortOption) {
 		trackedManager.didSortModels(withOption: option)
-
-		let mappedModels = trackedManager.trackedTVShows
-			.map(TrackedTVShowCollectionViewCellViewModel.init(_:))
-
-		var snapshot = Snapshot()
-		snapshot.appendSections([.main])
-		snapshot.appendItems(mappedModels)
-		dataSource.apply(snapshot)
+		applyDiffableDataSourceSnapshot(withModels: trackedManager.trackedTVShows)
 	}
 
 }

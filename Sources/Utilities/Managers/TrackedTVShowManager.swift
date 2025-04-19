@@ -54,7 +54,7 @@ final class TrackedTVShowManager: ObservableObject {
 
 	private func encode<D: Encodable>(_ data: D, forKey key: String) {
 		guard let encodedData = try? JSONEncoder().encode(data) else { return }
-		UserDefaults.standard.set(encodedData, forKey: key)		
+		UserDefaults.standard.set(encodedData, forKey: key)
 	}
 
 	private func decode<T: Decodable>(_ type: T.Type, forKey key: String) -> T? {
@@ -74,7 +74,7 @@ extension TrackedTVShowManager {
 	///		- season: The season object
 	///		- episode: The episode object
 	///		- completion: Escaping closure that takes a Bool as argument & returns nothing to check
-	///		if the tv show with the given episode id is already being tracked or not
+	///     if the tv show with the given episode id is already being tracked or not
 	func track(tvShow: TVShow, season: Season, episode: Episode, completion: @escaping (Bool) -> ()) {
 		guard let url = Service.imageURL(.episodeStill(episode)),
 			let seasonNumber = season.seasonNumber,
@@ -106,7 +106,8 @@ extension TrackedTVShowManager {
 	/// Function to delete a tracked tv show at the given index
 	/// - Parameters:
 	///		- at: The index for the tv show
-	func removeTrackedTVShow(at index: Int, isFilteredArray: Bool = false) {
+	///		- isFilteredArray: Boolean to check wether the array is filtered
+	func deleteTrackedTVShow(at index: Int, isFilteredArray: Bool = false) {
 		if !isFilteredArray { trackedTVShows.remove(at: index) }
 		else { filteredTrackedTVShows.remove(at: index) }
 	}
@@ -115,13 +116,14 @@ extension TrackedTVShowManager {
 	/// - Parameters:
 	///		- at: The index path for the item
 	///		- completion: Escaping closure that takes a Bool as argument & returns nothing to check if
-	///		the tv show is already in the filteredTrackedTVShows array or not
+	///     the tv show is already in the filteredTrackedTVShows array or not
 	func finishedShow(at index: Int, completion: @escaping (Bool) -> ()) {
 		let isShowAdded = filteredTrackedTVShows.contains(where: trackedTVShows.contains)
 
 		if !isShowAdded {
 			completion(false)
 			trackedTVShows[index].isFinished = true
+			trackedTVShows[index].isReturningSeries = false
 
 			filteredTrackedTVShows.append(contentsOf: trackedTVShows.filter { $0.isFinished })
 			trackedTVShows = trackedTVShows.filter { $0.isFinished == false }
@@ -132,7 +134,15 @@ extension TrackedTVShowManager {
 		}
 	}
 
-	/// Function sort the tv show models according to the given option
+	/// Function to mark a currently watching show as returning series
+	/// - Parameters:
+	///		- at: The index path for the tv show
+	///		- toggle: Boolean value to toggle between returning series or currently watching
+	func markShowAsReturningSeries(at index: Int, toggle: Bool = true) {
+		trackedTVShows[index].isReturningSeries = toggle
+	}
+
+	/// Function to sort the tv show models according to the given option
 	/// - Parameters:
 	///		- withOption: The option
 	func didSortModels(withOption option: SortOption) {

@@ -19,22 +19,11 @@ final class CurrentlyWatchingTrackedTVShowListView: UIView {
 	private lazy var toastViewLabel = createToastViewLabel(withMessage: "Already watched.")
 
 	private lazy var currentlyWatchingTrackedTVShowListCollectionView: UICollectionView = {
-		var layoutConfig = UICollectionLayoutListConfiguration(appearance: .plain)
-		layoutConfig.showsSeparators = false
-		layoutConfig.trailingSwipeActionsConfigurationProvider = { indexPath in
-			let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { _, _, completion in
-				self.viewModel.deleteItem(at: indexPath)
-				completion(true)
-			}
-			let finishedShowAction = UIContextualAction(style: .destructive, title: "Finished") { _, _, completion in
-				self.viewModel.finishedShow(at: indexPath)
-				completion(true)
-			}
-			finishedShowAction.backgroundColor = .areeshaPinkColor
-			return UISwipeActionsConfiguration(actions: [deleteAction, finishedShowAction])
+		let sectionProvider = { sectionIndex, layoutEnvironment in
+			self.setupListConfig(sectionIndex: sectionIndex, layoutEnvironment: layoutEnvironment)
 		}
 
-		let listLayout = UICollectionViewCompositionalLayout.list(using: layoutConfig)
+		let listLayout = UICollectionViewCompositionalLayout(sectionProvider: sectionProvider)
 		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: listLayout)
 		collectionView.backgroundColor = .systemBackground
 		collectionView.showsVerticalScrollIndicator = false
@@ -81,6 +70,39 @@ final class CurrentlyWatchingTrackedTVShowListView: UIView {
 
 		toastView.centerViewOnBothAxes(toastViewLabel)
 		toastView.setupHorizontalConstraints(forView: toastViewLabel, leadingConstant: 10, trailingConstant: -10)
+	}
+
+	private func setupListConfig(sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection {
+		var listConfig = UICollectionLayoutListConfiguration(appearance: .plain)
+		listConfig.headerMode = .supplementary
+		listConfig.showsSeparators = false
+
+		listConfig.leadingSwipeActionsConfigurationProvider = { indexPath in
+			let leadingAction = UIContextualAction(
+				style: .destructive,
+				title: sectionIndex == 0 ? "Returning series" : "Currently watching"
+			) { _, _, completion in
+				self.viewModel.markShowAsReturningSeries(at: indexPath, toggle: sectionIndex == 0 ? true : false)
+				completion(true)
+			}
+			leadingAction.backgroundColor = .systemOrange
+			return UISwipeActionsConfiguration(actions: [leadingAction])
+		}
+
+		listConfig.trailingSwipeActionsConfigurationProvider = { indexPath in
+			let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { _, _, completion in
+				self.viewModel.deleteItem(at: indexPath)
+				completion(true)
+			}
+			let finishedShowAction = UIContextualAction(style: .destructive, title: "Finished") { _, _, completion in
+				self.viewModel.finishedShow(at: indexPath)
+				completion(true)
+			}
+			finishedShowAction.backgroundColor = .areeshaPinkColor
+			return UISwipeActionsConfiguration(actions: [deleteAction, finishedShowAction])
+		}
+
+		return NSCollectionLayoutSection.list(using: listConfig, layoutEnvironment: layoutEnvironment)
 	}
 
 }
