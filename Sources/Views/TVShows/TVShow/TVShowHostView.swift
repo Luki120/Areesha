@@ -111,7 +111,10 @@ extension TVShowHostView: TVShowHostViewViewModelDelegate {
 extension TVShowHostView: UICollectionViewDelegate {
 
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
-		topHeaderView.transparentViewLeadingAnchorConstraint.constant = scrollView.contentOffset.x / 2
+		let desiredValue = scrollView.contentOffset.x / 2
+		let maxValue = topHeaderView.frame.width / 2
+
+		topHeaderView.transparentViewLeadingAnchorConstraint.constant = min(max(desiredValue, 0), maxValue)
 	}
 
 	func scrollViewWillEndDragging(
