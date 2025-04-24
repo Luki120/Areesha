@@ -109,6 +109,18 @@ final class SeasonsView: UIView {
 
 }
 
+// ! Public
+
+extension SeasonsView {
+	/// Function to fix the swipe pop gesture recognizer
+	/// - Parameters:
+	///		- for: The navigation controller object
+	func fixSwipePopGesture(for controller: UINavigationController) {
+		guard let popGestureRecognizer = controller.interactivePopGestureRecognizer else { return }
+		seasonsCollectionView.panGestureRecognizer.require(toFail: popGestureRecognizer)
+	}
+}
+
 // ! SeasonsViewViewModelDelegate
 
 extension SeasonsView: SeasonsViewViewModelDelegate {

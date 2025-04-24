@@ -36,8 +36,9 @@ final class SeasonsVC: BaseVC {
 
 	override func setupUI() {
 		view.addSubview(seasonsView)
-		super.setupUI()
+		seasonsView.fixSwipePopGesture(for: navigationController!)
 
+		super.setupUI()
 		layoutUI()
 	}
 
