@@ -31,6 +31,18 @@ final class TVShowDetailsVC: BaseVC {
 
 	override func loadView() { view = tvShowDetailsView }
 
+	override func viewDidLoad() {
+		super.viewDidLoad()
+
+		navigationItem.rightBarButtonItem = .init(
+			image: .init(systemName: "star"),
+			style: .done,
+			target: self,
+			action: #selector(didTapRightBarButton)
+		)
+		navigationItem.rightBarButtonItem?.tintColor = .label
+	}
+
 	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
 		tvShowDetailsView.titleLabel.isHidden = true
@@ -38,6 +50,11 @@ final class TVShowDetailsVC: BaseVC {
 
 	override func didTapLeftBarButton() {
 		coordinator?.eventOccurred(with: .backButtonTapped)
+	}
+
+	@objc
+	private func didTapRightBarButton() {
+		coordinator?.eventOccurred(with: .starButtonTapped(tvShow: tvShowDetailsViewViewModel.tvShow))
 	}
 
 }

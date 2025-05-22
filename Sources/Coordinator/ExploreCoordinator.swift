@@ -6,10 +6,12 @@ final class ExploreCoordinator: NSObject, Coordinator {
 	enum Event {
 		case tvShowCellTapped(tvShow: TVShow)
 		case backButtonTapped
+		case starButtonTapped(tvShow: TVShow)
 		case searchButtonTapped
 		case closeButtonTapped
 		case pushedVC
 		case poppedVC
+		case popVC
 	}
 
 	var navigationController = SwipeableNavigationController()
@@ -46,6 +48,12 @@ final class ExploreCoordinator: NSObject, Coordinator {
 			case .backButtonTapped, .closeButtonTapped:
 				navigationController.popViewController(animated: true)
 
+			case .starButtonTapped(let tvShow):
+				let viewModel = TVShowRatingViewViewModel(tvShow: tvShow)
+				let tvShowRatingVC = TVShowRatingVC(viewModel: viewModel)
+				tvShowRatingVC.coordinator = self
+				navigationController.pushViewController(tvShowRatingVC, animated: true)
+
 			case .searchButtonTapped:
 				let searchVC = TVShowSearchVC()
 				searchVC.coordinator = self
@@ -53,6 +61,8 @@ final class ExploreCoordinator: NSObject, Coordinator {
 
 			case .pushedVC: navigationController.navigationBar.isHidden = true
 			case .poppedVC: navigationController.navigationBar.isHidden = false
+
+			case .popVC: navigationController.popViewController(animated: true)
 		}
 	}
 
