@@ -93,9 +93,9 @@ extension EpisodeCell {
 	func configure(with viewModel: EpisodeCellViewModel) {
 		activeViewModel = viewModel
 
-		episodeNameLabel.text = viewModel.episodeNameText
-		episodeDurationLabel.text = viewModel.episodeDurationText
-		episodeDescriptionLabel.text = viewModel.episodeDescriptionText
+		episodeNameLabel.text = viewModel.episodeName
+		episodeDurationLabel.text = viewModel.episodeDuration
+		episodeDescriptionLabel.text = viewModel.episodeDescription
 
 		Task.detached(priority: .background) {
 			let image = try? await viewModel.fetchImage()

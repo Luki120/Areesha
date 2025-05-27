@@ -18,7 +18,7 @@ final class SeasonsViewViewModel: NSObject {
 		didSet {
 			viewModels += seasons.compactMap { season in
 				guard let url = Service.imageURL(.seasonPoster(season)) else { return nil }
-				return SeasonCellViewModel(imageURL: url, seasonNameText: season.name ?? "")
+				return SeasonCellViewModel(imageURL: url, seasonName: season.name ?? "")
 			}
 		}
 	}

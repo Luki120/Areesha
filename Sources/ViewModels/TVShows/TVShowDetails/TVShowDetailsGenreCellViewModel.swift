@@ -2,26 +2,26 @@ import Foundation
 
 /// View model struct for `TVShowDetailsGenreCell`
 struct TVShowDetailsGenreCellViewModel: Hashable {
-	let genreText: String?
-	let episodeAverageDurationText: String?
-	let lastAirDateText: String?
-	let statusText: String?
+	let genre: String?
+	let episodeAverageDuration: String?
+	let lastAirDate: String?
+	let status: String?
 
 	/// Designated initializer
 	/// - Parameters:
-	///		- genreText: A nullable string to represent the genre text
-	///		- episodeAverageDurationText: A nullable string to represent the episode average duration text
-	///		- lastAirDateText: A nullable string to represent the last air date text
-	///		- statusText: A nullable string to represent the status text
+	///		- genre: A nullable string to represent the genre
+	///		- episodeAverageDuration: A nullable string to represent the episode average duration
+	///		- lastAirDate: A nullable string to represent the last air date
+	///		- status: A nullable string to represent the status
 	init(
-		genreText: String? = nil,
-		episodeAverageDurationText: String? = nil,
-		lastAirDateText: String? = nil,
-		statusText: String? = nil
+		genre: String? = nil,
+		episodeAverageDuration: String? = nil,
+		lastAirDate: String? = nil,
+		status: String? = nil
 	) {
-		self.genreText = genreText
-		self.episodeAverageDurationText = episodeAverageDurationText
-		self.lastAirDateText = lastAirDateText
-		self.statusText = statusText
+		self.genre = genre
+		self.episodeAverageDuration = episodeAverageDuration
+		self.lastAirDate = lastAirDate
+		self.status = status
 	}
 }

@@ -10,7 +10,6 @@ protocol TrackedTVShowListViewDelegate: AnyObject {
 
 /// Class to represent the tracked tv shows list view
 final class TrackedTVShowListView: UIView {
-
 	private lazy var viewModel = TrackedTVShowListViewViewModel()
 
 	private lazy var trackedTVShowsListCollectionView: UICollectionView = {
@@ -40,15 +39,12 @@ final class TrackedTVShowListView: UIView {
 		viewModel.delegate = self
 		viewModel.setupCollectionViewDiffableDataSource(for: trackedTVShowsListCollectionView)
 	}
-
 }
 
 // ! TrackedTVShowListViewViewModelDelegate
 
 extension TrackedTVShowListView: TrackedTVShowListViewViewModelDelegate {
-
-	func didSelectItemAt(indexPath: IndexPath) {
+	func didSelectItem(at indexPath: IndexPath) {
 		delegate?.trackedTVShowListView(self, didSelectItemAt: indexPath)
 	}
-
 }

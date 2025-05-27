@@ -66,9 +66,9 @@ final class EpisodesViewViewModel: NSObject {
 
 			return EpisodeCellViewModel(
 				imageURL: url,
-				episodeNameText: "\(episode.number ?? 0). \(episode.name ?? "")",
-				episodeDurationText: "\(episode.duration ?? 0) min",
-				episodeDescriptionText: episode.description ?? ""
+				episodeName: "\(episode.number ?? 0). \(episode.name ?? "")",
+				episodeDuration: "\(episode.duration ?? 0) min",
+				episodeDescription: episode.description ?? ""
 			)
 		}
 	}
@@ -83,7 +83,7 @@ extension EpisodesViewViewModel {
 	func fetchTVShowImage(completion: @escaping (UIImage) async -> ()) {
 		Task.detached(priority: .background) {
 			guard let imageURL = Service.imageURL(.showPoster(self.tvShow), size: "w1280"),
-				let image = try? await ImageManager.sharedInstance.fetchImageAsync(imageURL) else { return }
+				let image = try? await ImageManager.sharedInstance.fetchImage(imageURL) else { return }
 
 			await completion(image)
 		}

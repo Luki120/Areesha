@@ -35,8 +35,8 @@ extension TVShowDetailsHeaderView {
 	/// - Parameters:
 	/// 	- with: The view's view model
 	func configure(with viewModel: TVShowDetailsHeaderViewViewModel) {
-		nameLabel.text = viewModel.tvShowNameText
-		ratingsLabel.text = viewModel.ratingsText
+		nameLabel.text = viewModel.tvShowName
+		ratingsLabel.text = viewModel.rating
 
 		Task.detached(priority: .background) {
 			let image = try? await viewModel.fetchImage()

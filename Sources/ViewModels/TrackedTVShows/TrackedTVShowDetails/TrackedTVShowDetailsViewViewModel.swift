@@ -8,11 +8,11 @@ final class TrackedTVShowDetailsViewViewModel {
 	private var episodeDetailsCellViewModel: TrackedTVShowDetailsCellViewModel {
 		return .init(
 			episodeNumber: trackedTVShow.episode.number ?? 0,
-			episodeAirDateText: trackedTVShow.episode.airDate ?? ""
+			episodeAirDate: trackedTVShow.episode.airDate ?? ""
 		)
 	}
 	private var overviewCellViewModel: TrackedTVShowDetailsOverviewCellViewModel {
-		return .init(overviewText: trackedTVShow.episode.description ?? "")
+		return .init(description: trackedTVShow.episode.description ?? "")
 	}
 
 	// ! UITableViewDiffableDataSource
@@ -50,7 +50,7 @@ final class TrackedTVShowDetailsViewViewModel {
 	private func setupHeaderViewModel() -> TrackedTVShowDetailsHeaderViewViewModel {
 		guard let url = Service.imageURL(.episodeStill(trackedTVShow.episode), size: "w1280") else { fatalError() }
 
-		return .init(imageURL: url, episodeNameText: trackedTVShow.episode.name ?? "")
+		return .init(imageURL: url, episodeName: trackedTVShow.episode.name ?? "")
 	}
 }
 

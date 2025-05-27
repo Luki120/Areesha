@@ -26,8 +26,8 @@ final class SettingsViewViewModel: NSObject {
 					DeveloperCellViewModel(
 						lukiImageURL: URL(string: Developer.lukiIcon),
 						leptosImageURL: URL(string: Developer.leptosIcon),
-						lukiNameText: Developer.lukiName,
-						leptosNameText: Developer.leptosName
+						lukiName: Developer.lukiName,
+						leptosName: Developer.leptosName
 					)
 				)
 			]

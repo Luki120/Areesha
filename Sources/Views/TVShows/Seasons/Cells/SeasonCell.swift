@@ -78,7 +78,7 @@ extension SeasonCell {
 	/// 	- with: The cell's view model
 	func configure(with viewModel: SeasonCellViewModel) {
 		activeViewModel = viewModel
-		seasonNameLabel.text = viewModel.seasonNameText
+		seasonNameLabel.text = viewModel.seasonName
 
 		Task.detached(priority: .background) {
 			let image = try? await viewModel.fetchImage()

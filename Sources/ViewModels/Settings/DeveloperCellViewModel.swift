@@ -4,7 +4,7 @@ import UIKit.UIImage
 /// View model struct for `DeveloperCell`
 struct DeveloperCellViewModel: Hashable {
 	let lukiImageURL, leptosImageURL: URL?
-	let lukiNameText, leptosNameText: String
+	let lukiName, leptosName: String
 
 	/// Function to fetch the developer's avatar image
 	/// - Parameters:
@@ -13,8 +13,8 @@ struct DeveloperCellViewModel: Hashable {
 		guard let lukiImageURL, let leptosImageURL else { return }
 
 		Task.detached(priority: .background) {
-			guard let lukisImage: UIImage = try? await ImageManager.sharedInstance.fetchImageAsync(lukiImageURL),
-				let leptosImage: UIImage = try? await ImageManager.sharedInstance.fetchImageAsync(leptosImageURL) else { return }
+			guard let lukisImage: UIImage = try? await ImageManager.sharedInstance.fetchImage(lukiImageURL),
+				let leptosImage: UIImage = try? await ImageManager.sharedInstance.fetchImage(leptosImageURL) else { return }
 
 			await completion([lukisImage, leptosImage])
 		}

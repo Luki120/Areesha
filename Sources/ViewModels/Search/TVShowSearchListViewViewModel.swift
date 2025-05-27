@@ -13,7 +13,7 @@ final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCel
 	private var searchedTVShows = [TVShow]() {
 		didSet {
 			orderedViewModels += searchedTVShows.compactMap { tvShow in
-				return TVShowSearchListCellViewModel(id: tvShow.id, tvShowNameText: tvShow.name)
+				return TVShowSearchListCellViewModel(id: tvShow.id, tvShowName: tvShow.name)
 			}
 		}
 	}
@@ -75,7 +75,7 @@ extension TVShowSearchListViewViewModel {
 extension UICollectionViewListCell: Configurable {
 	func configure(with viewModel: TVShowSearchListCellViewModel) {
 		var content = defaultContentConfiguration()
-		content.text = viewModel.tvShowNameText
+		content.text = viewModel.tvShowName
 		content.textProperties.font = .systemFont(ofSize: 18, weight: .semibold)
 
 		contentConfiguration = content

@@ -12,7 +12,7 @@ final class ImageManager {
 	///		- url: The image's url, optional as it may be nil
 	/// - Returns: `(UIImage, Bool)`
 	@_disfavoredOverload
-	func fetchImageAsync(_ url: URL?) async throws -> (UIImage, Bool) {
+	func fetchImage(_ url: URL?) async throws -> (UIImage, Bool) {
 		guard let url else { throw URLError(.badURL) }
 
 		if let cachedImage = imageCache.object(forKey: url.absoluteString as NSString) {
@@ -37,10 +37,10 @@ final class ImageManager {
 	/// - Parameters:
 	///		- url: The image's url, optional as it may be nil
 	/// - Returns: `UIImage`
-	func fetchImageAsync(_ url: URL?) async throws -> UIImage {
+	func fetchImage(_ url: URL?) async throws -> UIImage {
 		guard let url else { throw URLError(.badURL) }
 
-		let (image, _) = try await fetchImageAsync(url)
+		let (image, _) = try await fetchImage(url)
 		return image
 	}
 

@@ -129,8 +129,8 @@ extension DeveloperCell {
 	/// - Parameters:
 	///		- with: The cell's view model
 	func configure(with viewModel: DeveloperCellViewModel) {
-		lukiNameLabel.text = viewModel.lukiNameText
-		leptosNameLabel.text = viewModel.leptosNameText
+		lukiNameLabel.text = viewModel.lukiName
+		leptosNameLabel.text = viewModel.leptosName
 
 		viewModel.fetchImages() { [weak self] images in
 			guard let self else { return }

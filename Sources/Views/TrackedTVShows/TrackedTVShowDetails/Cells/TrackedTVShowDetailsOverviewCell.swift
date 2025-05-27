@@ -5,7 +5,7 @@ final class TrackedTVShowDetailsOverviewCell: TVShowDetailsBaseCell {
 	static let identifier = "TrackedTVShowDetailsOverviewCell"
 
 	@UsesAutoLayout
-	private var overviewLabel: UILabel = {
+	private var descriptionLabel: UILabel = {
 		let label = UILabel()
 		label.textColor = .label
 		label.numberOfLines = 0
@@ -16,17 +16,17 @@ final class TrackedTVShowDetailsOverviewCell: TVShowDetailsBaseCell {
 
 	override func prepareForReuse() {
 		super.prepareForReuse()
-		overviewLabel.text = nil
+		descriptionLabel.text = nil
 	}
 
 	override func setupUI() {
-		contentView.addSubview(overviewLabel)
+		contentView.addSubview(descriptionLabel)
 		super.setupUI()
 	}
 
 	override func layoutUI() {
 		contentView.pinViewToAllEdges(
-			overviewLabel,
+			descriptionLabel,
 			topConstant: 20,
 			bottomConstant: -20,
 			leadingConstant: 20,
@@ -42,6 +42,6 @@ extension TrackedTVShowDetailsOverviewCell {
 	/// - Parameters:
 	/// 	- with: The cell's view model
 	func configure(with viewModel: TrackedTVShowDetailsOverviewCellViewModel) {
-		overviewLabel.text = viewModel.overviewText
+		descriptionLabel.text = viewModel.description
 	}
 }

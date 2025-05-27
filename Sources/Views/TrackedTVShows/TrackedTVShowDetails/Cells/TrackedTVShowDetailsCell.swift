@@ -60,7 +60,7 @@ extension TrackedTVShowDetailsCell {
 	/// - Parameters:
 	///		- with: The cell's view model
 	func configure(with viewModel: TrackedTVShowDetailsCellViewModel) {
-		let date = dateFormatter.date(from: viewModel.episodeAirDateText) ?? Date()
+		let date = dateFormatter.date(from: viewModel.episodeAirDate) ?? Date()
 
 		episodeNumberLabel.text = "Episode \(viewModel.episodeNumber)"
 		episodeAirDateLabel.text = shortDateFormatter.string(from: date)

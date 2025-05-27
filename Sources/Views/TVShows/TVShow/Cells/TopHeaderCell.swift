@@ -37,6 +37,6 @@ final class TopHeaderCell: UICollectionViewCell {
 
 extension TopHeaderCell: Configurable {
 	func configure(with viewModel: TopHeaderCellViewModel) {
-		cellLabel.text = viewModel.sectionText
+		cellLabel.text = viewModel.sectionName
 	}
 }

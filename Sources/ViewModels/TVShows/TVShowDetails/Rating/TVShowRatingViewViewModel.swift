@@ -55,10 +55,10 @@ extension TVShowRatingViewViewModel {
 	func fetchTVShowImages(completion: @escaping ([UIImage]) async -> ()) {
 		Task.detached(priority: .background) {
 			guard let imageURL = Service.imageURL(.showPoster(self.tvShow), size: "w1280"),
-				let backgroundImage = try? await ImageManager.sharedInstance.fetchImageAsync(imageURL) else { return }
+				let backgroundImage = try? await ImageManager.sharedInstance.fetchImage(imageURL) else { return }
 
 			guard let imageURL = Service.imageURL(.showPoster(self.tvShow)),
-				let posterImage = try? await ImageManager.sharedInstance.fetchImageAsync(imageURL) else { return }
+				let posterImage = try? await ImageManager.sharedInstance.fetchImage(imageURL) else { return }
 
 			await completion([backgroundImage, posterImage])
 		}

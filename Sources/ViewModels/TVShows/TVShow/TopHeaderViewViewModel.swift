@@ -11,8 +11,8 @@ final class TopHeaderViewViewModel: BaseViewModel<TopHeaderCell> {
 
 	override func awake() {
 		viewModels = [
-			.init(sectionText: "Top rated"),
-			.init(sectionText: "Trending")
+			.init(sectionName: "Top rated"),
+			.init(sectionName: "Trending")
 		]
 		onCellRegistration = { cell, viewModel in
 			cell.configure(with: viewModel)

@@ -8,7 +8,7 @@ final class TrackedTVShowDetailsHeaderView: BaseHeaderView {
 	/// - Parameters:
 	/// 	- with: The view's view model
 	func configure(with viewModel: TrackedTVShowDetailsHeaderViewViewModel) {
-		nameLabel.text = viewModel.episodeNameText
+		nameLabel.text = viewModel.episodeName
 
 		Task.detached(priority: .background) {
 			let image = try? await viewModel.fetchImage()

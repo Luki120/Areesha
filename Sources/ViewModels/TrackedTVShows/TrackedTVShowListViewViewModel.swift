@@ -2,12 +2,11 @@ import UIKit
 
 
 protocol TrackedTVShowListViewViewModelDelegate: AnyObject {
-	func didSelectItemAt(indexPath: IndexPath)
+	func didSelectItem(at indexPath: IndexPath)
 }
 
-/// View model struct for TrackedTVShowsListView
+/// View model struct for `TrackedTVShowsListView`
 final class TrackedTVShowListViewViewModel: NSObject {
-
 	weak var delegate: TrackedTVShowListViewViewModelDelegate?
 
 	private let cellViewModels: [TrackedTVShowListCellViewModel] = [
@@ -18,21 +17,19 @@ final class TrackedTVShowListViewViewModel: NSObject {
 	// ! UICollectionViewDiffableDataSource
 
 	private typealias CellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, TrackedTVShowListCellViewModel>
-	private typealias DataSource = UICollectionViewDiffableDataSource<Sections, TrackedTVShowListCellViewModel>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, TrackedTVShowListCellViewModel>
+	private typealias DataSource = UICollectionViewDiffableDataSource<Section, TrackedTVShowListCellViewModel>
+	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, TrackedTVShowListCellViewModel>
 
 	private var dataSource: DataSource!
 
-	private enum Sections {
+	private enum Section {
 		case main
 	}
-
 }
 
 // ! CollectionView
 
 extension UICollectionViewListCell {
-
 	func configureCell(with viewModel: TrackedTVShowListCellViewModel) {
 		var content = defaultContentConfiguration()
 		content.text = viewModel.text
@@ -41,11 +38,9 @@ extension UICollectionViewListCell {
 
 		contentConfiguration = content
 	}
-
 }
 
 extension TrackedTVShowListViewViewModel: UICollectionViewDelegate {
-
 	/// Function to setup the collection view's diffable data source
 	/// - Parameters:
 	///		- collectionView: The collection view
@@ -74,7 +69,6 @@ extension TrackedTVShowListViewViewModel: UICollectionViewDelegate {
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
-		delegate?.didSelectItemAt(indexPath: indexPath)
+		delegate?.didSelectItem(at: indexPath)
 	}
-
 }

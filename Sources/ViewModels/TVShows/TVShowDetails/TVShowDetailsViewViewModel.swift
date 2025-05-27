@@ -49,24 +49,24 @@ final class TVShowDetailsViewViewModel {
 	private func setupModels() {
 		cells = [
 			.genre(viewModel: genreCellViewModel),
-			.overview(viewModel: .init(overviewText: tvShow.description)),
+			.overview(viewModel: .init(description: tvShow.description)),
 			.cast(viewModel: castCellViewModel),
 			.networks(viewModel: networksCellViewModel)
 		]
 	}
 
 	private func setupHeaderViewModel() -> TVShowDetailsHeaderViewViewModel {
-		let ratingsText = String(describing: tvShow.voteAverage?.round(to: 1) ?? 0) + "/10"
+		let rating = String(describing: tvShow.voteAverage?.round(to: 1) ?? 0) + "/10"
 
 		guard let url = Service.imageURL(.showBackdrop(tvShow), size: "w1280") else {
 			return .init(
 				imageURL: Bundle.main.url(forResource: "Placeholder", withExtension: "jpg"),
-				tvShowNameText: tvShow.name,
-				ratingsText: ratingsText
+				tvShowName: tvShow.name,
+				rating: rating
 			)
 		}
 
-		return .init(imageURL: url, tvShowNameText: tvShow.name, ratingsText: ratingsText)
+		return .init(imageURL: url, tvShowName: tvShow.name, rating: rating)
 	}
 
 	private func fetchTVShowCast() {
@@ -108,10 +108,10 @@ final class TVShowDetailsViewViewModel {
 		let genresNames = genres.map(\.name)
 
 		genreCellViewModel = .init(
-			genreText: genresNames.joined(separator: ", "),
-			episodeAverageDurationText: episodeAverageDuration,
-			lastAirDateText: tvShow.lastAirDate,
-			statusText: tvShow.status
+			genre: genresNames.joined(separator: ", "),
+			episodeAverageDuration: episodeAverageDuration,
+			lastAirDate: tvShow.lastAirDate,
+			status: tvShow.status
 		)
 	}
 
@@ -119,14 +119,14 @@ final class TVShowDetailsViewViewModel {
 		let castCrewNames = OrderedSet(castCrew.map(\.name))
 		let castCrewText = castCrewNames.isEmpty ? "Unknown" : castCrewNames.joined(separator: ", ")
 
-		castCellViewModel = .init(castText: "Cast", castCrewText: castCrewText)
+		castCellViewModel = .init(cast: "Cast", castCrew: castCrewText)
 	}
 
 	private func updateNetworkNames(with networks: [Network]) {
-		let networksNames = OrderedSet(networks.map(\.name))
-		let networksNamesText = networksNames.isEmpty ? "Unknown" : networksNames.joined(separator: ", ")
+		let networks = OrderedSet(networks.map(\.name))
+		let networksNames = networks.isEmpty ? "Unknown" : networks.joined(separator: ", ")
 
-		networksCellViewModel = .init(networksTitleText: "Networks", networksNamesText: networksNamesText)
+		networksCellViewModel = .init(networksTitle: "Networks", networksNames: networksNames)
 	}
 }
 

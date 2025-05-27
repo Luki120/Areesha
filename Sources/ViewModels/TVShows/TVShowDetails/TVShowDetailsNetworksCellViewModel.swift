@@ -2,15 +2,15 @@ import Foundation
 
 /// View model struct for `TVShowDetailsNetworksCell`
 struct TVShowDetailsNetworksCellViewModel: Hashable {
-	let networksTitleText: String?
-	let networksNamesText: String?
+	let networksTitle: String?
+	let networksNames: String?
 
 	/// Designated initializer
 	/// - Parameters:
-	///		- networksTitleText: A nullable string to represent the networks title text
-	///		- networksNamesText: A nullable string to represent the networks names text
-	init(networksTitleText: String? = nil, networksNamesText: String? = nil) {
-		self.networksTitleText = networksTitleText
-		self.networksNamesText = networksNamesText
+	///		- networksTitle: A nullable string to represent the networks title
+	///		- networksNames: A nullable string to represent the networks names
+	init(networksTitle: String? = nil, networksNames: String? = nil) {
+		self.networksTitle = networksTitle
+		self.networksNames = networksNames
 	}
 }
