@@ -9,7 +9,6 @@ protocol TVShowSearchListViewDelegate: AnyObject {
 
 /// Class that'll show the searched tv shows in a collection view
 final class TVShowSearchListView: UIView {
-
 	private lazy var viewModel = TVShowSearchListViewViewModel(collectionView: listCollectionView)
 
 	@UsesAutoLayout
@@ -81,12 +80,10 @@ final class TVShowSearchListView: UIView {
 		guard !textToSearch.isEmpty else { return }
 		viewModel.sendQuerySubject(textToSearch)
 	}
-
 }
 
 extension TVShowSearchListView {
-
-	// Public
+	// ! Public
 
 	/// Function to become the text field's first responder when needed
 	func becomeTextFieldFirstResponder() {
@@ -119,13 +116,11 @@ extension TVShowSearchListView {
 			}
 		}
 	}
-
 }
 
 // ! SearchTextFieldViewDelegate
 
 extension TVShowSearchListView: SearchTextFieldViewDelegate {
-
 	func didTapCloseButton(in searchTextFieldView: SearchTextFieldView) {
 		delegate?.didTapCloseButton(in: searchTextFieldView)
 	}
@@ -133,13 +128,11 @@ extension TVShowSearchListView: SearchTextFieldViewDelegate {
 	func didTapClearButton(in searchTextFieldView: SearchTextFieldView) {
 		delegate?.didTapClearButton(in: searchTextFieldView)
 	}
-
 }
 
 // ! TVShowSearchListViewViewModelDelegate
 
 extension TVShowSearchListView: TVShowSearchListViewViewModelDelegate {
-
 	func didSelect(tvShow: TVShow) {
 		delegate?.tvShowSearchListView(self, didSelect: tvShow)
 	}
@@ -156,16 +149,13 @@ extension TVShowSearchListView: TVShowSearchListViewViewModelDelegate {
 			}
 		}
 	}
-
 }
 
 // ! UITextFieldDelegate
 
 extension TVShowSearchListView: UITextFieldDelegate {
-
 	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 		searchTextFieldView.textField.resignFirstResponder()
 		return true
 	}
-
 }

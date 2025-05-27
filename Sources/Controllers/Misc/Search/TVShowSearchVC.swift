@@ -2,7 +2,6 @@ import UIKit
 
 /// Controller that'll show the TV show search list view
 final class TVShowSearchVC: UIViewController {
-
 	var coordinator: ExploreCoordinator?
 
 	private let tvShowSearchListView = TVShowSearchListView()
@@ -31,13 +30,11 @@ final class TVShowSearchVC: UIViewController {
 		tvShowSearchListView.fadeOutTextField()
 		tvShowSearchListView.resignTextFieldFirstResponder()
 	}
-
 }
 
 // ! TVShowSearchListViewDelegate
 
 extension TVShowSearchVC: TVShowSearchListViewDelegate {
-
 	func tvShowSearchListView(_ tvShowSearchListView: TVShowSearchListView, didSelect tvShow: TVShow) {
 		coordinator?.eventOccurred(with: .tvShowCellTapped(tvShow: tvShow))
 	}
@@ -49,5 +46,4 @@ extension TVShowSearchVC: TVShowSearchListViewDelegate {
 	func didTapClearButton(in searchTextFieldView: SearchTextFieldView) {
 		searchTextFieldView.textField.text = ""
 	}
-
 }

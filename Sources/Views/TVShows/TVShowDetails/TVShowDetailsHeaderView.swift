@@ -2,7 +2,6 @@ import UIKit
 
 /// Class to represent the header image for the tv show details view
 final class TVShowDetailsHeaderView: BaseHeaderView {
-
 	private var ratingsLabel: UILabel!
 
 	// ! Lifecycle
@@ -27,11 +26,9 @@ final class TVShowDetailsHeaderView: BaseHeaderView {
 		ratingsLabel.setContentHuggingPriority(.required, for: .horizontal)
 		ratingsLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
 	}
-
 }
 
 extension TVShowDetailsHeaderView {
-
 	// ! Public
 
 	/// Function to configure the view with its respective view model
@@ -53,5 +50,4 @@ extension TVShowDetailsHeaderView {
 			}
 		}
 	}
-
 }

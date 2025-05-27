@@ -2,7 +2,6 @@ import UIKit
 
 /// Controller that'll show the tv show seasons view
 final class SeasonsVC: BaseVC {
-
 	let seasonsViewViewModel: SeasonsViewViewModel
 	let coordinatorType: CoordinatorType
 	private let seasonsView: SeasonsView
@@ -58,13 +57,11 @@ final class SeasonsVC: BaseVC {
 		seasonsView.translatesAutoresizingMaskIntoConstraints = false
 		view.pinViewToSafeAreas(seasonsView)
 	}
-
 }
 
 // ! SeasonsViewDelegate
 
 extension SeasonsVC: SeasonsViewDelegate {
-
 	func seasonsView(_ seasonsView: SeasonsView, didSelect season: Season, from tvShow: TVShow) {
 		switch coordinatorType {
 			case .details(let tvShowDetailsCoordinator):
@@ -74,5 +71,4 @@ extension SeasonsVC: SeasonsViewDelegate {
 				trackedTVShowsCoordinator.eventOccurred(with: .seasonCellTapped(tvShow: tvShow, season: season))
 		}
 	}
-
 }

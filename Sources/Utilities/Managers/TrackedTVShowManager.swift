@@ -3,7 +3,6 @@ import UIKit
 
 /// Singleton to handle the tracked tv shows
 final class TrackedTVShowManager: ObservableObject {
-
 	static let sharedInstance = TrackedTVShowManager()
 
 	@Published private(set) var filteredTrackedTVShows = [TrackedTVShow]() {
@@ -61,11 +60,9 @@ final class TrackedTVShowManager: ObservableObject {
 		guard let data = UserDefaults.standard.object(forKey: key) as? Data else { return nil }
 		return try? JSONDecoder().decode(type.self, from: data)
 	}
-
 }
 
 extension TrackedTVShowManager {
-
 	// ! Public
 
 	/// Function to track & save a tv show
@@ -83,7 +80,7 @@ extension TrackedTVShowManager {
 		let isSeasonInDesiredRange = 1..<10 ~= seasonNumber
 		let isEpisodeInDesiredRange = 1..<10 ~= episodeNumber
 		let cleanSeasonNumber = isSeasonInDesiredRange ? "0\(seasonNumber)" : "\(seasonNumber)"
-		let cleanSeasonEpisode = isEpisodeInDesiredRange ? "0\(episodeNumber)" : "\(episodeNumber)"
+		let cleanEpisodeNumber = isEpisodeInDesiredRange ? "0\(episodeNumber)" : "\(episodeNumber)"
 
 		let trackedTVShow = TrackedTVShow(
 			tvShow: tvShow,
@@ -91,7 +88,7 @@ extension TrackedTVShowManager {
 			imageURL: url,
 			season: season,
 			episode: episode,
-			lastSeen: "Last seen: S\(cleanSeasonNumber)E\(cleanSeasonEpisode)",
+			lastSeen: "Last seen: S\(cleanSeasonNumber)E\(cleanEpisodeNumber)",
 		)
 
 		guard !trackedTVShows.contains(trackedTVShow) else {
@@ -153,5 +150,4 @@ extension TrackedTVShowManager {
 		}
 		encode(option, forKey: "sortOption")
 	}
-
 }

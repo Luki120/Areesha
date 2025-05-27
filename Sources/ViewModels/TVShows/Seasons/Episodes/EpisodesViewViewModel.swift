@@ -8,24 +8,23 @@ protocol EpisodesViewViewModelDelegate: AnyObject {
 
 /// View model class for EpisodesView
 final class EpisodesViewViewModel: NSObject {
-
 	var seasonName: String { return season.name ?? "" }
 
 	private var episodes = [Episode]()
-	private var viewModels = OrderedSet<EpisodeCollectionViewCellViewModel>()
+	private var viewModels = OrderedSet<EpisodeCellViewModel>()
 	private var subscriptions = Set<AnyCancellable>()
 
 	weak var delegate: EpisodesViewViewModelDelegate?
 
 	// ! UICollectionViewDiffableDataSource
 
-	private typealias CellRegistration = UICollectionView.CellRegistration<EpisodeCollectionViewCell, EpisodeCollectionViewCellViewModel>
-	private typealias DataSource = UICollectionViewDiffableDataSource<Sections, EpisodeCollectionViewCellViewModel>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, EpisodeCollectionViewCellViewModel>
+	private typealias CellRegistration = UICollectionView.CellRegistration<EpisodeCell, EpisodeCellViewModel>
+	private typealias DataSource = UICollectionViewDiffableDataSource<Section, EpisodeCellViewModel>
+	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, EpisodeCellViewModel>
 
 	private var dataSource: DataSource!
 
-	private enum Sections {
+	private enum Section {
 		case main
 	}
 
@@ -65,7 +64,7 @@ final class EpisodesViewViewModel: NSObject {
 		viewModels += episodes.compactMap { episode in
 			guard let url = Service.imageURL(.episodeStill(episode)) else { return nil }
 
-			return EpisodeCollectionViewCellViewModel(
+			return EpisodeCellViewModel(
 				imageURL: url,
 				episodeNameText: "\(episode.number ?? 0). \(episode.name ?? "")",
 				episodeDurationText: "\(episode.duration ?? 0) min",
@@ -73,11 +72,9 @@ final class EpisodesViewViewModel: NSObject {
 			)
 		}
 	}
-
 }
 
 extension EpisodesViewViewModel {
-
 	// ! Public
 
 	/// Function to fetch the tv show's poster image
@@ -91,13 +88,11 @@ extension EpisodesViewViewModel {
 			await completion(image)
 		}
 	}
-
 }
 
 // ! UICollectionView
 
 extension EpisodesViewViewModel: UICollectionViewDelegate {
-
 	/// Function to setup the collection view's diffable data source
 	/// - Parameters:
 	///		- collectionView: The collection view
@@ -135,5 +130,4 @@ extension EpisodesViewViewModel: UICollectionViewDelegate {
 			if !isTracked { self.delegate?.didShowToastView() }
 		}
 	}
-
 }

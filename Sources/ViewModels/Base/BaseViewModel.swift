@@ -1,18 +1,17 @@
 import UIKit
 
-/// Base class to handle a generic UICollectionViewDiffableDataSource
+/// Base class to handle a generic `UICollectionViewDiffableDataSource`
 class BaseViewModel<Cell: UICollectionViewCell & Configurable>: NSObject {
-
 	// ! UICollectionViewDiffableDataSource
 
 	typealias ViewModel = Cell.ViewModel
 	private typealias CellRegistration = UICollectionView.CellRegistration<Cell, ViewModel>
-	private typealias DataSource = UICollectionViewDiffableDataSource<Sections, ViewModel>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, ViewModel>
+	private typealias DataSource = UICollectionViewDiffableDataSource<Section, ViewModel>
+	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, ViewModel>
 
 	private var dataSource: DataSource!
 
-	private enum Sections {
+	private enum Section {
 		case main
 	}
 
@@ -62,11 +61,9 @@ class BaseViewModel<Cell: UICollectionViewCell & Configurable>: NSObject {
 		snapshot.appendItems(isOrderedSet ? Array(orderedViewModels) : viewModels)
 		dataSource.apply(snapshot)
 	}
-
 }
 
 extension BaseViewModel {
-
 	// ! Public
 
 	/// Function to apply the snapshot to the diffable data source
@@ -75,5 +72,4 @@ extension BaseViewModel {
 	func applySnapshot(isOrderedSet: Bool = false) {
 		applyDiffableDataSourceSnapshot(isOrderedSet: isOrderedSet)
 	}
-
 }

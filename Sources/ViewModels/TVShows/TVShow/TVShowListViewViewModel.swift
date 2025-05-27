@@ -7,20 +7,18 @@ protocol TVShowListViewViewModelDelegate: AnyObject {
 	func didSelect(tvShow: TVShow)
 }
 
-/// View model class for TopRatedTVShowsCollectionViewCell's collection view
-final class TVShowListViewViewModel: BaseViewModel<TVShowCollectionViewCell> {
-
+/// View model class for TopRatedTVShowsCell's collection view
+final class TVShowListViewViewModel: BaseViewModel<TVShowCell> {
 	private var tvShows = [TVShow]() {
 		didSet {
 			viewModels += tvShows.compactMap { tvShow in
 				guard let url = Service.imageURL(.showPoster(tvShow)) else { return nil }
-				return TVShowCollectionViewCellViewModel(imageURL: url)
+				return TVShowCellViewModel(imageURL: url)
 			}
 		}
 	}
 
 	private var subscriptions = Set<AnyCancellable>()
-
 	weak var delegate: TVShowListViewViewModelDelegate?
 
 	override init(collectionView: UICollectionView) {
@@ -44,11 +42,9 @@ final class TVShowListViewViewModel: BaseViewModel<TVShowCollectionViewCell> {
 			}
 			.store(in: &subscriptions)
 	}
-
 }
 
 extension TVShowListViewViewModel {
-
 	// ! Public
 
 	/// Function to fetch the current top rated tv shows
@@ -60,16 +56,13 @@ extension TVShowListViewViewModel {
 	func fetchTrendingTVShows() {
 		fetchTVShows(withURL: URL(string: Service.Constants.trendingTVShowsURL))
 	}
-
 }
 
 // ! UICollectionViewDelegate
 
 extension TVShowListViewViewModel: UICollectionViewDelegate {
-
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
 		delegate?.didSelect(tvShow: tvShows[indexPath.item])
 	}
-
 }

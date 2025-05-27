@@ -1,8 +1,7 @@
 import UIKit
 
-/// Explore coordinator, which will take care of any navigation events related to ExploreVC
+/// Explore coordinator, which will take care of any navigation events related to `ExploreVC`
 final class ExploreCoordinator: NSObject, Coordinator {
-
 	enum Event {
 		case tvShowCellTapped(tvShow: TVShow)
 		case backButtonTapped
@@ -77,12 +76,10 @@ final class ExploreCoordinator: NSObject, Coordinator {
 		guard let index = childCoordinators.firstIndex(where: { $0 === child }) else { return }
 		childCoordinators.remove(at: index)
 	}
-
 }
 
 /// Custom UINavigationController subclass to reenable swipe behavior with custom push/pop transitions
 final class SwipeableNavigationController: UINavigationController {
-
 	var completion: ((UIViewController) -> Void)?
 	private var isPushAnimation = false
 
@@ -111,24 +108,20 @@ final class SwipeableNavigationController: UINavigationController {
 		isPushAnimation = true
 		super.pushViewController(viewController, animated: animated)
 	}
-
 }
 
 // ! UIGestureRecognizerDelegate
 
 extension SwipeableNavigationController: UIGestureRecognizerDelegate {
-
 	func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
 		guard gestureRecognizer == interactivePopGestureRecognizer else { return true }
 		return viewControllers.count > 1 && isPushAnimation == false
 	}
-
 }
 
 // ! UINavigationControllerDelegate
 
 extension SwipeableNavigationController: UINavigationControllerDelegate {
-
 	func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
 		guard let swipeableNavigationController = navigationController as? SwipeableNavigationController else { return }
 		swipeableNavigationController.isPushAnimation = false
@@ -171,5 +164,4 @@ extension SwipeableNavigationController: UINavigationControllerDelegate {
 		}
 		return PushPopAnimator()
 	}
-
 }

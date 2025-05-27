@@ -8,7 +8,6 @@ protocol SearchTextFieldViewDelegate: AnyObject {
 
 /// UIView subclass to display a custom text field to search for TV shows
 final class SearchTextFieldView: UIView {
-
 	@UsesAutoLayout
 	private var textFieldStackView: UIStackView = {
 		let stackView = UIStackView()
@@ -125,5 +124,4 @@ final class SearchTextFieldView: UIView {
 		button.translatesAutoresizingMaskIntoConstraints = false
 		return button
 	}
-
 }

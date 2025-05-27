@@ -2,7 +2,6 @@ import UIKit
 
 /// Base class to implement a header view
 class BaseHeaderView: UIView {
-
 	private let addRatingsLabel: Bool
 
 	@UsesAutoLayout
@@ -87,7 +86,6 @@ class BaseHeaderView: UIView {
 }
 
 extension BaseHeaderView {
-
 	// ! Public
 
 	/// Function to notify the scroll view when the user started scrolling to act accordingly
@@ -102,5 +100,4 @@ extension BaseHeaderView {
 		headerImageViewBottomConstraint.constant = offsetY >= 0 ? 0 : -offsetY / 2
 		headerImageViewHeightConstraint.constant = max(offsetY + scrollView.contentInset.top, scrollView.contentInset.top)
 	}
-
 }

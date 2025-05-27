@@ -2,7 +2,6 @@ import UIKit
 
 /// Controller that'll show the tv show details view
 final class TVShowDetailsVC: BaseVC {
-
 	let tvShowDetailsViewViewModel: TVShowDetailsViewViewModel
 	private let tvShowDetailsView: TVShowDetailsView
 
@@ -56,15 +55,12 @@ final class TVShowDetailsVC: BaseVC {
 	private func didTapRightBarButton() {
 		coordinator?.eventOccurred(with: .starButtonTapped(tvShow: tvShowDetailsViewViewModel.tvShow))
 	}
-
 }
 
 // ! TVShowDetailsViewDelegate
 
 extension TVShowDetailsVC: TVShowDetailsViewDelegate {
-
 	func didTapSeasonsButton(in tvShowDetailsView: TVShowDetailsView) {
 		coordinator?.pushSeasonsVC(for: tvShowDetailsViewViewModel.tvShow)
 	}
-
 }

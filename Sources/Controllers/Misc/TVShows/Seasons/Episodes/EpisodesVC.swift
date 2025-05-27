@@ -2,7 +2,6 @@ import UIKit
 
 /// Controller that'll show the episodes view
 final class EpisodesVC: BaseVC {
-
 	let episodesViewViewModel: EpisodesViewViewModel
 	private let coordinatorType: CoordinatorType
 	private let episodesView: EpisodesView
@@ -45,15 +44,12 @@ final class EpisodesVC: BaseVC {
 				trackedTVShowsCoordinator.eventOccurred(with: .backButtonTapped)
 		}
 	}
-
 }
 
 // ! EpisodesViewDelegate
 
 extension EpisodesVC: EpisodesViewDelegate {
-
 	func didShowToastView(in episodesView: EpisodesView) {
 		episodesView.fadeInOutToastView()
 	}
-
 }

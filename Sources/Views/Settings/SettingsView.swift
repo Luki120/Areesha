@@ -8,7 +8,6 @@ protocol SettingsViewDelegate: AnyObject {
 
 /// Class to represent the settings view
 final class SettingsView: UIView {
-
 	private let viewModel = SettingsViewViewModel()
 
 	@UsesAutoLayout
@@ -21,8 +20,8 @@ final class SettingsView: UIView {
  		else {
 			tableView.estimatedSectionHeaderHeight = 38
 		}
-		tableView.register(DeveloperTableViewCell.self, forCellReuseIdentifier: DeveloperTableViewCell.identifier)
-		tableView.register(AppTableViewCell.self, forCellReuseIdentifier: AppTableViewCell.identifier)
+		tableView.register(DeveloperCell.self, forCellReuseIdentifier: DeveloperCell.identifier)
+		tableView.register(AppCell.self, forCellReuseIdentifier: AppCell.identifier)
 		tableView.register(UITableViewCell.self, forCellReuseIdentifier: "VanillaCell")
 		return tableView
 	}()
@@ -45,13 +44,11 @@ final class SettingsView: UIView {
 		viewModel.delegate = self
 		viewModel.setupTableView(settingsTableView)
 	}
-
 }
 
 // ! SettingsViewViewModelDelegate
 
 extension SettingsView: SettingsViewViewModelDelegate {
-
 	func didTapApp(_ app: App) {
 		delegate?.settingsView(self, didTap: app)
 	}
@@ -59,5 +56,4 @@ extension SettingsView: SettingsViewViewModelDelegate {
 	func didTapSourceCodeCell() {
 		delegate?.didTapSourceCodeCell(in: self)
 	}
-
 }

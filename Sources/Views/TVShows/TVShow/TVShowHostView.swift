@@ -7,7 +7,6 @@ protocol TVShowHostViewDelegate: AnyObject {
 
 /// Class to represent the tv shows host view
 final class TVShowHostView: UIView {
-
 	private let viewModel = TVShowHostViewViewModel()
 
 	private let compositionalLayout: UICollectionViewCompositionalLayout = {
@@ -61,8 +60,8 @@ final class TVShowHostView: UIView {
 		hostCollectionView.delegate = self
 		hostCollectionView.isPagingEnabled = true
 		hostCollectionView.setCollectionViewLayout(compositionalLayout, animated: true)
-		hostCollectionView.register(TopRatedTVShowsCollectionViewCell.self, forCellWithReuseIdentifier: TopRatedTVShowsCollectionViewCell.identifier)
-		hostCollectionView.register(TrendingTVShowsCollectionViewCell.self, forCellWithReuseIdentifier: TrendingTVShowsCollectionViewCell.identifier)
+		hostCollectionView.register(TopRatedTVShowsCell.self, forCellWithReuseIdentifier: TopRatedTVShowsCell.identifier)
+		hostCollectionView.register(TrendingTVShowsCell.self, forCellWithReuseIdentifier: TrendingTVShowsCell.identifier)
 	}
 
 	private func layoutUI() {
@@ -83,33 +82,27 @@ final class TVShowHostView: UIView {
 		let indexPath = IndexPath(item: indexPath.item, section: 0)
 		hostCollectionView.scrollToItem(at: indexPath, at: [], animated: true)
 	}
-
 }
 
 // ! TopHeaderViewDelegate
 
 extension TVShowHostView: TopHeaderViewDelegate {
-
 	func topHeaderView(_ topHeaderView: TopHeaderView, didSelectItemAt indexPath: IndexPath) {
 		scrollTo(itemAt: indexPath)
 	}
-
 }
 
 // ! TVShowHostViewViewModelDelegate
 
 extension TVShowHostView: TVShowHostViewViewModelDelegate {
-
 	func didSelect(tvShow: TVShow) {
 		delegate?.tvShowHostView(self, didSelect: tvShow)
 	}
-
 }
 
 // ! UICollectionViewDelegate
 
 extension TVShowHostView: UICollectionViewDelegate {
-
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
 		let desiredValue = scrollView.contentOffset.x / 2
 		let maxValue = topHeaderView.frame.width / 2
@@ -126,11 +119,9 @@ extension TVShowHostView: UICollectionViewDelegate {
 		let indexPath = IndexPath(item: Int(index), section: 0)
 		topHeaderView.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
 	}
-
 }
 
 extension TVShowHostView {
-
 	// ! Public
 
 	/// Function to scroll the tv shows list collection view to the top when tapping a tab bar item
@@ -143,12 +134,11 @@ extension TVShowHostView {
 			}
 		}
 		visibleCells.forEach {
-			let cell = $0 as? TopRatedTVShowsCollectionViewCell
+			let cell = $0 as? TopRatedTVShowsCell
 			cell?.collectionView.setContentOffset(
 				CGPoint(x: 0, y: -(cell?.collectionView.safeAreaInsets.top ?? 0)),
 				animated: true
 			)
 		}
 	}
-
 }

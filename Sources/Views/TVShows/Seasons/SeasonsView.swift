@@ -6,7 +6,6 @@ protocol SeasonsViewDelegate: AnyObject {
 
 /// Class to represent the tv show seasons view
 final class SeasonsView: UIView {
-
 	private let viewModel: SeasonsViewViewModel
 
 	private lazy var compositionalLayout: UICollectionViewCompositionalLayout = {
@@ -81,7 +80,7 @@ final class SeasonsView: UIView {
 		collectionView.dataSource = viewModel
 		collectionView.backgroundColor = .systemGroupedBackground
 		collectionView.showsHorizontalScrollIndicator = false
-		collectionView.register(SeasonCollectionViewCell.self, forCellWithReuseIdentifier: SeasonCollectionViewCell.identifier)
+		collectionView.register(SeasonCell.self, forCellWithReuseIdentifier: SeasonCell.identifier)
 		collectionView.translatesAutoresizingMaskIntoConstraints = false
 		addSubview(collectionView)
 		return collectionView
@@ -106,7 +105,6 @@ final class SeasonsView: UIView {
 		viewModel.delegate = self
 		pinViewToAllEdges(seasonsCollectionView)
 	}
-
 }
 
 // ! Public
@@ -124,7 +122,6 @@ extension SeasonsView {
 // ! SeasonsViewViewModelDelegate
 
 extension SeasonsView: SeasonsViewViewModelDelegate {
-
 	func didLoadTVShowSeasons() {
 		seasonsCollectionView.reloadData()
 	}
@@ -132,5 +129,4 @@ extension SeasonsView: SeasonsViewViewModelDelegate {
 	func didSelect(season: Season, from tvShow: TVShow) {
 		delegate?.seasonsView(self, didSelect: season, from: tvShow)
 	}
-
 }

@@ -9,17 +9,16 @@ protocol SeasonsViewViewModelDelegate: AnyObject {
 
 /// View model class for SeasonsView
 final class SeasonsViewViewModel: NSObject {
-
 	var title: String { return tvShow.name }
 
 	private var subscriptions = Set<AnyCancellable>()
-	private var viewModels = OrderedSet<SeasonCollectionViewCellViewModel>()
+	private var viewModels = OrderedSet<SeasonCellViewModel>()
 
 	private var seasons = [Season]() {
 		didSet {
 			viewModels += seasons.compactMap { season in
 				guard let url = Service.imageURL(.seasonPoster(season)) else { return nil }
-				return SeasonCollectionViewCellViewModel(imageURL: url, seasonNameText: season.name ?? "")
+				return SeasonCellViewModel(imageURL: url, seasonNameText: season.name ?? "")
 			}
 		}
 	}
@@ -52,27 +51,23 @@ final class SeasonsViewViewModel: NSObject {
 			}
 			.store(in: &subscriptions)
 	}
-
 }
 
 // ! UICollectionView
 
 extension SeasonsViewViewModel: UICollectionViewDataSource {
-
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		return viewModels.count
 	}
 
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		let cell: SeasonCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
+		let cell: SeasonCell = collectionView.dequeueReusableCell(for: indexPath)
 		cell.configure(with: viewModels[indexPath.item])
 		return cell
 	}
-
 }
 
 extension SeasonsViewViewModel: UICollectionViewDelegate {
-
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
 		delegate?.didSelect(season: seasons[indexPath.item], from: tvShow)
@@ -89,11 +84,9 @@ extension SeasonsViewViewModel: UICollectionViewDelegate {
 			collectionView.focusCenterItem(animated: true)
 		}
 	}
-
 }
 
 private extension UICollectionView {
-
 	func focusCenterItem(animated: Bool) {
 		var contentCenter = contentOffset
 		contentCenter.x += center.x
@@ -117,5 +110,4 @@ private extension UICollectionView {
 		}() else { return }
 		scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
 	}
-
 }

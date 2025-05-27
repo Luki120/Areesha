@@ -1,0 +1,96 @@
+import Combine
+import UIKit
+
+
+protocol FinishedListViewViewModelDelegate: AnyObject {
+	func didSelect(trackedTVShow: TrackedTVShow)
+}
+
+/// View model class for FinishedListView
+final class FinishedListViewViewModel: NSObject {
+
+	private var subscriptions: Set<AnyCancellable> = []
+	weak var delegate: FinishedListViewViewModelDelegate?
+
+	// ! UICollectionViewDiffableDataSource
+
+	private typealias CellRegistration = UICollectionView.CellRegistration<TrackedTVShowListCell, TrackedTVShowCellViewModel>
+	private typealias DataSource = UICollectionViewDiffableDataSource<Section, TrackedTVShowCellViewModel>
+	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, TrackedTVShowCellViewModel>
+
+	private var dataSource: DataSource!
+
+	private enum Section {
+		case main
+	}
+
+	override init() {
+		super.init()
+
+		TrackedTVShowManager.sharedInstance.$filteredTrackedTVShows
+			.sink { [unowned self] filteredTrackedTVShows in
+				applyDiffableDataSourceSnapshot(withModels: filteredTrackedTVShows)
+			}
+			.store(in: &subscriptions)
+	}
+
+}
+
+// ! UICollectionView
+
+extension FinishedListViewViewModel: UICollectionViewDelegate {
+
+	private func setupCollectionViewDiffableDataSource(for collectionView: UICollectionView) {
+		let cellRegistration = CellRegistration { cell, _, viewModel in
+			cell.viewModel = viewModel
+		}
+
+		dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, identifier in
+			let cell = collectionView.dequeueConfiguredReusableCell(
+				using: cellRegistration,
+				for: indexPath,
+				item: identifier
+			)
+			return cell
+		}
+		applyDiffableDataSourceSnapshot(withModels: TrackedTVShowManager.sharedInstance.filteredTrackedTVShows)
+	}
+
+	private func applyDiffableDataSourceSnapshot(withModels models: [TrackedTVShow]) {
+		guard let dataSource else { return }
+
+		let mappedModels = models
+			.map(TrackedTVShowCellViewModel.init(_:))
+
+		var snapshot = Snapshot()
+		snapshot.appendSections([.main])
+		snapshot.appendItems(mappedModels)
+		dataSource.apply(snapshot)
+	}
+
+	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+		collectionView.deselectItem(at: indexPath, animated: true)
+		delegate?.didSelect(trackedTVShow: TrackedTVShowManager.sharedInstance.filteredTrackedTVShows[indexPath.item])
+	}
+
+}
+
+// ! Public
+
+extension FinishedListViewViewModel {
+
+	/// Function to delete an item from the collection view at the given index path
+	/// - Parameters:
+	///		- at: The index path for the item
+	func deleteItem(at indexPath: IndexPath) {
+		TrackedTVShowManager.sharedInstance.deleteTrackedTVShow(at: indexPath.item, isFilteredArray: true)
+	}
+
+	/// Function to setup the diffable data source for the collection view
+	///	- Parameters:
+	///		- for: The collection view
+	func setupDiffableDataSource(for collectionView: UICollectionView) {
+		setupCollectionViewDiffableDataSource(for: collectionView)
+	}
+
+}

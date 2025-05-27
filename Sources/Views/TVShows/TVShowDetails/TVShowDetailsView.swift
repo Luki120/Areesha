@@ -7,7 +7,6 @@ protocol TVShowDetailsViewDelegate: AnyObject {
 
 /// Class to represent the TV show details view
 final class TVShowDetailsView: UIView {
-
 	private let viewModel: TVShowDetailsViewViewModel
 	private var headerView: TVShowDetailsHeaderView!
 
@@ -16,10 +15,10 @@ final class TVShowDetailsView: UIView {
 		let tableView = UITableView()
 		tableView.allowsSelection = false
 		tableView.backgroundColor = .systemBackground
-		tableView.register(TVShowDetailsGenreTableViewCell.self, forCellReuseIdentifier: TVShowDetailsGenreTableViewCell.identifier)
-		tableView.register(TVShowDetailsOverviewTableViewCell.self, forCellReuseIdentifier: TVShowDetailsOverviewTableViewCell.identifier)
-		tableView.register(TVShowDetailsCastTableViewCell.self, forCellReuseIdentifier: TVShowDetailsCastTableViewCell.identifier)
-		tableView.register(TVShowDetailsNetworksTableViewCell.self, forCellReuseIdentifier: TVShowDetailsNetworksTableViewCell.identifier)
+		tableView.register(TVShowDetailsGenreCell.self, forCellReuseIdentifier: TVShowDetailsGenreCell.identifier)
+		tableView.register(TVShowDetailsOverviewCell.self, forCellReuseIdentifier: TVShowDetailsOverviewCell.identifier)
+		tableView.register(TVShowDetailsCastCell.self, forCellReuseIdentifier: TVShowDetailsCastCell.identifier)
+		tableView.register(TVShowDetailsNetworksCell.self, forCellReuseIdentifier: TVShowDetailsNetworksCell.identifier)
 		return tableView
 	}()
 
@@ -80,13 +79,11 @@ final class TVShowDetailsView: UIView {
 			seasonsButton.heightAnchor.constraint(equalToConstant: 50)
 		])		
 	}
-
 }
 
 // ! UITableViewDelegate
 
 extension TVShowDetailsView: UITableViewDelegate {
-
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
 		guard let headerView = tvShowDetailsTableView.tableHeaderView as? TVShowDetailsHeaderView,
 			let vc = parentViewController as? TVShowDetailsVC else { return }
@@ -104,5 +101,4 @@ extension TVShowDetailsView: UITableViewDelegate {
 			if scrolledEnough { self.titleLabel.isHidden = false }
 		}
 	}
-
 }

@@ -2,7 +2,6 @@ import UIKit
 
 /// Root view controller, which will show our tabs
 final class TabBarVC: UITabBarController {
-
 	private let exploreCoordinator = ExploreCoordinator()
 	private let trackedTVShowsCoordinator = TrackedTVShowsCoordinator()
 	private let settingsCoordinator = SettingsCoordinator()
@@ -21,5 +20,4 @@ final class TabBarVC: UITabBarController {
 			settingsCoordinator.navigationController
 		]
 	}
-
 }

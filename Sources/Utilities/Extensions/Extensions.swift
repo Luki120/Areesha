@@ -283,7 +283,6 @@ private extension ReusableView {
 }
 
 extension UICollectionViewCell: ReusableView {}
-
 extension UITableViewCell: ReusableView {}
 
 extension UICollectionView {
@@ -306,7 +305,6 @@ extension UITableView {
 
 @propertyWrapper
 struct UsesAutoLayout<T: UIView> {
-
 	var wrappedValue: T {
 		didSet {
 			wrappedValue.translatesAutoresizingMaskIntoConstraints = false
@@ -317,5 +315,4 @@ struct UsesAutoLayout<T: UIView> {
 		self.wrappedValue = wrappedValue
 		wrappedValue.translatesAutoresizingMaskIntoConstraints = false
 	}
-
 }

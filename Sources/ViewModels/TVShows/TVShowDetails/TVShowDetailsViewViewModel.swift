@@ -1,35 +1,34 @@
 import Combine
 import UIKit
 
-/// View model class for TVShowDetailsView
+/// View model class for `TVShowDetailsView`
 final class TVShowDetailsViewViewModel {
-
 	var title: String { return tvShow.name }
 
-	private var genreCellViewModel = TVShowDetailsGenreTableViewCellViewModel()
-	private var overviewCellViewModel: TVShowDetailsOverviewTableViewCellViewModel!
-	private var castCellViewModel = TVShowDetailsCastTableViewCellViewModel()
-	private var networksCellViewModel = TVShowDetailsNetworksTableViewCellViewModel()
+	private var genreCellViewModel = TVShowDetailsGenreCellViewModel()
+	private var overviewCellViewModel: TVShowDetailsOverviewCellViewModel!
+	private var castCellViewModel = TVShowDetailsCastCellViewModel()
+	private var networksCellViewModel = TVShowDetailsNetworksCellViewModel()
 
 	private var subscriptions = Set<AnyCancellable>()
 
 	// ! UITableViewDiffableDataSource
 
 	private enum CellType: Hashable {
-		case genre(viewModel: TVShowDetailsGenreTableViewCellViewModel)
-		case overview(viewModel: TVShowDetailsOverviewTableViewCellViewModel)
-		case cast(viewModel: TVShowDetailsCastTableViewCellViewModel)
-		case networks(viewModel: TVShowDetailsNetworksTableViewCellViewModel)
+		case genre(viewModel: TVShowDetailsGenreCellViewModel)
+		case overview(viewModel: TVShowDetailsOverviewCellViewModel)
+		case cast(viewModel: TVShowDetailsCastCellViewModel)
+		case networks(viewModel: TVShowDetailsNetworksCellViewModel)
 	}
 
 	private var cells = [CellType]()
 
-	private enum Sections {
+	private enum Section {
 		case main
 	}
 
-	private typealias DataSource = UITableViewDiffableDataSource<Sections, CellType>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, CellType>
+	private typealias DataSource = UITableViewDiffableDataSource<Section, CellType>
+	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CellType>
 
 	private var dataSource: DataSource!
 
@@ -129,13 +128,11 @@ final class TVShowDetailsViewViewModel {
 
 		networksCellViewModel = .init(networksTitleText: "Networks", networksNamesText: networksNamesText)
 	}
-
 }
 
 // ! TableView
 
 extension TVShowDetailsViewViewModel {
-
 	/// Function to setup the table view's header
 	/// - Parameters:
 	///		- view: The view that owns the table view, therefore the header
@@ -155,22 +152,22 @@ extension TVShowDetailsViewViewModel {
 
 			switch cells[indexPath.row] {
 				case .genre:
-					let cell: TVShowDetailsGenreTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: TVShowDetailsGenreCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: genreCellViewModel)
 					return cell
 
 				case .overview(let overviewCellViewModel):
-					let cell: TVShowDetailsOverviewTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: TVShowDetailsOverviewCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: overviewCellViewModel)
 					return cell
 
 				case .cast:
-					let cell: TVShowDetailsCastTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: TVShowDetailsCastCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: castCellViewModel)
 					return cell
 
 				case .networks:
-					let cell: TVShowDetailsNetworksTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: TVShowDetailsNetworksCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: networksCellViewModel)
 					return cell
 			}
@@ -192,5 +189,4 @@ extension TVShowDetailsViewViewModel {
 
 		dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
 	}
-
 }

@@ -7,20 +7,18 @@ protocol TVShowSearchListViewViewModelDelegate: AnyObject {
 	func shouldAnimateNoResultsLabel(isDataSourceEmpty: Bool)
 }
 
-/// View model class for TVShowSearchListView
+/// View model class for `TVShowSearchListView`
 final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCell>, ObservableObject {
-
 	private let searchQuerySubject = PassthroughSubject<String, Never>()
 	private var searchedTVShows = [TVShow]() {
 		didSet {
 			orderedViewModels += searchedTVShows.compactMap { tvShow in
-				return TVShowSearchCollectionViewListCellViewModel(id: tvShow.id, tvShowNameText: tvShow.name)
+				return TVShowSearchListCellViewModel(id: tvShow.id, tvShowNameText: tvShow.name)
 			}
 		}
 	}
 
 	private var subscriptions = Set<AnyCancellable>()
-
 	weak var delegate: TVShowSearchListViewViewModelDelegate?
 
 	override init(collectionView: UICollectionView) {
@@ -59,11 +57,9 @@ final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCel
 			}
 			.store(in: &subscriptions)
 	}
-
 }
 
 extension TVShowSearchListViewViewModel {
-
 	// ! Public
 
 	/// Function to send the query subject
@@ -72,28 +68,23 @@ extension TVShowSearchListViewViewModel {
 	func sendQuerySubject(_ subject: String) {
 		searchQuerySubject.send(subject)
 	}
-
 }
 
 // ! CollectionView
 
 extension UICollectionViewListCell: Configurable {
-
-	func configure(with viewModel: TVShowSearchCollectionViewListCellViewModel) {
+	func configure(with viewModel: TVShowSearchListCellViewModel) {
 		var content = defaultContentConfiguration()
 		content.text = viewModel.tvShowNameText
 		content.textProperties.font = .systemFont(ofSize: 18, weight: .semibold)
 
 		contentConfiguration = content
 	}
-
 }
 
 extension TVShowSearchListViewViewModel: UICollectionViewDelegate {
-
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
 		delegate?.didSelect(tvShow: searchedTVShows[indexPath.item])
 	}
-
 }

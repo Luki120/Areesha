@@ -1,8 +1,7 @@
 import UIKit
 
-/// Settings coordinator, which will take care of any navigation events related to SettingsVC
+/// Settings coordinator, which will take care of any navigation events related to `SettingsVC`
 final class SettingsCoordinator: Coordinator {
-
 	enum Event {
 		case appCellTapped(app: App)
 		case sourceCodeCellTapped
@@ -30,5 +29,4 @@ final class SettingsCoordinator: Coordinator {
 		guard let url else { return }
 		UIApplication.shared.open(url, options: [:], completionHandler: nil)
 	}
-
 }

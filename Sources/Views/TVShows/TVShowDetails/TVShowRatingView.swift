@@ -7,7 +7,6 @@ protocol TVShowRatingViewDelegate: AnyObject {
 
 /// Class to represent the TV show rating view
 final class TVShowRatingView: UIView {
-
 	private let viewModel: TVShowRatingViewViewModel
 
 	private lazy var tvShowPosterImageView = createImageView()
@@ -189,5 +188,4 @@ final class TVShowRatingView: UIView {
 		imageView.translatesAutoresizingMaskIntoConstraints = false
 		return imageView
 	}
-
 }

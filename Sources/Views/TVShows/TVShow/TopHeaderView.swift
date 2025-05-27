@@ -7,7 +7,6 @@ protocol TopHeaderViewDelegate: AnyObject {
 
 /// Class to display a collection view to switch between top rated & trending TV shows
 final class TopHeaderView: UIView {
-
 	private let compositionalLayout: UICollectionViewCompositionalLayout = {
 		let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1 / 2), heightDimension: .fractionalHeight(1))
 		let item = NSCollectionLayoutItem(layoutSize: itemSize)
@@ -91,15 +90,12 @@ final class TopHeaderView: UIView {
 			trailingConstant: -35
 		)
 	}
-
 }
 
 // ! TopHeaderViewViewModelDelegate
 
 extension TopHeaderView: TopHeaderViewViewModelDelegate {
-
-	func didSelectItemAt(indexPath: IndexPath) {
+	func didSelectItem(at indexPath: IndexPath) {
 		delegate?.topHeaderView(self, didSelectItemAt: indexPath)
 	}
-
 }

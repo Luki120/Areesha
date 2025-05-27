@@ -2,12 +2,11 @@ import UIKit
 
 
 protocol TopHeaderViewViewModelDelegate: AnyObject {
-	func didSelectItemAt(indexPath: IndexPath)
+	func didSelectItem(at indexPath: IndexPath)
 }
 
-/// View model class for TopHeaderView
-final class TopHeaderViewViewModel: BaseViewModel<TopHeaderCollectionViewCell> {
-
+/// View model class for `TopHeaderView`
+final class TopHeaderViewViewModel: BaseViewModel<TopHeaderCell> {
 	weak var delegate: TopHeaderViewViewModelDelegate?
 
 	override func awake() {
@@ -19,15 +18,12 @@ final class TopHeaderViewViewModel: BaseViewModel<TopHeaderCollectionViewCell> {
 			cell.configure(with: viewModel)
 		}
 	}
-
 }
 
 // ! UICollectionViewDelegate
 
 extension TopHeaderViewViewModel: UICollectionViewDelegate {
-
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-		delegate?.didSelectItemAt(indexPath: indexPath)
+		delegate?.didSelectItem(at: indexPath)
 	}
-
 }

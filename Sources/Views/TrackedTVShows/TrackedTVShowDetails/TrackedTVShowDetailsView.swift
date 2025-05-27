@@ -2,24 +2,23 @@ import UIKit
 
 
 protocol TrackedTVShowDetailsViewDelegate: AnyObject {
-	func didTapSeasonsButton(in trackedTVShowDetailsTableView: TrackedTVShowDetailsView, tvShow: TVShow)
+	func didTapSeasonsButton(in trackedTVShowDetailsView: TrackedTVShowDetailsView, tvShow: TVShow)
 }
 
 /// Class to represent the tracked tv show details view
 final class TrackedTVShowDetailsView: UIView {
-
 	// ! Lifecycle
 
 	private let viewModel: TrackedTVShowDetailsViewViewModel
-	private var headerView: TrackedTVShowDetailsEpisodeDetailsHeaderView!
+	private var headerView: TrackedTVShowDetailsHeaderView!
 
 	@UsesAutoLayout
 	private var trackedTVShowDetailsTableView: UITableView = {
 		let tableView = UITableView()
 		tableView.allowsSelection = false
 		tableView.backgroundColor = .systemBackground
-		tableView.register(TrackedTVShowDetailsEpisodeDetailsTableViewCell.self, forCellReuseIdentifier: TrackedTVShowDetailsEpisodeDetailsTableViewCell.identifier)
-		tableView.register(TrackedTVShowDetailsOverviewTableViewCell.self, forCellReuseIdentifier: TrackedTVShowDetailsOverviewTableViewCell.identifier)
+		tableView.register(TrackedTVShowDetailsCell.self, forCellReuseIdentifier: TrackedTVShowDetailsCell.identifier)
+		tableView.register(TrackedTVShowDetailsOverviewCell.self, forCellReuseIdentifier: TrackedTVShowDetailsOverviewCell.identifier)
 		return tableView
 	}()
 
@@ -78,15 +77,13 @@ final class TrackedTVShowDetailsView: UIView {
 			seasonsButton.heightAnchor.constraint(equalToConstant: 50)
 		])
 	}
-
 }
 
 // ! UITableViewDelegate
 
 extension TrackedTVShowDetailsView: UITableViewDelegate {
-
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
-		guard let headerView = trackedTVShowDetailsTableView.tableHeaderView as? TrackedTVShowDetailsEpisodeDetailsHeaderView,
+		guard let headerView = trackedTVShowDetailsTableView.tableHeaderView as? TrackedTVShowDetailsHeaderView,
 			let vc = parentViewController as? TrackedTVShowDetailsVC else { return }
 
 		headerView.scrollViewDidScroll(scrollView: scrollView)
@@ -102,5 +99,4 @@ extension TrackedTVShowDetailsView: UITableViewDelegate {
 			if scrolledEnough { self.titleLabel.isHidden = false }
 		}
 	}
-
 }

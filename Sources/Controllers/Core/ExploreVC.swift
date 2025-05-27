@@ -2,7 +2,6 @@ import UIKit
 
 /// Controller that'll show the main tv shows list
 final class ExploreVC: UIViewController {
-
 	var coordinator: ExploreCoordinator?
 	private var previousVC: UIViewController?
 	private var isInitiallyInHomeVC = true
@@ -36,23 +35,19 @@ final class ExploreVC: UIViewController {
 	private func didTapSearchButton() {
 		coordinator?.eventOccurred(with: .searchButtonTapped)
 	}
-
 }
 
 // ! TVShowHostViewDelegate
 
 extension ExploreVC: TVShowHostViewDelegate {
-
 	func tvShowHostView(_ tvShowHostView: TVShowHostView, didSelect tvShow: TVShow) {
 		coordinator?.eventOccurred(with: .tvShowCellTapped(tvShow: tvShow))
 	}
-
 }
 
 // ! UITabBarControllerDelegate
 
 extension ExploreVC: UITabBarControllerDelegate {
-
 	func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
 		if previousVC == viewController || isInitiallyInHomeVC {
 			guard let navVC = viewController as? UINavigationController,
@@ -64,5 +59,4 @@ extension ExploreVC: UITabBarControllerDelegate {
 		}
 		previousVC = viewController
 	}
-
 }

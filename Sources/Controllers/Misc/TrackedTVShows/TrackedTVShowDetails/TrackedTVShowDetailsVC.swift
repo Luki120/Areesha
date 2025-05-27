@@ -2,7 +2,6 @@ import UIKit
 
 /// Controller that'll show the tracked tv show's details view
 final class TrackedTVShowDetailsVC: BaseVC {
-
 	let trackedTVShowDetailsViewViewModel: TrackedTVShowDetailsViewViewModel
 	private let trackedTVShowDetailsView: TrackedTVShowDetailsView
 
@@ -33,15 +32,12 @@ final class TrackedTVShowDetailsVC: BaseVC {
 	override func didTapLeftBarButton() {
 		coordinator?.eventOccurred(with: .backButtonTapped)
 	}
-
 }
 
 // ! TrackedTVShowDetailsViewDelegate
 
 extension TrackedTVShowDetailsVC: TrackedTVShowDetailsViewDelegate {
-
 	func didTapSeasonsButton(in trackedTVShowDetailsView: TrackedTVShowDetailsView, tvShow: TVShow) {
 		coordinator?.eventOccurred(with: .seasonsButtonTapped(tvShow: tvShow))
 	}
-
 }

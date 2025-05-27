@@ -10,16 +10,16 @@ final class TrackedTVShowListViewViewModel: NSObject {
 
 	weak var delegate: TrackedTVShowListViewViewModelDelegate?
 
-	private let cellViewModels: [TrackedTVShowCollectionViewListCellViewModel] = [
+	private let cellViewModels: [TrackedTVShowListCellViewModel] = [
 		.init(text: "Currently watching", imageName: "play"),
 		.init(text: "Finished", imageName: "checkmark")
 	]
 
 	// ! UICollectionViewDiffableDataSource
 
-	private typealias CellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, TrackedTVShowCollectionViewListCellViewModel>
-	private typealias DataSource = UICollectionViewDiffableDataSource<Sections, TrackedTVShowCollectionViewListCellViewModel>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, TrackedTVShowCollectionViewListCellViewModel>
+	private typealias CellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, TrackedTVShowListCellViewModel>
+	private typealias DataSource = UICollectionViewDiffableDataSource<Sections, TrackedTVShowListCellViewModel>
+	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, TrackedTVShowListCellViewModel>
 
 	private var dataSource: DataSource!
 
@@ -33,7 +33,7 @@ final class TrackedTVShowListViewViewModel: NSObject {
 
 extension UICollectionViewListCell {
 
-	func configureCell(with viewModel: TrackedTVShowCollectionViewListCellViewModel) {
+	func configureCell(with viewModel: TrackedTVShowListCellViewModel) {
 		var content = defaultContentConfiguration()
 		content.text = viewModel.text
 		content.image = UIImage(systemName: viewModel.imageName)

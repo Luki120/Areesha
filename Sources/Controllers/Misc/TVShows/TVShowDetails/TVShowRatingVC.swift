@@ -2,7 +2,6 @@ import UIKit
 
 /// Controller that'll show the tv show rating view
 final class TVShowRatingVC: BaseVC {
-
 	private let viewModel: TVShowRatingViewViewModel
 	private let tvShowRatingView: TVShowRatingView
 
@@ -45,15 +44,12 @@ final class TVShowRatingVC: BaseVC {
 	override func didTapLeftBarButton() {
 		coordinator?.eventOccurred(with: .backButtonTapped)
 	}
-
 }
 
 // ! TVShowRatingViewDelegate
 
 extension TVShowRatingVC: TVShowRatingViewDelegate {
-
 	func didAddRating(in tvShowRatingView: TVShowRatingView) {
 		coordinator?.eventOccurred(with: .popVC)
 	}
-
 }

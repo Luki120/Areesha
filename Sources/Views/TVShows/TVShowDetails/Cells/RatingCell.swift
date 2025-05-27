@@ -1,11 +1,9 @@
 import UIKit
 
-
+/// Class to represent the rating cell
 final class RatingCell: UICollectionViewCell {
-
 	private lazy var starImageView: UIImageView = {
 		let imageView = UIImageView()
-		imageView.image = .init(systemName: "star")
 		imageView.contentMode = .scaleAspectFill
 		imageView.clipsToBounds = true
 		imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -23,13 +21,15 @@ final class RatingCell: UICollectionViewCell {
 		super.init(frame: frame)
 		contentView.pinViewToAllEdges(starImageView)
 	}
-
 }
 
 extension RatingCell {
+	// ! Public
 
+	/// Function to configure the cell with its respective view model
+	/// - Parameters:
+	/// 	- with: The cell's view model
 	func configure(with viewModel: RatingCellViewModel) {
 		starImageView.image = .init(systemName: viewModel.image)
 	}
-
 }

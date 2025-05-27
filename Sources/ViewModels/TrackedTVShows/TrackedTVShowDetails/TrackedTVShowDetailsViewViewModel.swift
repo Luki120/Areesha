@@ -1,26 +1,25 @@
 import UIKit
 
-/// View model class for TrackedTVShowDetailsView
+/// View model class for `TrackedTVShowDetailsView`
 final class TrackedTVShowDetailsViewViewModel {
-
 	var title: String { return trackedTVShow.episode.name ?? "" }
 	var tvShow: TVShow { return trackedTVShow.tvShow }
 
-	private var episodeDetailsCellViewModel: TrackedTVShowDetailsEpisodeDetailsTableViewCellViewModel {
+	private var episodeDetailsCellViewModel: TrackedTVShowDetailsCellViewModel {
 		return .init(
 			episodeNumber: trackedTVShow.episode.number ?? 0,
 			episodeAirDateText: trackedTVShow.episode.airDate ?? ""
 		)
 	}
-	private var overviewCellViewModel: TrackedTVShowDetailsOverviewTableViewCellViewModel {
+	private var overviewCellViewModel: TrackedTVShowDetailsOverviewCellViewModel {
 		return .init(overviewText: trackedTVShow.episode.description ?? "")
 	}
 
 	// ! UITableViewDiffableDataSource
 
 	private enum CellType: Hashable {
-		case episodeDetails(viewModel: TrackedTVShowDetailsEpisodeDetailsTableViewCellViewModel)
-		case overview(viewModel: TrackedTVShowDetailsOverviewTableViewCellViewModel)
+		case episodeDetails(viewModel: TrackedTVShowDetailsCellViewModel)
+		case overview(viewModel: TrackedTVShowDetailsOverviewCellViewModel)
 	}
 
 	private var cells: [CellType] {
@@ -30,12 +29,12 @@ final class TrackedTVShowDetailsViewViewModel {
 		]
 	}
 
-	private enum Sections {
+	private enum Section {
 		case main
 	}
 
-	private typealias DataSource = UITableViewDiffableDataSource<Sections, CellType>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Sections, CellType>
+	private typealias DataSource = UITableViewDiffableDataSource<Section, CellType>
+	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CellType>
 
 	private var dataSource: DataSource!
 
@@ -48,23 +47,21 @@ final class TrackedTVShowDetailsViewViewModel {
 		self.trackedTVShow = trackedTVShow
 	}
 
-	private func setupHeaderViewModel() -> TrackedTVShowDetailsEpisodeDetailsHeaderViewViewModel {
+	private func setupHeaderViewModel() -> TrackedTVShowDetailsHeaderViewViewModel {
 		guard let url = Service.imageURL(.episodeStill(trackedTVShow.episode), size: "w1280") else { fatalError() }
 
 		return .init(imageURL: url, episodeNameText: trackedTVShow.episode.name ?? "")
 	}
-
 }
 
 // ! TableView
 
 extension TrackedTVShowDetailsViewViewModel {
-
 	/// Function to setup the table view's header
 	/// - Parameters:
 	///		- view: The view that owns the table view, therefore the header
-	func setupEpisodeHeaderView(forView view: UIView) -> TrackedTVShowDetailsEpisodeDetailsHeaderView {
-		let headerView = TrackedTVShowDetailsEpisodeDetailsHeaderView(addRatingsLabel: false)
+	func setupEpisodeHeaderView(forView view: UIView) -> TrackedTVShowDetailsHeaderView {
+		let headerView = TrackedTVShowDetailsHeaderView(addRatingsLabel: false)
 		headerView.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 160)
 		headerView.configure(with: setupHeaderViewModel())
 		return headerView
@@ -79,12 +76,12 @@ extension TrackedTVShowDetailsViewViewModel {
 
 			switch cells[indexPath.row] {
 				case .episodeDetails(let episodeDetailsCellViewModel):
-					let cell: TrackedTVShowDetailsEpisodeDetailsTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: TrackedTVShowDetailsCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: episodeDetailsCellViewModel)
 					return cell
 
 				case .overview(let overviewCellViewModel):
-					let cell: TrackedTVShowDetailsOverviewTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: TrackedTVShowDetailsOverviewCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: overviewCellViewModel)
 					return cell
 			}
@@ -98,5 +95,4 @@ extension TrackedTVShowDetailsViewViewModel {
 		snapshot.appendItems(cells)
 		dataSource.apply(snapshot)
 	}
-
 }

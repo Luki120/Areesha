@@ -2,7 +2,6 @@ import UIKit
 
 /// Class to represent the settings footer view
 final class SettingsFooterView: UIView {
-
 	private lazy var footerLabel: UILabel = {
 		let label = UILabel()
 		label.font = .systemFont(ofSize: 12)
@@ -56,11 +55,9 @@ final class SettingsFooterView: UIView {
 			UIApplication.shared.open(url)
 		}
 	}
-
 }
 
 extension SettingsFooterView {
-
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
@@ -78,5 +75,4 @@ extension SettingsFooterView {
 			subStringColor: .link
 		)
 	}
-
 }

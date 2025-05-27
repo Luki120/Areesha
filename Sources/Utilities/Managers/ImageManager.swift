@@ -2,7 +2,6 @@ import UIKit
 
 /// Singleton manager to handle the image fetching logic
 final class ImageManager {
-
 	static let sharedInstance = ImageManager()
 	private init() {}
 
@@ -11,7 +10,7 @@ final class ImageManager {
 	/// Function that'll handle the image fetching data task
 	/// - Parameters:
 	///		- url: The image's url, optional as it may be nil
-	/// - Returns: A tuple of type UIImage & Bool
+	/// - Returns: `(UIImage, Bool)`
 	@_disfavoredOverload
 	func fetchImageAsync(_ url: URL?) async throws -> (UIImage, Bool) {
 		guard let url else { throw URLError(.badURL) }
@@ -37,7 +36,7 @@ final class ImageManager {
 	/// Function that'll handle the image fetching data task
 	/// - Parameters:
 	///		- url: The image's url, optional as it may be nil
-	/// - Returns: A UIImage
+	/// - Returns: `UIImage`
 	func fetchImageAsync(_ url: URL?) async throws -> UIImage {
 		guard let url else { throw URLError(.badURL) }
 
@@ -56,5 +55,4 @@ final class ImageManager {
 			task.resume()
 		}
 	}
-
 }

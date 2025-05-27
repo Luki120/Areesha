@@ -7,9 +7,8 @@ protocol ImageFetching {
 }
 
 extension ImageFetching {
-
 	/// Function to retrieve the tv show season image either from the cache or the network
-	/// - Returns: A tuple of type UIImage & Bool
+	/// - Returns: `(UIImage, Bool)`
 	@_disfavoredOverload
 	func fetchImage() async throws -> (UIImage, Bool) {
 		guard let imageURL else { throw URLError(.badURL) }
@@ -17,12 +16,11 @@ extension ImageFetching {
 	}
 
 	/// Function to retrieve the tv show season image either from the cache or the network
-	/// - Returns: A UIImage
+	/// - Returns: `UIImage`
 	func fetchImage() async throws -> UIImage {
 		guard let imageURL else { throw URLError(.badURL) }
 
 		let (image, _) = try await ImageManager.sharedInstance.fetchImageAsync(imageURL)
 		return image
 	}
-
 }

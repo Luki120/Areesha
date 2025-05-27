@@ -6,9 +6,8 @@ protocol SettingsViewViewModelDelegate: AnyObject {
 	func didTapSourceCodeCell()
 }
 
-/// View model class for SettingsView
+/// View model class for `SettingsView`
 final class SettingsViewViewModel: NSObject {
-
 	weak var delegate: SettingsViewViewModelDelegate?
 
 	// ! UITableViewDiffableDataSource
@@ -24,7 +23,7 @@ final class SettingsViewViewModel: NSObject {
 		static let developers: Section = .init(name: "Developers",
 			viewModels: [
 				.init(viewModel:
-					DeveloperTableViewCellViewModel(
+					DeveloperCellViewModel(
 						lukiImageURL: URL(string: Developer.lukiIcon),
 						leptosImageURL: URL(string: Developer.leptosIcon),
 						lukiNameText: Developer.lukiName,
@@ -36,14 +35,14 @@ final class SettingsViewViewModel: NSObject {
 
 		static let apps: Section = .init(name: "Other apps you may like",
 			viewModels: [
-				.init(viewModel: AppTableViewCellViewModel(app: .azure)),
-				.init(viewModel: AppTableViewCellViewModel(app: .chelsea))
+				.init(viewModel: AppCellViewModel(app: .azure)),
+				.init(viewModel: AppCellViewModel(app: .chelsea))
 			]
 		)
 
 		static let sourceCode: Section = .init(name: "View the source",
 			viewModels: [
-				.init(viewModel: SourceCodeTableViewCellViewModel(text: "Source Code"))
+				.init(viewModel: SourceCodeCellViewModel(text: "Source Code"))
 			]
 		)
 	}
@@ -72,25 +71,21 @@ final class SettingsViewViewModel: NSObject {
 			urlString: "https://icons8.com/icon/EYpsuynPA2Ra/clapperboard"
 		)
 	}
-
 }
 
 // ! UITableView
 
 private extension UITableViewCell {
-
-	func configure(with viewModel: SourceCodeTableViewCellViewModel) {
+	func configure(with viewModel: SourceCodeCellViewModel) {
 		var content = defaultContentConfiguration()
 		content.text = viewModel.text
 		content.textProperties.font = .systemFont(ofSize: 16)
 
 		contentConfiguration = content
 	}
-
 }
 
 extension SettingsViewViewModel: UITableViewDelegate {
-
 	final private class WorkingDataSource: DataSource {
 		override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
 			let section = self.snapshot().sectionIdentifiers[section]
@@ -117,21 +112,21 @@ extension SettingsViewViewModel: UITableViewDelegate {
 
 			switch sections[indexPath.section] {
 				case .developers:
-					guard let developerViewModel = item.viewModel as? DeveloperTableViewCellViewModel else { fatalError() }
+					guard let developerViewModel = item.viewModel as? DeveloperCellViewModel else { fatalError() }
 
-					let cell: DeveloperTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: DeveloperCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: developerViewModel)
 					return cell
 
 				case .apps:
-					guard let appViewModel = item.viewModel as? AppTableViewCellViewModel else { fatalError() }
+					guard let appViewModel = item.viewModel as? AppCellViewModel else { fatalError() }
 
-					let cell: AppTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: AppCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: appViewModel)
 					return cell
 
 				case .sourceCode:
-					guard let sourceCodeViewModel = item.viewModel as? SourceCodeTableViewCellViewModel else { fatalError() }
+					guard let sourceCodeViewModel = item.viewModel as? SourceCodeCellViewModel else { fatalError() }
 
 					let cell = tableView.dequeueReusableCell(withIdentifier: "VanillaCell", for: indexPath)
 					cell.configure(with: sourceCodeViewModel)
@@ -164,7 +159,7 @@ extension SettingsViewViewModel: UITableViewDelegate {
 
 		switch sections[indexPath.section] {
 			case .apps:
-				guard let viewModel = sections[indexPath.section].viewModels[indexPath.row].viewModel as? AppTableViewCellViewModel else {
+				guard let viewModel = sections[indexPath.section].viewModels[indexPath.row].viewModel as? AppCellViewModel else {
 					return
 				}
 				delegate?.didTapApp(viewModel.app)
@@ -173,7 +168,5 @@ extension SettingsViewViewModel: UITableViewDelegate {
 
 			default: break
 		}
-
 	}
-
 }

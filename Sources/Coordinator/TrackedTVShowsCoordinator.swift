@@ -1,14 +1,13 @@
 import UIKit
 
-/// Tracked tv shows coordinator, which will take care of any navigation events related to TrackedTVShowsVC
+/// Tracked tv shows coordinator, which will take care of any navigation events related to `TrackedTVShowsVC`
 final class TrackedTVShowsCoordinator: Coordinator {
-
 	enum Event {
 		case cellTapped(indexPath: IndexPath)
 		case backButtonTapped
 		case trackedTVShowCellTapped(trackedTVShow: TrackedTVShow)
 		case sortButtonTapped(
-			viewModel: CurrentlyWatchingTrackedTVShowListViewViewModel,
+			viewModel: CurrentlyWatchingListViewViewModel,
 			option: TrackedTVShowManager.SortOption
 		)
 		case seasonsButtonTapped(tvShow: TVShow)
@@ -31,12 +30,12 @@ final class TrackedTVShowsCoordinator: Coordinator {
 			case .cellTapped(let indexPath):
 				switch indexPath.item {
 					case 0:
-						let currentlyWatchingTrackedTVShowsVC = CurrentlyWatchingTrackedTVShowsVC()
+						let currentlyWatchingTrackedTVShowsVC = CurrentlyWatchingVC()
 						currentlyWatchingTrackedTVShowsVC.coordinator = self
 						navigationController.pushViewController(currentlyWatchingTrackedTVShowsVC, animated: true)
 
 					case 1:
-						let finishedTrackedTVShowsVC = FinishedTrackedTVShowsVC()
+						let finishedTrackedTVShowsVC = FinishedVC()
 						finishedTrackedTVShowsVC.coordinator = self
 						navigationController.pushViewController(finishedTrackedTVShowsVC, animated: true)
 	
@@ -66,5 +65,4 @@ final class TrackedTVShowsCoordinator: Coordinator {
 				navigationController.pushViewController(episodesVC, animated: true)
 		}
 	}
-
 }

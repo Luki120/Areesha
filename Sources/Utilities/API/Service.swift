@@ -3,7 +3,6 @@ import Foundation
 
 /// Singleton service to make API calls
 final class Service {
-
 	static let sharedInstance = Service()
 	private init() {}
 
@@ -88,11 +87,9 @@ final class Service {
 			.receive(on: DispatchQueue.main)
 			.eraseToAnyPublisher()
 	}
-
 }
 
 extension Service {
-
 	/// Enum to represent the different types of images
 	enum ImageFetch {
 		case showPoster(TVShow)
@@ -118,5 +115,4 @@ extension Service {
 		guard let path = image.path else { return nil }
 		return URL(string: "https://image.tmdb.org/t/p/\(size)/\(path)")
 	}
-
 }
