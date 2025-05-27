@@ -2,9 +2,8 @@ import Combine
 import Foundation
 import UIKit.UIImage
 
-/// View model class for `TVShowRatingVi
+/// View model class for `TVShowRatingView`
 final class TVShowRatingViewViewModel: NSObject {
-
 	private var viewModels = [RatingCellViewModel]()
 	private var subscriptions = Set<AnyCancellable>()
 
@@ -33,13 +32,11 @@ final class TVShowRatingViewViewModel: NSObject {
 			viewModels.append(.init())
 		}
 	}
-
 }
 
 // ! Public
 
 extension TVShowRatingViewViewModel {
-
 	/// Function to add a rating for a given TV show
 	/// - Parameters:
 	///		- completion: Escaping closure that takes no arguments & returns nothing
@@ -60,7 +57,7 @@ extension TVShowRatingViewViewModel {
 			guard let imageURL = Service.imageURL(.showPoster(self.tvShow), size: "w1280"),
 				let backgroundImage = try? await ImageManager.sharedInstance.fetchImageAsync(imageURL) else { return }
 
-			guard let imageURL = Service.imageURL(.showPoster(self.tvShow), size: "w500"),
+			guard let imageURL = Service.imageURL(.showPoster(self.tvShow)),
 				let posterImage = try? await ImageManager.sharedInstance.fetchImageAsync(imageURL) else { return }
 
 			await completion([backgroundImage, posterImage])
@@ -71,7 +68,6 @@ extension TVShowRatingViewViewModel {
 // ! UICollectionView
 
 extension TVShowRatingViewViewModel: UICollectionViewDelegate {
-
 	/// Function to setup the collection view's diffable data source
 	/// - Parameters:
 	///		- collectionView: The collection view
@@ -106,5 +102,4 @@ extension TVShowRatingViewViewModel: UICollectionViewDelegate {
 		}
 		applyDiffableDataSourceSnapshot()
 	}
-
 }
