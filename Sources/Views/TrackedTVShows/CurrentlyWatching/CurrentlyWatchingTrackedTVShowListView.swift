@@ -86,7 +86,16 @@ final class CurrentlyWatchingTrackedTVShowListView: UIView {
 				completion(true)
 			}
 			leadingAction.backgroundColor = .systemOrange
-			return UISwipeActionsConfiguration(actions: [leadingAction])
+
+			let trackNextEpisodeAction = UIContextualAction(style: .destructive, title: "Track next") { _, _, completion in
+				self.viewModel.trackNextEpisode(at: indexPath)
+				completion(true)
+			}
+			trackNextEpisodeAction.backgroundColor = .systemGreen
+
+			return UISwipeActionsConfiguration(
+				actions: sectionIndex == 0 ? [leadingAction, trackNextEpisodeAction] : [leadingAction]
+			)
 		}
 
 		listConfig.trailingSwipeActionsConfigurationProvider = { indexPath in

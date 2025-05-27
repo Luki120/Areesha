@@ -157,6 +157,14 @@ extension CurrentlyWatchingTrackedTVShowListViewViewModel {
 		dataSource.apply(snapshot)
 	}
 
+	/// Function to sort the tv show models according to the given option
+	/// - Parameters:
+	///		- withOption: The option
+	func didSortDataSource(withOption option: TrackedTVShowManager.SortOption) {
+		trackedManager.didSortModels(withOption: option)
+		applyDiffableDataSourceSnapshot(withModels: trackedManager.trackedTVShows)
+	}
+
 	/// Function to mark a tv show as finished
 	/// - Parameters:
 	///		- at: The index path for the item
@@ -180,15 +188,85 @@ extension CurrentlyWatchingTrackedTVShowListViewViewModel {
 	}
 
 	/// Function to setup the diffable data source for the collection view
+	/// - Parameters:
+	///		- for: The collection view
 	func setupDiffableDataSource(for collectionView: UICollectionView) {
 		setupCollectionViewDiffableDataSource(for: collectionView)
 	}
 
-	/// Function to sort the tv show models according to the given option
+	/// Function to track the next episode if available
 	/// - Parameters:
-	///		- withOption: The option
-	func didSortDataSource(withOption option: TrackedTVShowManager.SortOption) {
-		trackedManager.didSortModels(withOption: option)
+	///		- at: The current index path for the item
+	func trackNextEpisode(at indexPath: IndexPath) {
+		guard let index = getModelIndex(for: indexPath) else { return }
+
+		let tvShow = trackedManager.trackedTVShows[index].tvShow
+		let currentSeason = trackedManager.trackedTVShows[index].season
+		let currentEpisode = trackedManager.trackedTVShows[index].episode
+
+		fetchSeasonDetails(url: getURL(for: currentSeason, tvShow: tvShow)) { [weak self] season in
+			guard let self else { return }
+
+			if let episodes = season.episodes,
+				let nextEpisode = episodes.first(where: { $0.number == (currentEpisode.number ?? 0) + 1 }) {
+					track(tvShow: tvShow, season: season, episode: nextEpisode)
+			}
+			else {
+				fetchTVShowSeasons(for: tvShow) { [weak self] seasons in
+					guard let self else { return }
+					guard let nextSeason = seasons.first(where: { $0.number == (currentSeason.number ?? 0) + 1 }) else {
+						return
+					}
+					fetchSeasonDetails(url: getURL(for: nextSeason, tvShow: tvShow)) { [weak self] nextSeason in
+						guard let firstEpisode = nextSeason.episodes?.first(where: { $0.number == 1 }) else { return }
+						self?.track(tvShow: tvShow, season: nextSeason, episode: firstEpisode)
+					}
+				}
+			}
+		}
+	}
+
+}
+
+// ! Track next episode logic
+
+extension CurrentlyWatchingTrackedTVShowListViewViewModel {
+
+	private func getURL(for season: Season, tvShow: TVShow) -> URL? {
+		guard let url = URL(string: "\(Service.Constants.baseURL)tv/\(tvShow.id)/season/\(season.number ?? 0)?\(Service.Constants.apiKey)") else {
+			return nil
+		}
+
+		return url
+	}
+
+	private func fetchTVShowSeasons(for show: TVShow, completion: @escaping ([Season]) -> Void) {
+		let urlString = "\(Service.Constants.baseURL)tv/\(show.id)?\(Service.Constants.apiKey)"
+		guard let url = URL(string: urlString) else { return }	
+
+		Service.sharedInstance.fetchTVShows(withURL: url, expecting: TVShow.self)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveCompletion: { _ in }) { tvShow in
+				guard let seasons = tvShow.seasons else { return }
+				completion(seasons)
+			}
+			.store(in: &subscriptions)
+	}
+
+	private func fetchSeasonDetails(url: URL?, completion: @escaping (Season) -> ()) {
+		guard let url else { return }
+
+		Service.sharedInstance.fetchTVShows(withURL: url, expecting: Season.self)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveCompletion: { _ in }) { season in
+				completion(season)
+				
+			}
+			.store(in: &subscriptions)
+	}
+
+	private func track(tvShow: TVShow, season: Season, episode: Episode) {
+		trackedManager.track(tvShow: tvShow, season: season, episode: episode) { _ in }
 		applyDiffableDataSourceSnapshot(withModels: trackedManager.trackedTVShows)
 	}
 
