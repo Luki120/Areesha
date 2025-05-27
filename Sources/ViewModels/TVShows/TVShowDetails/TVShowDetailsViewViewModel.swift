@@ -49,7 +49,7 @@ final class TVShowDetailsViewViewModel {
 	private func setupModels() {
 		cells = [
 			.genre(viewModel: genreCellViewModel),
-			.overview(viewModel: .init(overviewText: tvShow.overview)),
+			.overview(viewModel: .init(overviewText: tvShow.description)),
 			.cast(viewModel: castCellViewModel),
 			.networks(viewModel: networksCellViewModel)
 		]
@@ -100,16 +100,16 @@ final class TVShowDetailsViewViewModel {
 	}
 
 	private func updateGenresNames(with genres: [Genre], for tvShow: TVShow) {
-		let episodeRunTimes = tvShow.episodeRunTime ?? []
-		let episodeRunTimeValues = episodeRunTimes.map { String($0) }
+		let episodeAverageDurations = tvShow.episodeAverageDurations ?? []
+		let episodeAverageDurationsValues = episodeAverageDurations.map { String($0) }
 
-		let episodeAverageDurationText = episodeRunTimes.isEmpty ? "" : String(describing: episodeRunTimeValues.joined(separator: ", ")) + " min"
+		let episodeAverageDuration = episodeAverageDurations.isEmpty ? "" : String(describing: episodeAverageDurationsValues.joined(separator: ", ")) + " min"
 
 		let genresNames = genres.map(\.name)
 
 		genreCellViewModel = .init(
 			genreText: genresNames.joined(separator: ", "),
-			episodeAverageDurationText: episodeAverageDurationText,
+			episodeAverageDurationText: episodeAverageDuration,
 			lastAirDateText: tvShow.lastAirDate,
 			statusText: tvShow.status
 		)

@@ -12,6 +12,7 @@ final class Service {
 	enum Constants {
 		static let apiKey = "api_key=\(_Constants.apiKey)"
 		static let baseURL = "https://api.themoviedb.org/3/"
+		static let imageBaseURL = "https://image.tmdb.org/t/p/"
 		static let topRatedTVShowsURL = "\(baseURL)tv/top_rated?\(apiKey)"
 		static let trendingTVShowsURL = "\(baseURL)trending/tv/day?\(apiKey)"
 		static let searchTVShowBaseURL = "\(baseURL)search/tv?\(apiKey)"
@@ -99,10 +100,10 @@ extension Service {
 
 		var path: String? {
 			switch self {
-				case .showPoster(let show): return show.posterPath
-				case .showBackdrop(let show): return show.backdropPath
-				case .seasonPoster(let season): return season.posterPath
-				case .episodeStill(let episode): return episode.stillPath
+				case .showPoster(let show): return show.coverImage
+				case .showBackdrop(let show): return show.backgroundCoverImage
+				case .seasonPoster(let season): return season.coverImage
+				case .episodeStill(let episode): return episode.coverImage
 			}
 		}
 	}
@@ -113,6 +114,6 @@ extension Service {
 	///		- size: A string representing the size of the image
 	static func imageURL(_ image: ImageFetch, size: String = "w500") -> URL? {
 		guard let path = image.path else { return nil }
-		return URL(string: "https://image.tmdb.org/t/p/\(size)/\(path)")
+		return URL(string: String(describing: Constants.imageBaseURL + size + "/" + path))
 	}
 }

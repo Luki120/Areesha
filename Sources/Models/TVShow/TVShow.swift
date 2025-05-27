@@ -8,10 +8,10 @@ struct APIResponse: Codable {
 struct TVShow: Codable {
 	let id: Int
 	let name: String
-	let overview: String
-	let posterPath: String?
-	let backdropPath: String?
-	let episodeRunTime: [Int]?
+	let coverImage: String?
+	let description: String
+	let backgroundCoverImage: String?
+	let episodeAverageDurations: [Int]?
 	let genres: [Genre]?
 	let lastAirDate: String?
 	let networks: [Network]?
@@ -22,10 +22,10 @@ struct TVShow: Codable {
 	enum CodingKeys: String, CodingKey {
 		case id
 		case name
-		case overview
-		case posterPath = "poster_path"
-		case backdropPath = "backdrop_path"
-		case episodeRunTime = "episode_run_time"
+		case coverImage = "poster_path"
+		case description = "overview"
+		case backgroundCoverImage = "backdrop_path"
+		case episodeAverageDurations = "episode_run_time"
 		case genres
 		case lastAirDate = "last_air_date"
 		case networks
@@ -47,13 +47,13 @@ struct Season: Codable {
 	let name: String?
 	let number: Int?
 	let episodes: [Episode]?
-	let posterPath: String?
+	let coverImage: String?
 
 	enum CodingKeys: String, CodingKey {
 		case name
 		case number = "season_number"
 		case episodes
-		case posterPath = "poster_path"
+		case coverImage = "poster_path"
 	}
 }
 
@@ -65,7 +65,7 @@ struct Episode: Codable {
 	let duration: Int?
 	let description: String?
 	let seasonNumber: Int?
-	let stillPath: String?
+	let coverImage: String?
 
 	enum CodingKeys: String, CodingKey {
 		case id
@@ -75,6 +75,6 @@ struct Episode: Codable {
 		case duration = "runtime"
 		case description = "overview"
 		case seasonNumber = "season_number"
-		case stillPath = "still_path"
+		case coverImage = "still_path"
 	}
 }
