@@ -45,34 +45,36 @@ struct Network: Codable {
 
 struct Season: Codable {
 	let name: String?
-	let posterPath: String?
+	let number: Int?
 	let episodes: [Episode]?
-	let seasonNumber: Int?
+	let posterPath: String?
 
 	enum CodingKeys: String, CodingKey {
 		case name
-		case posterPath = "poster_path"
+		case number = "season_number"
 		case episodes
-		case seasonNumber = "season_number"
+		case posterPath = "poster_path"
 	}
 }
 
 struct Episode: Codable {
 	let id: Int
-	let airDate: String?
-	let episodeNumber: Int?
 	let name: String?
-	let overview: String?
-	let runtime: Int?
+	let number: Int?
+	let airDate: String?
+	let duration: Int?
+	let description: String?
+	let seasonNumber: Int?
 	let stillPath: String?
 
 	enum CodingKeys: String, CodingKey {
 		case id
-		case airDate = "air_date"
-		case episodeNumber = "episode_number"
 		case name
-		case overview
-		case runtime
+		case number = "episode_number"
+		case airDate = "air_date"
+		case duration = "runtime"
+		case description = "overview"
+		case seasonNumber = "season_number"
 		case stillPath = "still_path"
 	}
 }

@@ -44,7 +44,7 @@ final class EpisodesViewViewModel: NSObject {
 	}
 
 	private func fetchSeasonDetails() {
-		guard let url = URL(string: "\(Service.Constants.baseURL)tv/\(tvShow.id)/season/\(season.seasonNumber ?? 0)?\(Service.Constants.apiKey)") else {
+		guard let url = URL(string: "\(Service.Constants.baseURL)tv/\(tvShow.id)/season/\(season.number ?? 0)?\(Service.Constants.apiKey)") else {
 			return
 		}
 
@@ -67,9 +67,9 @@ final class EpisodesViewViewModel: NSObject {
 
 			return EpisodeCollectionViewCellViewModel(
 				imageURL: url,
-				episodeNameText: "\(episode.episodeNumber ?? 0). \(episode.name ?? "")",
-				episodeDurationText: "\(episode.runtime ?? 0) min",
-				episodeDescriptionText: episode.overview ?? ""
+				episodeNameText: "\(episode.number ?? 0). \(episode.name ?? "")",
+				episodeDurationText: "\(episode.duration ?? 0) min",
+				episodeDescriptionText: episode.description ?? ""
 			)
 		}
 	}

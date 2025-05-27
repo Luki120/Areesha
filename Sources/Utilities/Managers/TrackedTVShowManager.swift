@@ -77,8 +77,8 @@ extension TrackedTVShowManager {
 	///     if the tv show with the given episode id is already being tracked or not
 	func track(tvShow: TVShow, season: Season, episode: Episode, completion: @escaping (Bool) -> ()) {
 		guard let url = Service.imageURL(.episodeStill(episode)),
-			let seasonNumber = season.seasonNumber,
-			let episodeNumber = episode.episodeNumber else { return }
+			let seasonNumber = season.number,
+			let episodeNumber = episode.number else { return }
 
 		let isSeasonInDesiredRange = 1..<10 ~= seasonNumber
 		let isEpisodeInDesiredRange = 1..<10 ~= episodeNumber
@@ -87,11 +87,11 @@ extension TrackedTVShowManager {
 
 		let trackedTVShow = TrackedTVShow(
 			tvShow: tvShow,
-			imageURL: url,
 			name: tvShow.name,
-			lastSeen: "Last seen: S\(cleanSeasonNumber)E\(cleanSeasonEpisode)",
+			imageURL: url,
+			season: season,
 			episode: episode,
-			episodeID: episode.id
+			lastSeen: "Last seen: S\(cleanSeasonNumber)E\(cleanSeasonEpisode)",
 		)
 
 		guard !trackedTVShows.contains(trackedTVShow) else {

@@ -8,12 +8,12 @@ final class TrackedTVShowDetailsViewViewModel {
 
 	private var episodeDetailsCellViewModel: TrackedTVShowDetailsEpisodeDetailsTableViewCellViewModel {
 		return .init(
-			episodeNumber: trackedTVShow.episode.episodeNumber ?? 0,
+			episodeNumber: trackedTVShow.episode.number ?? 0,
 			episodeAirDateText: trackedTVShow.episode.airDate ?? ""
 		)
 	}
 	private var overviewCellViewModel: TrackedTVShowDetailsOverviewTableViewCellViewModel {
-		return .init(overviewText: trackedTVShow.episode.overview ?? "")
+		return .init(overviewText: trackedTVShow.episode.description ?? "")
 	}
 
 	// ! UITableViewDiffableDataSource
