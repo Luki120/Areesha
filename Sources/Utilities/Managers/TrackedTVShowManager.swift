@@ -144,10 +144,19 @@ extension TrackedTVShowManager {
 	///		- withOption: The option
 	func didSortModels(withOption option: SortOption) {
 		switch option {
-			case .alphabetically: trackedTVShows = trackedTVShows.sorted { $0.name < $1.name }
-			case .leastAdvanced: trackedTVShows = trackedTVShows.sorted { $0.lastSeen < $1.lastSeen }
-			case .moreAdvanced: trackedTVShows = trackedTVShows.sorted { $0.lastSeen > $1.lastSeen }
+			case .alphabetically:
+				trackedTVShows = trackedTVShows.sorted { $0.name < $1.name }
+				filteredTrackedTVShows = filteredTrackedTVShows.sorted { $0.name < $1.name }
+
+			case .leastAdvanced:
+				trackedTVShows = trackedTVShows.sorted { $0.lastSeen < $1.lastSeen }
+				filteredTrackedTVShows = filteredTrackedTVShows.sorted { $0.lastSeen < $1.lastSeen }
+
+			case .moreAdvanced:
+				trackedTVShows = trackedTVShows.sorted { $0.lastSeen > $1.lastSeen }
+				filteredTrackedTVShows = filteredTrackedTVShows.sorted { $0.lastSeen > $1.lastSeen }
 		}
+
 		encode(option, forKey: "sortOption")
 	}
 }
