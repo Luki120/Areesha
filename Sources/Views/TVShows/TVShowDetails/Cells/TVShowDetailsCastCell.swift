@@ -43,7 +43,6 @@ final class TVShowDetailsCastCell: TVShowDetailsBaseCell {
 		contentView.addSubview(label)
 		return label
 	}
-
 }
 
 extension TVShowDetailsCastCell {
