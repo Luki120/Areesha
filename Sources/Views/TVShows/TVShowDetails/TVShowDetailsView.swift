@@ -18,7 +18,7 @@ final class TVShowDetailsView: UIView {
 		tableView.register(TVShowDetailsGenreCell.self, forCellReuseIdentifier: TVShowDetailsGenreCell.identifier)
 		tableView.register(TVShowDetailsOverviewCell.self, forCellReuseIdentifier: TVShowDetailsOverviewCell.identifier)
 		tableView.register(TVShowDetailsCastCell.self, forCellReuseIdentifier: TVShowDetailsCastCell.identifier)
-		tableView.register(TVShowDetailsNetworksCell.self, forCellReuseIdentifier: TVShowDetailsNetworksCell.identifier)
+		tableView.register(TVShowDetailsProvidersCell.self, forCellReuseIdentifier: TVShowDetailsProvidersCell.identifier)
 		return tableView
 	}()
 
@@ -85,15 +85,12 @@ final class TVShowDetailsView: UIView {
 
 extension TVShowDetailsView: UITableViewDelegate {
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
-		guard let headerView = tvShowDetailsTableView.tableHeaderView as? TVShowDetailsHeaderView,
-			let vc = parentViewController as? TVShowDetailsVC else { return }
-
+		guard let headerView = tvShowDetailsTableView.tableHeaderView as? TVShowDetailsHeaderView else {
+			return
+		}
 		headerView.scrollViewDidScroll(scrollView: scrollView)
 
-		let kNavigationBarHeight = (window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0) +
-			(vc.navigationController?.navigationBar.frame.height ?? 0)
-		let kScrollableHeight = headerView.frame.size.height - kNavigationBarHeight
-
+		let kScrollableHeight = headerView.frame.size.height - safeAreaInsets.top
 		let scrolledEnough = scrollView.contentOffset.y > kScrollableHeight
 
 		UIView.animate(withDuration: 0.5, delay: 0, options: scrolledEnough ? .curveEaseIn: .curveEaseOut) {
