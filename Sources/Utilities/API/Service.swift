@@ -97,6 +97,7 @@ extension Service {
 		case showBackdrop(TVShow)
 		case seasonPoster(Season)
 		case episodeStill(Episode)
+		case watchProviderLogo(WatchOption)
 
 		var path: String? {
 			switch self {
@@ -104,6 +105,7 @@ extension Service {
 				case .showBackdrop(let show): return show.backgroundCoverImage
 				case .seasonPoster(let season): return season.coverImage
 				case .episodeStill(let episode): return episode.coverImage
+				case .watchProviderLogo(let watchOption): return watchOption.logoImage
 			}
 		}
 	}

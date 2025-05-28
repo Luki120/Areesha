@@ -8,24 +8,44 @@ final class TVShowDetailsViewViewModel {
 	private var genreCellViewModel = TVShowDetailsGenreCellViewModel()
 	private var overviewCellViewModel: TVShowDetailsOverviewCellViewModel!
 	private var castCellViewModel = TVShowDetailsCastCellViewModel()
-	private var networksCellViewModel = TVShowDetailsNetworksCellViewModel()
+
+	enum WatchProvidersState {
+		case empty
+		case available([TVShowDetailsProvidersCellViewModel])
+	}
+
+	private var watchProvidersState: WatchProvidersState = .available([])
+
+	private var watchProvider: WatchProvider? {
+		didSet {
+			guard let arRegion = watchProvider?.results["AR"] else {
+				watchProvidersState = .empty
+				return
+			}
+
+			let providers = Set((arRegion.additionals ?? []) + (arRegion.flatrate ?? []))
+
+			let viewModels: [TVShowDetailsProvidersCellViewModel] = providers.compactMap { watchOption in
+				guard let url = Service.imageURL(.watchProviderLogo(watchOption), size: "w200") else { return nil }
+				return TVShowDetailsProvidersCellViewModel(imageURL: url)
+			}
+			watchProvidersState = .available(viewModels)
+		}
+	}
 
 	private var subscriptions = Set<AnyCancellable>()
 
 	// ! UITableViewDiffableDataSource
 
-	private enum CellType: Hashable {
-		case genre(viewModel: TVShowDetailsGenreCellViewModel)
-		case overview(viewModel: TVShowDetailsOverviewCellViewModel)
-		case cast(viewModel: TVShowDetailsCastCellViewModel)
-		case networks(viewModel: TVShowDetailsNetworksCellViewModel)
+	private enum CellType {
+		case genre, description, cast, providers
 	}
-
-	private var cells = [CellType]()
 
 	private enum Section {
 		case main
 	}
+
+	private let cells: [CellType] = [.genre, .description, .cast, .providers]
 
 	private typealias DataSource = UITableViewDiffableDataSource<Section, CellType>
 	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CellType>
@@ -39,21 +59,14 @@ final class TVShowDetailsViewViewModel {
 	///		- tvShow: The tv show model object
 	init(tvShow: TVShow) {
 		self.tvShow = tvShow
-		setupModels()
 		fetchTVShowCast()
 		fetchTVShowDetails()
+		fetchTVShowWatchProviders()
+
+		overviewCellViewModel = .init(description: tvShow.description)
 	}
 
 	// ! Private
-
-	private func setupModels() {
-		cells = [
-			.genre(viewModel: genreCellViewModel),
-			.overview(viewModel: .init(description: tvShow.description)),
-			.cast(viewModel: castCellViewModel),
-			.networks(viewModel: networksCellViewModel)
-		]
-	}
 
 	private func setupHeaderViewModel() -> TVShowDetailsHeaderViewViewModel {
 		let rating = String(describing: tvShow.voteAverage?.round(to: 1) ?? 0) + "/10"
@@ -92,8 +105,21 @@ final class TVShowDetailsViewViewModel {
 				guard let self else { return }
 
 				updateGenresNames(with: tvShow.genres ?? [], for: tvShow)
-				updateNetworkNames(with: tvShow.networks ?? [])
+				reloadSnapshot(animatingDifferences: !isFromCache)
+			}
+			.store(in: &subscriptions)
+	}
 
+	private func fetchTVShowWatchProviders() {
+		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)/watch/providers?\(Service.Constants.apiKey)"
+		guard let url = URL(string: urlString) else { return }
+
+		Service.sharedInstance.fetchTVShows(withURL: url, expecting: WatchProvider.self)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveCompletion: { _ in }) { [weak self] watchProvider, isFromCache in
+				guard let self else { return }
+
+				self.watchProvider = watchProvider
 				reloadSnapshot(animatingDifferences: !isFromCache)
 			}
 			.store(in: &subscriptions)
@@ -120,13 +146,6 @@ final class TVShowDetailsViewViewModel {
 		let castCrewText = castCrewNames.isEmpty ? "Unknown" : castCrewNames.joined(separator: ", ")
 
 		castCellViewModel = .init(cast: "Cast", castCrew: castCrewText)
-	}
-
-	private func updateNetworkNames(with networks: [Network]) {
-		let networks = OrderedSet(networks.map(\.name))
-		let networksNames = networks.isEmpty ? "Unknown" : networks.joined(separator: ", ")
-
-		networksCellViewModel = .init(networksTitle: "Networks", networksNames: networksNames)
 	}
 }
 
@@ -156,7 +175,7 @@ extension TVShowDetailsViewViewModel {
 					cell.configure(with: genreCellViewModel)
 					return cell
 
-				case .overview(let overviewCellViewModel):
+				case .description:
 					let cell: TVShowDetailsOverviewCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: overviewCellViewModel)
 					return cell
@@ -166,9 +185,9 @@ extension TVShowDetailsViewViewModel {
 					cell.configure(with: castCellViewModel)
 					return cell
 
-				case .networks:
-					let cell: TVShowDetailsNetworksCell = tableView.dequeueReusableCell(for: indexPath)
-					cell.configure(with: networksCellViewModel)
+				case .providers:
+					let cell: TVShowDetailsProvidersCell = tableView.dequeueReusableCell(for: indexPath)
+					cell.configure(with: watchProvidersState)
 					return cell
 			}
 		}

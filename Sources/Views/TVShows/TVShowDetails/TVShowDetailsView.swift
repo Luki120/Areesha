@@ -88,6 +88,7 @@ extension TVShowDetailsView: UITableViewDelegate {
 		guard let headerView = tvShowDetailsTableView.tableHeaderView as? TVShowDetailsHeaderView else {
 			return
 		}
+
 		headerView.scrollViewDidScroll(scrollView: scrollView)
 
 		let kScrollableHeight = headerView.frame.size.height - safeAreaInsets.top

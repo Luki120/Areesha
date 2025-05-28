@@ -80,6 +80,7 @@ extension UIImage {
 	enum Asset: String {
 		case movie = "Movie"
 		case tmdb = "TMDB"
+		case justWatch = "JustWatch"
 	}
 
 	convenience init?(asset: Asset) {
