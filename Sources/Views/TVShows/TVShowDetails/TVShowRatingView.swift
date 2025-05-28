@@ -54,46 +54,27 @@ final class TVShowRatingView: UIView {
 		return collectionView
 	}()
 
-	private lazy var visualEffectView: UIVisualEffectView = {
-		let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
+	@UsesAutoLayout
+	private var visualEffectView: UIVisualEffectView = {
+		let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
 		visualEffectView.clipsToBounds = true
-		visualEffectView.translatesAutoresizingMaskIntoConstraints = false
-		tvShowImageView.addSubview(visualEffectView)
 		return visualEffectView
 	}()
 
-	private lazy var rateShowLabel: UILabel = {
+	@UsesAutoLayout
+	private var rateShowLabel: UILabel = {
 		let label = UILabel()
 		label.font = .boldSystemFont(ofSize: 24)
 		label.text = "How would you rate this show?"
-		label.translatesAutoresizingMaskIntoConstraints = false
-		addSubview(label)
 		return label
 	}()
 
-	private lazy var ratingButton: UIButton = {
-		let button = UIButton()
-		if #available(iOS 15.0, *) {
-			var configuration: UIButton.Configuration = .plain()
-			configuration.title = "Rate"
-			configuration.baseForegroundColor = .label
-			button.configuration = configuration
-		}
-		else {
-			button.setTitle("Rate", for: .normal)
-			button.setTitleColor(.label, for: .normal)
-		}
-		button.backgroundColor = .areeshaPinkColor
-		button.translatesAutoresizingMaskIntoConstraints = false
-		button.layer.cornerCurve = .continuous
-		button.layer.cornerRadius = 25
-		button.layer.shadowColor = UIColor.label.cgColor
-		button.layer.shadowOffset = .init(width: 0, height: 0)
-		button.layer.shadowOpacity = 0.5
-		button.layer.shadowRadius = 4
-		addSubview(button)
-		return button
-	}()
+	private lazy var ratingButton = createRoundedButton(title: "Rate") { [weak self] in
+		guard let self else { return }
+		viewModel.addRating {
+			self.delegate?.didAddRating(in: self)
+		}		
+	}
 
 	weak var delegate: TVShowRatingViewDelegate?
 
@@ -123,21 +104,11 @@ final class TVShowRatingView: UIView {
 
 	private func setupUI() {
 		insertSubview(tvShowImageView, at: 0)
-		addSubview(tvShowPosterImageView)
+		tvShowImageView.addSubview(visualEffectView)
+		addSubviews(tvShowPosterImageView, rateShowLabel, ratingButton)
 
 		fetchTVShowImage()
 		layoutUI()
-
-		ratingButton.addAction(
-			UIAction { [weak self] _ in
-				guard let self else { return }
-				viewModel.addRating {
-					self.delegate?.didAddRating(in: self)
-				}
-			},
-			for: .touchUpInside
-		)
-
 	}
 
 	private func layoutUI() {
@@ -147,8 +118,6 @@ final class TVShowRatingView: UIView {
 		NSLayoutConstraint.activate([
 			tvShowPosterImageView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 30),
 			tvShowPosterImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
-			tvShowPosterImageView.widthAnchor.constraint(equalToConstant: 230),
-			tvShowPosterImageView.heightAnchor.constraint(equalToConstant: 350),
 
 			rateShowLabel.topAnchor.constraint(equalTo: tvShowPosterImageView.bottomAnchor, constant: 35),
 			rateShowLabel.centerXAnchor.constraint(equalTo: tvShowPosterImageView.centerXAnchor),
@@ -158,11 +127,12 @@ final class TVShowRatingView: UIView {
 			ratingCollectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
 			ratingCollectionView.heightAnchor.constraint(equalToConstant: 28),
 
-			ratingButton.centerXAnchor.constraint(equalTo: centerXAnchor),
 			ratingButton.topAnchor.constraint(equalTo: ratingCollectionView.bottomAnchor, constant: 35),
-			ratingButton.widthAnchor.constraint(equalToConstant: 120),
-			ratingButton.heightAnchor.constraint(equalToConstant: 50)
+			ratingButton.centerXAnchor.constraint(equalTo: centerXAnchor)
 		])
+
+		setupSizeConstraints(forView: tvShowPosterImageView, width: 230, height: 350)
+		setupSizeConstraints(forView: ratingButton, width: 120, height: 50)
 	}
 
 	private func fetchTVShowImage() {

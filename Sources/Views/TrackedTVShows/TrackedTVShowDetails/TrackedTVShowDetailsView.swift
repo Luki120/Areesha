@@ -22,7 +22,11 @@ final class TrackedTVShowDetailsView: UIView {
 		return tableView
 	}()
 
-	private lazy var seasonsButton = createSeasonsButton()
+	private lazy var seasonsButton = createRoundedButton { [weak self] in
+		guard let self else { return }
+		delegate?.didTapSeasonsButton(in: self, tvShow: viewModel.tvShow)		
+	}
+
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: viewModel.title, isHidden: true)
 
 	weak var delegate: TrackedTVShowDetailsViewDelegate?
@@ -55,27 +59,12 @@ final class TrackedTVShowDetailsView: UIView {
 		trackedTVShowDetailsTableView.tableHeaderView = headerView
 
 		viewModel.setupTrackedTVShowDetailsTableView(trackedTVShowDetailsTableView)
-
-		seasonsButton.addAction(
-			UIAction { [weak self] _ in
-				guard let self else { return }
-				delegate?.didTapSeasonsButton(in: self, tvShow: viewModel.tvShow)
-			},
-			for: .touchUpInside
-		)
-
 		layoutUI()
 	}
 
 	private func layoutUI() {
 		pinViewToAllEdges(trackedTVShowDetailsTableView)
-
-		NSLayoutConstraint.activate([
-			seasonsButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-			seasonsButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -25),
-			seasonsButton.widthAnchor.constraint(equalToConstant: 120),
-			seasonsButton.heightAnchor.constraint(equalToConstant: 50)
-		])
+		pinRoundedButton(seasonsButton)
 	}
 }
 

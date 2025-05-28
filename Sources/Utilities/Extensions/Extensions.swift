@@ -156,18 +156,19 @@ extension UIView {
 		views.forEach { addSubview($0) }
 	}
 
-	func createSeasonsButton() -> UIButton {
+	func createRoundedButton(title: String = "Seasons", completion: @escaping () -> Void) -> UIButton {
 		let button = UIButton()
 		if #available(iOS 15.0, *) {
 			var configuration: UIButton.Configuration = .plain()
-			configuration.title = "Seasons"
+			configuration.title = title
 			configuration.baseForegroundColor = .label
 			button.configuration = configuration
 		}
 		else {
-			button.setTitle("Seasons", for: .normal)
+			button.setTitle(title, for: .normal)
 			button.setTitleColor(.label, for: .normal)
 		}
+		button.addAction(UIAction { _ in completion() }, for: .touchUpInside)
 		button.backgroundColor = .areeshaPinkColor
 		button.translatesAutoresizingMaskIntoConstraints = false
 		button.layer.cornerCurve = .continuous
@@ -272,6 +273,12 @@ extension UIView {
 	func setupSizeConstraints(forView view: UIView, width: CGFloat, height: CGFloat) {
 		view.widthAnchor.constraint(equalToConstant: width).isActive = true
 		view.heightAnchor.constraint(equalToConstant: height).isActive = true
+	}
+
+	func pinRoundedButton(_ button: UIButton) {
+		button.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+		button.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -25).isActive = true
+		setupSizeConstraints(forView: button, width: 120, height: 50)
 	}
 }
 

@@ -22,7 +22,11 @@ final class TVShowDetailsView: UIView {
 		return tableView
 	}()
 
-	private lazy var seasonsButton = createSeasonsButton()
+	private lazy var seasonsButton = createRoundedButton { [weak self] in
+		guard let self else { return }
+		self.delegate?.didTapSeasonsButton(in: self)
+	}
+
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: viewModel.title, isHidden: true)
 
 	weak var delegate: TVShowDetailsViewDelegate?
@@ -57,27 +61,12 @@ final class TVShowDetailsView: UIView {
 		tvShowDetailsTableView.tableHeaderView = headerView
 
 		viewModel.setupTableView(tvShowDetailsTableView)
-
-		seasonsButton.addAction(
-			UIAction { [weak self] _ in
-				guard let self else { return }
-				self.delegate?.didTapSeasonsButton(in: self)
-			},
-			for: .touchUpInside
-		)
-
 		layoutUI()
 	}
 
 	private func layoutUI() {
 		pinViewToAllEdges(tvShowDetailsTableView)
-
-		NSLayoutConstraint.activate([
-			seasonsButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-			seasonsButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -25),
-			seasonsButton.widthAnchor.constraint(equalToConstant: 120),
-			seasonsButton.heightAnchor.constraint(equalToConstant: 50)
-		])		
+		pinRoundedButton(seasonsButton)
 	}
 }
 

@@ -6,7 +6,6 @@ protocol EpisodesViewDelegate: AnyObject {
 
 /// Class to represent the episodes view
 final class EpisodesView: UIView {
-
 	private let viewModel: EpisodesViewViewModel
 
 	private let compositionalLayout: UICollectionViewCompositionalLayout = {
@@ -54,7 +53,7 @@ final class EpisodesView: UIView {
 	private lazy var trackedEpisodeToastView = createToastView()
 	private lazy var toastViewLabel = createToastViewLabel(withMessage: "Episode tracked.")
 
-	private var noEpisodesLabel: UILabel = .createContentUnavailableLabel(withMessage: "No episodes for this season yet.")
+	private let noEpisodesLabel: UILabel = .createContentUnavailableLabel(withMessage: "No episodes for this season yet.")
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: viewModel.seasonName)
 
 	weak var delegate: EpisodesViewDelegate?
@@ -117,24 +116,20 @@ final class EpisodesView: UIView {
 			}
 		}
 	}
-
 }
 
 extension EpisodesView {
-
 	// ! Public
 
 	/// Function to fade in & out the toast view
 	func fadeInOutToastView() {
 		animateToastView(trackedEpisodeToastView)
 	}
-
 }
 
 // ! EpisodesViewViewModelDelegate
 
 extension EpisodesView: EpisodesViewViewModelDelegate {
-
 	func didShowToastView() {
 		delegate?.didShowToastView(in: self)
 	}
@@ -151,5 +146,4 @@ extension EpisodesView: EpisodesViewViewModelDelegate {
 			}
 		}
 	}
-
 }
