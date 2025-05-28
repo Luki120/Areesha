@@ -5,6 +5,7 @@ import UIKit
 protocol SeasonsViewViewModelDelegate: AnyObject {
 	func didLoadTVShowSeasons()
 	func didSelect(season: Season, from tvShow: TVShow)
+	func shouldAnimateNoSeasonsLabel(isDataSourceEmpty: Bool)
 }
 
 /// View model class for SeasonsView
@@ -45,9 +46,11 @@ final class SeasonsViewViewModel: NSObject {
 		Service.sharedInstance.fetchTVShows(withURL: url, expecting: TVShow.self)
 			.receive(on: DispatchQueue.main)
 			.sink(receiveCompletion: { _ in }) { [weak self] tvShow in
+				guard let self else { return }
 				guard let seasons = tvShow.seasons else { return }
-				self?.seasons = seasons.filter { $0[keyPath: \.name!].contains("Specials") == false }
-				self?.delegate?.didLoadTVShowSeasons()
+				self.seasons = seasons.filter { $0[keyPath: \.name!].contains("Specials") == false }
+				self.delegate?.didLoadTVShowSeasons()
+				self.delegate?.shouldAnimateNoSeasonsLabel(isDataSourceEmpty: viewModels.isEmpty)
 			}
 			.store(in: &subscriptions)
 	}

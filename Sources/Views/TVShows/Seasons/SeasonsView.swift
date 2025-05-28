@@ -86,6 +86,7 @@ final class SeasonsView: UIView {
 		return collectionView
 	}()
 
+	private let noSeasonsLabel: UILabel = .createContentUnavailableLabel(withMessage: "No seasons for this show yet.")
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: viewModel.title)
 
 	weak var delegate: SeasonsViewDelegate?
@@ -103,7 +104,18 @@ final class SeasonsView: UIView {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
 		viewModel.delegate = self
+
+		setupUI()
+	}
+
+	// ! Private
+
+	private func setupUI() {
 		pinViewToAllEdges(seasonsCollectionView)
+		addSubview(noSeasonsLabel)
+
+		centerViewOnBothAxes(noSeasonsLabel)
+		setupHorizontalConstraints(forView: noSeasonsLabel, leadingConstant: 10, trailingConstant: -10)
 	}
 }
 
@@ -128,5 +140,18 @@ extension SeasonsView: SeasonsViewViewModelDelegate {
 
 	func didSelect(season: Season, from tvShow: TVShow) {
 		delegate?.seasonsView(self, didSelect: season, from: tvShow)
+	}
+
+	func shouldAnimateNoSeasonsLabel(isDataSourceEmpty: Bool) {
+		UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut) {	
+			if isDataSourceEmpty {
+				self.noSeasonsLabel.alpha = 1
+				self.seasonsCollectionView.alpha = 0
+			}
+			else {
+				self.noSeasonsLabel.alpha = 0
+				self.seasonsCollectionView.alpha = 1
+			}
+		}
 	}
 }
