@@ -14,7 +14,6 @@ struct TVShow: Codable {
 	let episodeAverageDurations: [Int]?
 	let genres: [Genre]?
 	let lastAirDate: String?
-	let networks: [Network]?
 	let seasons: [Season]?
 	let status: String?
 	let voteAverage: Double?
@@ -28,7 +27,6 @@ struct TVShow: Codable {
 		case episodeAverageDurations = "episode_run_time"
 		case genres
 		case lastAirDate = "last_air_date"
-		case networks
 		case seasons
 		case status
 		case voteAverage = "vote_average"
@@ -36,10 +34,6 @@ struct TVShow: Codable {
 }
 
 struct Genre: Codable {
-	let name: String
-}
-
-struct Network: Codable {
 	let name: String
 }
 
