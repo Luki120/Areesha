@@ -76,6 +76,19 @@ extension UIColor {
 	static let areeshaPinkColor = UIColor(red: 0.78, green: 0.64, blue: 0.83, alpha: 1.0)
 }
 
+extension UIDevice {
+	var hasDynamicIsland: Bool {
+		guard userInterfaceIdiom == .phone else { return false }
+
+		guard let window = (UIApplication.shared.connectedScenes
+			.compactMap { $0 as? UIWindowScene }
+			.flatMap { $0.windows }
+			.filter { $0.isKeyWindow }.first) else { return false }
+
+		return window.safeAreaInsets.top >= 51
+	}
+}
+
 extension UIImage {
 	enum Asset: String {
 		case movie = "Movie"

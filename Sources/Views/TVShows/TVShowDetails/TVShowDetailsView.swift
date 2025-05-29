@@ -83,9 +83,15 @@ extension TVShowDetailsView: UITableViewDelegate {
 		let kScrollableHeight = headerView.frame.size.height - safeAreaInsets.top
 		let scrolledEnough = scrollView.contentOffset.y > kScrollableHeight
 
-		UIView.animate(withDuration: 0.5, delay: 0, options: scrolledEnough ? .curveEaseIn: .curveEaseOut) {
+		UIView.animate(withDuration: 0.35, delay: 0, options: scrolledEnough ? .curveEaseIn : .curveEaseOut) {
 			self.titleLabel.alpha = scrolledEnough ? 1 : 0
 			if scrolledEnough { self.titleLabel.isHidden = false }
+		} completion: { isFinished in
+			guard UIDevice.current.hasDynamicIsland else { return }
+
+			if isFinished && !scrolledEnough {
+				self.titleLabel.isHidden = true
+			}
 		}
 	}
 }
