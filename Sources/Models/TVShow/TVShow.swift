@@ -17,6 +17,7 @@ struct TVShow: Codable {
 	let seasons: [Season]?
 	let status: String?
 	let voteAverage: Double?
+	let nextEpisodeToAir: Episode?
 
 	enum CodingKeys: String, CodingKey {
 		case id
@@ -30,6 +31,7 @@ struct TVShow: Codable {
 		case seasons
 		case status
 		case voteAverage = "vote_average"
+		case nextEpisodeToAir = "next_episode_to_air"
 	}
 }
 

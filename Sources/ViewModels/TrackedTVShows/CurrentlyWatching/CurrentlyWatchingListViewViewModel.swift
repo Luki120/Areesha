@@ -1,7 +1,6 @@
 import Combine
 import UIKit
 
-
 protocol CurrentlyWatchingListViewViewModelDelegate: AnyObject {
 	func didSelect(trackedTVShow: TrackedTVShow)
 	func didShowToastView()
@@ -9,9 +8,9 @@ protocol CurrentlyWatchingListViewViewModelDelegate: AnyObject {
 
 /// View model class for `CurrentlyWatchingListView`
 final class CurrentlyWatchingListViewViewModel: NSObject {
-
 	private let trackedManager: TrackedTVShowManager = .sharedInstance
 	private var subscriptions: Set<AnyCancellable> = []
+	private var tvShow: TVShow!
 
 	weak var delegate: CurrentlyWatchingListViewViewModelDelegate?
 
@@ -57,14 +56,12 @@ final class CurrentlyWatchingListViewViewModel: NSObject {
 
 		let selectedShow = relevantShows[indexPath.item]
 		return trackedManager.trackedTVShows.firstIndex(where: { $0 == selectedShow })
-	}
-
+	}	
 }
 
 // ! UICollectionView
 
 extension CurrentlyWatchingListViewViewModel: UICollectionViewDelegate {
-
 	private func setupCollectionViewDiffableDataSource(for collectionView: UICollectionView) {
 		let cellRegistration = CellRegistration { cell, _, viewModel in
 			cell.viewModel = viewModel
@@ -136,19 +133,21 @@ extension CurrentlyWatchingListViewViewModel: UICollectionViewDelegate {
 			default: break
 		}
 	}
-
 }
 
 // ! Public
 
 extension CurrentlyWatchingListViewViewModel {
-
 	/// Function to delete an item from the collection view at the given index path
 	/// - Parameters:
 	///		- at: The index path for the item
 	func deleteItem(at indexPath: IndexPath) {
 		guard let index = getModelIndex(for: indexPath),
 			let item = dataSource.itemIdentifier(for: indexPath) else { return }
+
+		NotificationManager.sharedInstance.removePendingNotificationRequests(
+			for: trackedManager.trackedTVShows[index].tvShow
+		)
 
 		trackedManager.deleteTrackedTVShow(at: index)
 
@@ -204,20 +203,30 @@ extension CurrentlyWatchingListViewViewModel {
 		let currentSeason = trackedManager.trackedTVShows[index].season
 		let currentEpisode = trackedManager.trackedTVShows[index].episode
 
-		fetchSeasonDetails(url: getURL(for: currentSeason, tvShow: tvShow)) { [weak self] season in
+		Service.sharedInstance.fetchTVShowDetails(for: tvShow, storeIn: &subscriptions) { [weak self] tvShow, _ in
 			guard let self else { return }
+			self.tvShow = tvShow
 
-			if let episodes = season.episodes,
-				let nextEpisode = episodes.first(where: { $0.number == (currentEpisode.number ?? 0) + 1 }) {
+			Service.sharedInstance.fetchSeasonDetails(
+				for: currentSeason,
+				tvShow: tvShow,
+				storeIn: &subscriptions
+			) { [weak self] season in
+				guard let self else { return }
+
+				if let episodes = season.episodes,
+					let nextEpisode = episodes.first(where: { $0.number == (currentEpisode.number ?? 0) + 1 }) {
 					track(tvShow: tvShow, season: season, episode: nextEpisode)
-			}
-			else {
-				fetchTVShowSeasons(for: tvShow) { [weak self] seasons in
-					guard let self else { return }
-					guard let nextSeason = seasons.first(where: { $0.number == (currentSeason.number ?? 0) + 1 }) else {
-						return
-					}
-					fetchSeasonDetails(url: getURL(for: nextSeason, tvShow: tvShow)) { [weak self] nextSeason in
+				}
+				else {
+					guard let seasons = tvShow.seasons,
+						let nextSeason = seasons.first(where: { $0.number == (currentSeason.number ?? 0) + 1 }) else { return }
+
+					Service.sharedInstance.fetchSeasonDetails(
+						for: nextSeason,
+						tvShow: tvShow,
+						storeIn: &subscriptions
+					) { [weak self] nextSeason in
 						guard let firstEpisode = nextSeason.episodes?.first(where: { $0.number == 1 }) else { return }
 						self?.track(tvShow: tvShow, season: nextSeason, episode: firstEpisode)
 					}
@@ -225,49 +234,19 @@ extension CurrentlyWatchingListViewViewModel {
 			}
 		}
 	}
-
 }
 
 // ! Track next episode logic
 
 extension CurrentlyWatchingListViewViewModel {
-
-	private func getURL(for season: Season, tvShow: TVShow) -> URL? {
-		guard let url = URL(string: "\(Service.Constants.baseURL)tv/\(tvShow.id)/season/\(season.number ?? 0)?\(Service.Constants.apiKey)") else {
-			return nil
-		}
-
-		return url
-	}
-
-	private func fetchTVShowSeasons(for show: TVShow, completion: @escaping ([Season]) -> Void) {
-		let urlString = "\(Service.Constants.baseURL)tv/\(show.id)?\(Service.Constants.apiKey)"
-		guard let url = URL(string: urlString) else { return }	
-
-		Service.sharedInstance.fetchTVShows(withURL: url, expecting: TVShow.self)
-			.receive(on: DispatchQueue.main)
-			.sink(receiveCompletion: { _ in }) { tvShow in
-				guard let seasons = tvShow.seasons else { return }
-				completion(seasons)
-			}
-			.store(in: &subscriptions)
-	}
-
-	private func fetchSeasonDetails(url: URL?, completion: @escaping (Season) -> ()) {
-		guard let url else { return }
-
-		Service.sharedInstance.fetchTVShows(withURL: url, expecting: Season.self)
-			.receive(on: DispatchQueue.main)
-			.sink(receiveCompletion: { _ in }) { season in
-				completion(season)
-				
-			}
-			.store(in: &subscriptions)
-	}
-
 	private func track(tvShow: TVShow, season: Season, episode: Episode) {
-		trackedManager.track(tvShow: tvShow, season: season, episode: episode) { _ in }
+		trackedManager.track(tvShow: tvShow, season: season, episode: episode) { isTracked in
+			if !isTracked {
+				Task {
+					await NotificationManager.sharedInstance.postNewEpisodeNotification(for: self.tvShow)
+				}
+			}
+		}
 		applyDiffableDataSourceSnapshot(withModels: trackedManager.trackedTVShows)
 	}
-
 }

@@ -53,6 +53,8 @@
 	<string>0.9.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>SBAppUsesLocalNotifications</key>
+	<true/>
 	<key>UIDeviceFamily</key>
 	<array>
 		<integer>1</integer>

@@ -11,6 +11,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 		window?.tintColor = .areeshaPinkColor
 		window?.rootViewController = TabBarVC()
 		window?.makeKeyAndVisible()
+
+		NotificationManager.sharedInstance.requestAuthorization()
 		return true
 	}
 
