@@ -65,7 +65,7 @@ final class Service {
 	/// - Parameters:
 	///		- for: The `TVShow` object
 	///		- rating: An integer that represents the rating
-	/// - Returns: AnyPublisher<Data, Error>
+	/// - Returns: `AnyPublisher<Data, Error>`
 	func addRating(for tvShow: TVShow, rating: Int) -> AnyPublisher<Data, Error> {
 		guard let url = URL(string: "\(Constants.baseURL)tv/\(tvShow.id)/rating") else {
 			return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
@@ -90,6 +90,56 @@ final class Service {
 	}
 }
 
+// ! Reusable
+
+extension Service {
+	/// Function to fetch tv show details for a given tv show
+	/// - Parameters:
+	///		- for: The `TVShow` object
+	///		- storeIn: A `Set<AnyCancellable>` to store this instance
+	///		- completion: `@escaping` closure that takes a tuple of `TVShow` & `Bool` and returns nothing
+	func fetchTVShowDetails(
+		for tvShow: TVShow,
+		storeIn subscriptions: inout Set<AnyCancellable>,
+		completion: @escaping (TVShow, Bool) -> ()
+	) {
+		let urlString = "\(Constants.baseURL)tv/\(tvShow.id)?\(Constants.apiKey)"
+		guard let url = URL(string: urlString) else { return }
+
+		fetchTVShows(withURL: url, expecting: TVShow.self)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveCompletion: { _ in }) { tvShow, isFromCache in
+				completion(tvShow, isFromCache)
+			}
+			.store(in: &subscriptions)
+	}
+
+	/// Function to fetch season details for a given season
+	/// - Parameters:
+	///		- for: The `Season` object
+	///		- tvShow: The `TVShow` object for the season
+	///		- storeIn: A `Set<AnyCancellable>` to store this instance
+	///		- completion: `@escaping` closure that takes a `Seasons` object & returns nothing
+	func fetchSeasonDetails(
+		for season: Season,
+		tvShow: TVShow,
+		storeIn subscriptions: inout Set<AnyCancellable>,
+		completion: @escaping (Season) -> ()
+	) {
+		let urlString = "\(Constants.baseURL)tv/\(tvShow.id)/season/\(season.number ?? 0)?\(Constants.apiKey)"
+		guard let url = URL(string: urlString) else { return }
+
+		fetchTVShows(withURL: url, expecting: Season.self)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveCompletion: { _ in }) { season in
+				completion(season)
+			}
+			.store(in: &subscriptions)
+	}
+}
+
+// ! ImageFetch
+
 extension Service {
 	/// Enum to represent the different types of images
 	enum ImageFetch {
@@ -112,7 +162,7 @@ extension Service {
 
 	/// Function to get the requested image url
 	/// - Parameters:
-	///		- image: The image object
+	///		- image: The `ImageFetch` object
 	///		- size: A string representing the size of the image
 	static func imageURL(_ image: ImageFetch, size: String = "w500") -> URL? {
 		guard let path = image.path else { return nil }

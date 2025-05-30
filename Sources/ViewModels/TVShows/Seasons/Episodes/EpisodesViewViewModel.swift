@@ -10,6 +10,7 @@ protocol EpisodesViewViewModelDelegate: AnyObject {
 final class EpisodesViewViewModel: NSObject {
 	var seasonName: String { return season.name ?? "" }
 
+	private var _tvShow: TVShow!
 	private var episodes = [Episode]()
 	private var viewModels = OrderedSet<EpisodeCellViewModel>()
 	private var subscriptions = Set<AnyCancellable>()
@@ -39,25 +40,27 @@ final class EpisodesViewViewModel: NSObject {
 		self.tvShow = tvShow
 		self.season = season
 		super.init()
-		fetchSeasonDetails()
+
+		fetchDetails()
 	}
 
-	private func fetchSeasonDetails() {
-		guard let url = URL(string: "\(Service.Constants.baseURL)tv/\(tvShow.id)/season/\(season.number ?? 0)?\(Service.Constants.apiKey)") else {
-			return
+	private func fetchDetails() {
+		Service.sharedInstance.fetchTVShowDetails(for: tvShow, storeIn: &subscriptions) { tvShow, _ in
+			self._tvShow = tvShow
 		}
 
-		Service.sharedInstance.fetchTVShows(withURL: url, expecting: Season.self)
-			.receive(on: DispatchQueue.main)
-			.sink(receiveCompletion: { _ in }) { [weak self] season in
-				guard let self else { return }
-				episodes = season.episodes ?? []
-				updateViewModels(with: episodes)
-				applyDiffableDataSourceSnapshot()
+		Service.sharedInstance.fetchSeasonDetails(
+			for: season,
+			tvShow: tvShow,
+			storeIn: &subscriptions
+		) { [weak self] season in
+			guard let self else { return }
+			episodes = season.episodes ?? []
+			updateViewModels(with: episodes)
+			applyDiffableDataSourceSnapshot()
 
-				delegate?.shouldAnimateNoEpisodesLabel(isDataSourceEmpty: viewModels.isEmpty)
-			}
-			.store(in: &subscriptions)
+			delegate?.shouldAnimateNoEpisodesLabel(isDataSourceEmpty: viewModels.isEmpty)
+		}
 	}
 
 	private func updateViewModels(with episodes: [Episode]) {
@@ -127,7 +130,13 @@ extension EpisodesViewViewModel: UICollectionViewDelegate {
 			season: season,
 			episode: episodes[indexPath.item]
 		) { isTracked in
-			if !isTracked { self.delegate?.didShowToastView() }
+			if !isTracked {
+				self.delegate?.didShowToastView()
+
+				Task {
+					await NotificationManager.sharedInstance.postNewEpisodeNotification(for: self._tvShow)
+				}
+			}
 		}
 	}
 }

@@ -34,25 +34,17 @@ final class SeasonsViewViewModel: NSObject {
 	init(tvShow: TVShow) {
 		self.tvShow = tvShow
 		super.init()
-		fetchTVShowSeasons()
-	}
 
-	// ! Private
-
-	private func fetchTVShowSeasons() {
-		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)?\(Service.Constants.apiKey)"
-		guard let url = URL(string: urlString) else { return }	
-
-		Service.sharedInstance.fetchTVShows(withURL: url, expecting: TVShow.self)
-			.receive(on: DispatchQueue.main)
-			.sink(receiveCompletion: { _ in }) { [weak self] tvShow in
-				guard let self else { return }
-				guard let seasons = tvShow.seasons else { return }
-				self.seasons = seasons.filter { $0[keyPath: \.name!].contains("Specials") == false }
-				self.delegate?.didLoadTVShowSeasons()
-				self.delegate?.shouldAnimateNoSeasonsLabel(isDataSourceEmpty: viewModels.isEmpty)
-			}
-			.store(in: &subscriptions)
+		Service.sharedInstance.fetchTVShowDetails(
+			for: tvShow,
+			storeIn: &subscriptions
+		) { [weak self] tvShow, _ in
+			guard let self else { return }
+			guard let seasons = tvShow.seasons else { return }
+			self.seasons = seasons.filter { $0[keyPath: \.name!].contains("Specials") == false }
+			self.delegate?.didLoadTVShowSeasons()
+			self.delegate?.shouldAnimateNoSeasonsLabel(isDataSourceEmpty: viewModels.isEmpty)
+		}
 	}
 }
 

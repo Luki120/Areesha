@@ -96,18 +96,15 @@ final class TVShowDetailsViewViewModel {
 	}
 
 	private func fetchTVShowDetails() {
-		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)?\(Service.Constants.apiKey)"
-		guard let url = URL(string: urlString) else { return }
+		Service.sharedInstance.fetchTVShowDetails(
+			for: tvShow,
+			storeIn: &subscriptions
+		) { [weak self] tvShow, isFromCache in
+			guard let self else { return }	
 
-		Service.sharedInstance.fetchTVShows(withURL: url, expecting: TVShow.self)
-			.receive(on: DispatchQueue.main)
-			.sink(receiveCompletion: { _ in }) { [weak self] tvShow, isFromCache in
-				guard let self else { return }
-
-				updateGenresNames(with: tvShow.genres ?? [], for: tvShow)
-				reloadSnapshot(animatingDifferences: !isFromCache)
-			}
-			.store(in: &subscriptions)
+			updateGenresNames(with: tvShow.genres ?? [], for: tvShow)
+			reloadSnapshot(animatingDifferences: !isFromCache)
+		}
 	}
 
 	private func fetchTVShowWatchProviders() {
