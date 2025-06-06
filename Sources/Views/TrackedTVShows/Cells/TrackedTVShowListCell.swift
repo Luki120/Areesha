@@ -7,6 +7,7 @@ final class TrackedTVShowListCell: UICollectionViewListCell {
 	override func updateConfiguration(using state: UICellConfigurationState) {
 		var newConfiguration = TrackedTVShowContentConfiguration().updated(for: state)
 		newConfiguration.name = viewModel?.name
+		newConfiguration.rating = viewModel?.rating
 		newConfiguration.lastSeen = viewModel?.lastSeen
 		newConfiguration.viewModel = viewModel
 
@@ -17,6 +18,7 @@ final class TrackedTVShowListCell: UICollectionViewListCell {
 /// Struct to represent the content configuration for the tracked tv show cell
 struct TrackedTVShowContentConfiguration: UIContentConfiguration, Hashable {
 	var name: String?
+	var rating: Double?
 	var lastSeen: String?
 	var viewModel: TrackedTVShowCellViewModel?
 
@@ -54,7 +56,19 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 		return imageView
 	}()
 
-	private var tvShowNameLabel, lastSeenLabel: UILabel!
+	@UsesAutoLayout
+	private var ratingStarImageView: UIImageView = {
+		let configuration: UIImage.SymbolConfiguration = .init(pointSize: 12)
+
+		let imageView = UIImageView()
+		imageView.image = .init(systemName: "star.fill", withConfiguration: configuration)
+		imageView.tintColor = .systemYellow
+		imageView.contentMode = .scaleAspectFill
+		imageView.clipsToBounds = true
+		return imageView
+	}()
+
+	private var tvShowNameLabel, detailsLabel: UILabel!
 
 	// ! Lifecyle
 
@@ -73,9 +87,9 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 
 	private func setupUI() {
 		tvShowNameLabel = createLabel(withFontWeight: .bold)
-		lastSeenLabel = createLabel(textColor: .secondaryLabel)
+		detailsLabel = createLabel(textColor: .secondaryLabel)
 
-		addSubviews(seasonImageView, tvShowNameLabel, lastSeenLabel)
+		addSubviews(seasonImageView, tvShowNameLabel, detailsLabel)
 		layoutUI()
 	}
 
@@ -91,8 +105,8 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 			tvShowNameLabel.leadingAnchor.constraint(equalTo: seasonImageView.trailingAnchor, constant: 20),
 			tvShowNameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
 
-			lastSeenLabel.topAnchor.constraint(equalTo: tvShowNameLabel.bottomAnchor, constant: 2.5),
-			lastSeenLabel.leadingAnchor.constraint(equalTo: tvShowNameLabel.leadingAnchor)
+			detailsLabel.topAnchor.constraint(equalTo: tvShowNameLabel.bottomAnchor, constant: 2.5),
+			detailsLabel.leadingAnchor.constraint(equalTo: tvShowNameLabel.leadingAnchor)
 		])
 	}
 
@@ -102,9 +116,10 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 
 		guard let viewModel = configuration.viewModel else { return }
 		configure(with: viewModel)
+		configureRating(with: viewModel)
 
-		tvShowNameLabel.text = configuration.name
-		lastSeenLabel.text = configuration.lastSeen
+		tvShowNameLabel.text = viewModel.name
+		detailsLabel.text = viewModel.listType == .finished ? viewModel.ratingLabel : viewModel.lastSeen
 	}
 
 	private func configure(with viewModel: TrackedTVShowCellViewModel) {
@@ -127,6 +142,14 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 				}
 			}
 		}
+	}
+
+	private func configureRating(with viewModel: TrackedTVShowCellViewModel) {
+		guard viewModel.listType == .finished && viewModel.rating != 0 else { return }
+
+		addSubview(ratingStarImageView)
+		ratingStarImageView.centerYAnchor.constraint(equalTo: detailsLabel.centerYAnchor).isActive = true
+		ratingStarImageView.leadingAnchor.constraint(equalTo: detailsLabel.trailingAnchor, constant: 5).isActive = true
 	}
 
 	// ! Reusable

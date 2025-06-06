@@ -9,6 +9,7 @@ struct TrackedTVShow: Codable, Hashable {
 	let episode: Episode
 	let lastSeen: String
 
+	var rating: Double?
 	var isFinished = false
 	var isReturningSeries = false
 

@@ -1,14 +1,12 @@
 import Combine
 import UIKit
 
-
 protocol FinishedListViewViewModelDelegate: AnyObject {
 	func didSelect(trackedTVShow: TrackedTVShow)
 }
 
-/// View model class for FinishedListView
+/// View model class for `FinishedListView`
 final class FinishedListViewViewModel: NSObject {
-
 	private var subscriptions: Set<AnyCancellable> = []
 	weak var delegate: FinishedListViewViewModelDelegate?
 
@@ -32,17 +30,35 @@ final class FinishedListViewViewModel: NSObject {
 				applyDiffableDataSourceSnapshot(withModels: filteredTrackedTVShows)
 			}
 			.store(in: &subscriptions)
+
+		fetchRatedShows()
 	}
 
+	private func fetchRatedShows() {
+		guard let url = URL(string: Service.Constants.ratedShowsURL) else { return }
+
+		var urlRequest = URLRequest(url: url)
+		urlRequest.allHTTPHeaderFields = [
+			"accept": "application/json",
+			"Authorization": "Bearer \(_Constants.token)"
+		]
+
+		Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveCompletion: { _ in }) { ratedShows, _ in
+				TrackedTVShowManager.sharedInstance.updateRatings(with: ratedShows.results)
+			}
+			.store(in: &subscriptions)
+	}
 }
 
 // ! UICollectionView
 
 extension FinishedListViewViewModel: UICollectionViewDelegate {
-
 	private func setupCollectionViewDiffableDataSource(for collectionView: UICollectionView) {
 		let cellRegistration = CellRegistration { cell, _, viewModel in
 			cell.viewModel = viewModel
+			cell.viewModel?.listType = .finished
 		}
 
 		dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, identifier in
@@ -59,8 +75,7 @@ extension FinishedListViewViewModel: UICollectionViewDelegate {
 	private func applyDiffableDataSourceSnapshot(withModels models: [TrackedTVShow]) {
 		guard let dataSource else { return }
 
-		let mappedModels = models
-			.map(TrackedTVShowCellViewModel.init(_:))
+		let mappedModels = models.map(TrackedTVShowCellViewModel.init(_:))
 
 		var snapshot = Snapshot()
 		snapshot.appendSections([.main])
@@ -72,13 +87,11 @@ extension FinishedListViewViewModel: UICollectionViewDelegate {
 		collectionView.deselectItem(at: indexPath, animated: true)
 		delegate?.didSelect(trackedTVShow: TrackedTVShowManager.sharedInstance.filteredTrackedTVShows[indexPath.item])
 	}
-
 }
 
 // ! Public
 
 extension FinishedListViewViewModel {
-
 	/// Function to delete an item from the collection view at the given index path
 	/// - Parameters:
 	///		- at: The index path for the item
@@ -92,5 +105,4 @@ extension FinishedListViewViewModel {
 	func setupDiffableDataSource(for collectionView: UICollectionView) {
 		setupCollectionViewDiffableDataSource(for: collectionView)
 	}
-
 }

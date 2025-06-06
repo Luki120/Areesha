@@ -13,6 +13,7 @@ final class Service {
 		static let apiKey = "api_key=\(_Constants.apiKey)"
 		static let baseURL = "https://api.themoviedb.org/3/"
 		static let imageBaseURL = "https://image.tmdb.org/t/p/"
+		static let ratedShowsURL = "\(baseURL)/account/\(_Constants.accountID)/rated/tv"
 		static let topRatedTVShowsURL = "\(baseURL)tv/top_rated?\(apiKey)"
 		static let trendingTVShowsURL = "\(baseURL)trending/tv/day?\(apiKey)"
 		static let searchTVShowBaseURL = "\(baseURL)search/tv?\(apiKey)"
@@ -20,14 +21,15 @@ final class Service {
 
 	/// Function to make API calls
 	/// - Parameters:
-	///		- withURL: The API call url
+	///		- request: The `URLRequest`
 	///		- expecting: The given type that conforms to `Codable` from which to decode the JSON data
 	/// - Returns: `AnyPublisher<(T, Bool), Error>`
-	func fetchTVShows<T: Codable>(withURL url: URL, expecting type: T.Type) -> AnyPublisher<(T, Bool), Error> {
+	func fetchTVShows<T: Codable>(request: URLRequest, expecting type: T.Type) -> AnyPublisher<(T, Bool), Error> {
+		let urlString = request.url?.absoluteString ?? UUID().uuidString
 		let dataPublisher: AnyPublisher<Data, Error>
 		let isFromCache: Bool
 
-		if let cachedData = apiCache[url.absoluteString] {
+		if let cachedData = apiCache[urlString] {
 			isFromCache = true
 			dataPublisher = Just(cachedData)
 				.setFailureType(to: Error.self)
@@ -35,9 +37,9 @@ final class Service {
 		}
 		else {
 			isFromCache = false
-			dataPublisher = URLSession.shared.dataTaskPublisher(for: url)
+			dataPublisher = URLSession.shared.dataTaskPublisher(for: request)
 				.tryMap { data, _ in
-					self.apiCache[url.absoluteString] = data
+					self.apiCache[urlString] = data
 					return data
 				}
 				.eraseToAnyPublisher()
@@ -50,13 +52,22 @@ final class Service {
 			.eraseToAnyPublisher()
 	}
 
-	/// Function to make API calls without caring about if it's coming from the cache or the network
+	/// Function to make API calls
+	/// - Parameters:
+	///		- withURL: The API call url
+	///		- expecting: The given type that conforms to `Codable` from which to decode the JSON data
+	/// - Returns: `AnyPublisher<(T, Bool), Error>`
+	func fetchTVShows<T: Codable>(withURL url: URL, expecting type: T.Type) -> AnyPublisher<(T, Bool), Error> {
+		return fetchTVShows(request: .init(url: url), expecting: type)
+	}
+
+	/// Function to make API calls, ignoring if it comes from the cache or the network
 	/// - Parameters:
 	///		- withURL: The API call url
 	///		- expecting: The given type that conforms to `Codable` from which to decode the JSON data
 	/// - Returns: `AnyPublisher<T, Error>`
 	func fetchTVShows<T: Codable>(withURL url: URL, expecting type: T.Type) -> AnyPublisher<T, Error> {
-		fetchTVShows(withURL: url, expecting: T.self)
+		fetchTVShows(request: .init(url: url), expecting: T.self)
 			.map(\.0)
 			.eraseToAnyPublisher()
 	}
