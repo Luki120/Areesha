@@ -323,17 +323,3 @@ extension UITableView {
 		return cell
 	}
 }
-
-@propertyWrapper
-struct UsesAutoLayout<T: UIView> {
-	var wrappedValue: T {
-		didSet {
-			wrappedValue.translatesAutoresizingMaskIntoConstraints = false
-		}
-	}
-
-	init(wrappedValue: T) {
-		self.wrappedValue = wrappedValue
-		wrappedValue.translatesAutoresizingMaskIntoConstraints = false
-	}
-}
