@@ -5,38 +5,25 @@ import UIKit
 final class TrackedTVShowManager: ObservableObject {
 	static let sharedInstance = TrackedTVShowManager()
 
-	@Published private(set) var filteredTrackedTVShows = [TrackedTVShow]() {
-		didSet {
-			encode(filteredTrackedTVShows, forKey: "filteredViewModels")
-		}
-	}
+	@PublishedStorage(key: "filteredViewModels", defaultValue: [])
+	private(set) var filteredTrackedTVShows: [TrackedTVShow]
 
-	@Published private(set) var trackedTVShows = [TrackedTVShow]() {
-		didSet {
-			encode(trackedTVShows, forKey: "viewModels")
-		}
-	}
+	@PublishedStorage(key: "viewModels", defaultValue: [])
+	private(set) var trackedTVShows: [TrackedTVShow]
 
-	private init() {
-		guard let trackedTVShows = decode([TrackedTVShow].self, forKey: "viewModels") else { return }
-		self.trackedTVShows = trackedTVShows
-
-		guard let filteredTrackedTVShows = decode([TrackedTVShow].self, forKey: "filteredViewModels") else { return }
-		self.filteredTrackedTVShows = filteredTrackedTVShows
-	}
+	@Storage(key: "sortOption", defaultValue: .moreAdvanced) var sortOption: SortOption
 
 	/// Enum to represent the different types of options to sort
-	enum SortOption: String, Codable {
+	enum SortOption: String, CaseIterable, Codable {
 		case alphabetically, leastAdvanced, moreAdvanced
 	}
 
-	private func insert(trackedTVShow: TrackedTVShow) {
-		guard let decodedSortOption = decode(SortOption.self, forKey: "sortOption") else {
-			trackedTVShows.append(trackedTVShow)
-			return
-		}
+	private init() {
+		filteredTrackedTVShows = filteredTrackedTVShows.sorted { $0.rating ?? 0 > $1.rating ?? 0 }
+	}
 
-		switch decodedSortOption {
+	private func insert(trackedTVShow: TrackedTVShow) {
+		switch sortOption {
 			case .alphabetically:
 				let index = trackedTVShows.insertionIndex(of: trackedTVShow) { $0.name < $1.name }
 				trackedTVShows.insert(trackedTVShow, at: index)
@@ -50,16 +37,6 @@ final class TrackedTVShowManager: ObservableObject {
 				trackedTVShows.insert(trackedTVShow, at: index)
 		}
 	}
-
-	private func encode<D: Encodable>(_ data: D, forKey key: String) {
-		guard let encodedData = try? JSONEncoder().encode(data) else { return }
-		UserDefaults.standard.set(encodedData, forKey: key)
-	}
-
-	private func decode<T: Decodable>(_ type: T.Type, forKey key: String) -> T? {
-		guard let data = UserDefaults.standard.object(forKey: key) as? Data else { return nil }
-		return try? JSONDecoder().decode(type.self, from: data)
-	}
 }
 
 extension TrackedTVShowManager {
@@ -67,11 +44,11 @@ extension TrackedTVShowManager {
 
 	/// Function to track & save a tv show
 	/// - Parameters:
-	///		- tvShow: The tv show object
-	///		- season: The season object
-	///		- episode: The episode object
-	///		- completion: Escaping closure that takes a Bool as argument & returns nothing to check
-	///     if the tv show with the given episode id is already being tracked or not
+	///		- tvShow: The `TVShow` object
+	///		- season: The `Season` object
+	///		- episode: The `Episode` object
+	///		- completion: `@escaping` closure that takes a `Bool` as argument & returns nothing, to check
+	///     if the given episode is already tracked or not
 	func track(tvShow: TVShow, season: Season, episode: Episode, completion: @escaping (Bool) -> ()) {
 		guard let url = Service.imageURL(.episodeStill(episode)),
 			let seasonNumber = season.number,
@@ -144,19 +121,23 @@ extension TrackedTVShowManager {
 	///		- withOption: The option
 	func didSortModels(withOption option: SortOption) {
 		switch option {
-			case .alphabetically:
-				trackedTVShows = trackedTVShows.sorted { $0.name < $1.name }
-				filteredTrackedTVShows = filteredTrackedTVShows.sorted { $0.name < $1.name }
-
-			case .leastAdvanced:
-				trackedTVShows = trackedTVShows.sorted { $0.lastSeen < $1.lastSeen }
-				filteredTrackedTVShows = filteredTrackedTVShows.sorted { $0.lastSeen < $1.lastSeen }
-
-			case .moreAdvanced:
-				trackedTVShows = trackedTVShows.sorted { $0.lastSeen > $1.lastSeen }
-				filteredTrackedTVShows = filteredTrackedTVShows.sorted { $0.lastSeen > $1.lastSeen }
+			case .alphabetically: trackedTVShows = trackedTVShows.sorted { $0.name < $1.name }
+			case .leastAdvanced: trackedTVShows = trackedTVShows.sorted { $0.lastSeen < $1.lastSeen }
+			case .moreAdvanced: trackedTVShows = trackedTVShows.sorted { $0.lastSeen > $1.lastSeen }
 		}
+	}
 
-		encode(option, forKey: "sortOption")
+	/// Function to set the ratings for the finished shows, if they exist
+	/// - Parameters:
+	///		- with: An array of `RatedTVShow` objects
+	func updateRatings(with ratedShows: [RatedTVShow]) {
+		for index in 0..<filteredTrackedTVShows.count {
+			var filteredShow = filteredTrackedTVShows[index]
+
+			if let ratedShow = ratedShows.first(where: { $0.id == filteredShow.tvShow.id }) {
+				filteredShow.rating = ratedShow.rating
+				filteredTrackedTVShows[index] = filteredShow
+			}
+		}
 	}
 }

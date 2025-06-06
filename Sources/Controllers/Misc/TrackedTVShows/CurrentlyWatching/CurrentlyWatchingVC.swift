@@ -5,9 +5,6 @@ final class CurrentlyWatchingVC: BaseVC {
 	private let currentlyWatchingListView = CurrentlyWatchingListView()
 
 	var coordinator: TrackedTVShowsCoordinator?
-
-	private var selectedOption: TrackedTVShowManager.SortOption?
-
 	override var titleView: UIView { return currentlyWatchingListView.titleLabel }
 
 	// ! Lifecycle
@@ -16,69 +13,43 @@ final class CurrentlyWatchingVC: BaseVC {
 
 	override func setupUI() {
 		super.setupUI()
+		currentlyWatchingListView.delegate = self
+
 		navigationItem.leftBarButtonItem?.tintColor = .areeshaPinkColor
 		navigationItem.rightBarButtonItem = .init(
 			title: "",
 			image: UIImage(systemName: "arrow.up.arrow.down"),
-			menu: setupMenu()
+			menu: UIMenu(title: "Sort by", children: TrackedTVShowManager.SortOption.allCases.map(makeAction))
 		)
-
-		currentlyWatchingListView.delegate = self
-
-		guard let selectedOptionValue = UserDefaults.standard.string(forKey: "selectedOption"),
-			let selectedOption = TrackedTVShowManager.SortOption(rawValue: selectedOptionValue) else { return }
-
-		self.selectedOption = selectedOption
-		updateMenu()
-	}
-
-	// ! Private
-
-	private func setupMenu() -> UIMenu {
-		let actions = [
-			UIAction(title: "Alphabetically", state: selectedOption == .alphabetically ? .on : .off) { _ in
-				self.coordinator?.eventOccurred(
-					with: .sortButtonTapped(
-						viewModel: self.currentlyWatchingListView.viewModel, option: .alphabetically
-					)
-				)
-				self.handleSelection(for: .alphabetically)
-				self.updateMenu()
-			},
-			UIAction(title: "Least advanced", state: selectedOption == .leastAdvanced ? .on : .off) { _ in
-				self.coordinator?.eventOccurred(
-					with: .sortButtonTapped(
-						viewModel: self.currentlyWatchingListView.viewModel, option: .leastAdvanced
-					)
-				)
-				self.handleSelection(for: .leastAdvanced)
-				self.updateMenu()
-			},
-			UIAction(title: "More advanced", state: selectedOption == .moreAdvanced ? .on : .off) { _ in
-				self.coordinator?.eventOccurred(
-					with: .sortButtonTapped(
-						viewModel: self.currentlyWatchingListView.viewModel, option: .moreAdvanced
-					)
-				)
-				self.handleSelection(for: .moreAdvanced)
-				self.updateMenu()
-			}
-		]
-
-		return UIMenu(title: "Sort by", children: actions)
-	}
-
-	private func handleSelection(for sortOption: TrackedTVShowManager.SortOption) {
-    	selectedOption = sortOption
-    	UserDefaults.standard.set(selectedOption?.rawValue, forKey: "selectedOption")
-	}
-
-	private func updateMenu() {
-		navigationItem.rightBarButtonItem?.menu = setupMenu()
 	}
 
 	override func didTapLeftBarButton() {
 		coordinator?.eventOccurred(with: .backButtonTapped)
+	}
+
+	// ! Private
+
+	private func makeAction(for sortOption: TrackedTVShowManager.SortOption) -> UIAction {
+		let title: String
+		let state: UIAction.State = TrackedTVShowManager.sharedInstance.sortOption == sortOption ? .on : .off
+
+		switch sortOption {
+			case .alphabetically: title = "Alphabetically"
+			case .leastAdvanced: title = "Least advanced"
+			case .moreAdvanced: title = "More advanced"
+		}
+
+		return UIAction(title: title, state: state) { _ in
+			self.coordinator?.eventOccurred(
+				with: .sortButtonTapped(viewModel: self.currentlyWatchingListView.viewModel, option: sortOption)
+			)
+
+			TrackedTVShowManager.sharedInstance.sortOption = sortOption
+			self.navigationItem.rightBarButtonItem?.menu = UIMenu(
+				title: "Sort by",
+				children: TrackedTVShowManager.SortOption.allCases.map(self.makeAction)
+			)
+		}
 	}
 }
 
