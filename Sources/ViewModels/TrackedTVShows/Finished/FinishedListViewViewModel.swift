@@ -7,6 +7,7 @@ protocol FinishedListViewViewModelDelegate: AnyObject {
 
 /// View model class for `FinishedListView`
 final class FinishedListViewViewModel: NSObject {
+	private var sortedShows = [TrackedTVShow]()
 	private var subscriptions: Set<AnyCancellable> = []
 	weak var delegate: FinishedListViewViewModelDelegate?
 
@@ -27,7 +28,8 @@ final class FinishedListViewViewModel: NSObject {
 
 		TrackedTVShowManager.sharedInstance.$filteredTrackedTVShows
 			.sink { [unowned self] filteredTrackedTVShows in
-				applyDiffableDataSourceSnapshot(withModels: filteredTrackedTVShows)
+				sortedShows = filteredTrackedTVShows.sorted { $0.rating ?? 0 > $1.rating ?? 0 }
+				applyDiffableDataSourceSnapshot(withModels: sortedShows)
 			}
 			.store(in: &subscriptions)
 
@@ -69,7 +71,7 @@ extension FinishedListViewViewModel: UICollectionViewDelegate {
 			)
 			return cell
 		}
-		applyDiffableDataSourceSnapshot(withModels: TrackedTVShowManager.sharedInstance.filteredTrackedTVShows)
+		applyDiffableDataSourceSnapshot(withModels: sortedShows)
 	}
 
 	private func applyDiffableDataSourceSnapshot(withModels models: [TrackedTVShow]) {
@@ -85,7 +87,7 @@ extension FinishedListViewViewModel: UICollectionViewDelegate {
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
-		delegate?.didSelect(trackedTVShow: TrackedTVShowManager.sharedInstance.filteredTrackedTVShows[indexPath.item])
+		delegate?.didSelect(trackedTVShow: sortedShows[indexPath.item])
 	}
 }
 

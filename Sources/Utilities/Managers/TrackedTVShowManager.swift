@@ -83,7 +83,10 @@ extension TrackedTVShowManager {
 	///		- isFilteredArray: Boolean to check wether the array is filtered
 	func deleteTrackedTVShow(at index: Int, isFilteredArray: Bool = false) {
 		if !isFilteredArray { trackedTVShows.remove(at: index) }
-		else { filteredTrackedTVShows.remove(at: index) }
+		else {
+			filteredTrackedTVShows = filteredTrackedTVShows.sorted { $0.rating ?? 0 > $1.rating ?? 0 }
+			filteredTrackedTVShows.remove(at: index)
+		}
 	}
 
 	/// Function to mark a tv show as finished
