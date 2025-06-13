@@ -29,6 +29,18 @@ final class TrackedTVShowDetailsVC: BaseVC {
 
 	override func loadView() { view = trackedTVShowDetailsView }
 
+	override func viewDidLoad() {
+		super.viewDidLoad()
+
+		navigationItem.leftBarButtonItem = trackedTVShowDetailsView.createBarButtonItem(
+			systemImage: "chevron.backward",
+			target: self,
+			action: #selector(didTapLeftBarButton)
+		)
+
+		navigationItem.rightBarButtonItem?.tintColor = .label
+	}
+
 	override func didTapLeftBarButton() {
 		coordinator?.eventOccurred(with: .backButtonTapped)
 	}

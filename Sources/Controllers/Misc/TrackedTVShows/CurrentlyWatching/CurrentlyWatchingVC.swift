@@ -3,6 +3,7 @@ import UIKit
 /// Controller that'll show the currently watching tracked tv shows list view
 final class CurrentlyWatchingVC: BaseVC {
 	private let currentlyWatchingListView = CurrentlyWatchingListView()
+	private let roundedBlurredButton: RoundedBlurredButton = .init(systemImage: "arrow.up.arrow.down")
 
 	var coordinator: TrackedTVShowsCoordinator?
 	override var titleView: UIView { return currentlyWatchingListView.titleLabel }
@@ -16,11 +17,7 @@ final class CurrentlyWatchingVC: BaseVC {
 		currentlyWatchingListView.delegate = self
 
 		navigationItem.leftBarButtonItem?.tintColor = .areeshaPinkColor
-		navigationItem.rightBarButtonItem = .init(
-			title: "",
-			image: UIImage(systemName: "arrow.up.arrow.down"),
-			menu: UIMenu(title: "Sort by", children: TrackedTVShowManager.SortOption.allCases.map(makeAction))
-		)
+		navigationItem.rightBarButtonItem = createSortShowsBarButtonItem()
 	}
 
 	override func didTapLeftBarButton() {
@@ -45,11 +42,20 @@ final class CurrentlyWatchingVC: BaseVC {
 			)
 
 			TrackedTVShowManager.sharedInstance.sortOption = sortOption
-			self.navigationItem.rightBarButtonItem?.menu = UIMenu(
+			self.roundedBlurredButton.menu = UIMenu(
 				title: "Sort by",
 				children: TrackedTVShowManager.SortOption.allCases.map(self.makeAction)
 			)
 		}
+	}
+
+	private func createSortShowsBarButtonItem() -> UIBarButtonItem {
+		roundedBlurredButton.menu = UIMenu(
+			title: "Sort by",
+			children: TrackedTVShowManager.SortOption.allCases.map(self.makeAction)
+		)
+		roundedBlurredButton.showsMenuAsPrimaryAction = true
+		return .init(customView: roundedBlurredButton)
 	}
 }
 

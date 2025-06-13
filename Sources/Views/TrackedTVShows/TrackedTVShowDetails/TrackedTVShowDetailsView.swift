@@ -68,24 +68,41 @@ final class TrackedTVShowDetailsView: UIView {
 	}
 }
 
+// ! Public
+
+extension TrackedTVShowDetailsView {
+	/// Function to create a `UIBarButtonItem`
+	///
+	/// - Parameters:
+	///		- systemImage: A `String` that represents the image's system name
+	///		- target: The target
+	///		- selector: The `Selector`
+	/// - Returns: `UIBarButtonItem`
+	func createBarButtonItem(systemImage: String, target: Any?, action: Selector) -> UIBarButtonItem {
+		return headerView.createBarButtonItem(systemImage: systemImage, target: target, action: action)
+	}
+}
+
 // ! UITableViewDelegate
 
 extension TrackedTVShowDetailsView: UITableViewDelegate {
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
-		guard let headerView = trackedTVShowDetailsTableView.tableHeaderView as? TrackedTVShowDetailsHeaderView,
-			let vc = parentViewController as? TrackedTVShowDetailsVC else { return }
+		guard let headerView = trackedTVShowDetailsTableView.tableHeaderView as? TrackedTVShowDetailsHeaderView else {
+			return
+		}
 
 		headerView.scrollViewDidScroll(scrollView: scrollView)
 
-		let kNavigationBarHeight = (window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0) +
-			(vc.navigationController?.navigationBar.frame.height ?? 0)
-		let kScrollableHeight = headerView.frame.size.height - kNavigationBarHeight
-
+		let kScrollableHeight = headerView.frame.size.height - safeAreaInsets.top
 		let scrolledEnough = scrollView.contentOffset.y > kScrollableHeight
 
 		UIView.animate(withDuration: 0.35, delay: 0, options: scrolledEnough ? .curveEaseIn : .curveEaseOut) {
 			self.titleLabel.alpha = scrolledEnough ? 1 : 0
 			if scrolledEnough { self.titleLabel.isHidden = false }
+
+			headerView.roundedBlurredButtons.forEach {
+				$0.setupStyles(for: .header(status: scrolledEnough))
+			}
 		} completion: { isFinished in 
 			guard UIDevice.current.hasDynamicIsland else { return }
 

@@ -19,6 +19,8 @@ class BaseHeaderView: UIView {
 	}()
 
 	private(set) var nameLabel: UILabel!
+	private(set) var roundedBlurredButtons = [RoundedBlurredButton]()
+
 	private var containerViewHeightConstraint: NSLayoutConstraint!
 	private var headerImageViewBottomConstraint: NSLayoutConstraint!
 	private var headerImageViewHeightConstraint: NSLayoutConstraint!
@@ -82,13 +84,28 @@ class BaseHeaderView: UIView {
 		label.translatesAutoresizingMaskIntoConstraints = false
 		return label
 	}
-
 }
 
 extension BaseHeaderView {
 	// ! Public
 
+	/// Function to create a `UIBarButtonItem`
+	///
+	/// - Parameters:
+	///		- systemImage: A `String` that represents the image's system name
+	///		- target: The target
+	///		- selector: The `Selector`
+	/// - Returns: `UIBarButtonItem`
+	final func createBarButtonItem(systemImage: String, target: Any?, action: Selector) -> UIBarButtonItem {
+		let roundedBlurredButton: RoundedBlurredButton = .init(systemImage: systemImage, isHeader: true)
+		roundedBlurredButton.addTarget(target, action: action, for: .touchUpInside)
+
+		roundedBlurredButtons.append(roundedBlurredButton)
+		return .init(customView: roundedBlurredButton)
+	}
+
 	/// Function to notify the scroll view when the user started scrolling to act accordingly
+	///
 	/// - Parameters:
 	/// 	- scrollView: The scroll view
 	final func scrollViewDidScroll(scrollView: UIScrollView) {

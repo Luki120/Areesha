@@ -5,6 +5,8 @@ import UIKit
 final class TVShowDetailsViewViewModel {
 	var title: String { return tvShow.name }
 
+	private var lastSeason: Season!
+
 	private var genreCellViewModel = TVShowDetailsGenreCellViewModel()
 	private var overviewCellViewModel: TVShowDetailsOverviewCellViewModel!
 	private var castCellViewModel = TVShowDetailsCastCellViewModel()
@@ -56,7 +58,7 @@ final class TVShowDetailsViewViewModel {
 
 	/// Designated initializer
 	/// - Parameters:
-	///		- tvShow: The tv show model object
+	///		- tvShow: The `TVShow` model object
 	init(tvShow: TVShow) {
 		self.tvShow = tvShow
 		fetchTVShowCast()
@@ -100,10 +102,13 @@ final class TVShowDetailsViewViewModel {
 			for: tvShow,
 			storeIn: &subscriptions
 		) { [weak self] tvShow, isFromCache in
-			guard let self else { return }	
+			guard let self else { return }
 
 			updateGenresNames(with: tvShow.genres ?? [], for: tvShow)
 			reloadSnapshot(animatingDifferences: !isFromCache)
+
+			guard let lastSeason = tvShow.seasons?.last else { return }
+			self.lastSeason = lastSeason
 		}
 	}
 
@@ -204,5 +209,32 @@ extension TVShowDetailsViewViewModel {
 		else { snapshot.reloadItems(cells) }
 
 		dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
+	}
+}
+
+// ! Public
+
+extension TVShowDetailsViewViewModel {
+	/// Function to mark a tv show as watched
+	func markShowAsWatched() {
+		guard let lastSeason else { return }
+
+		Service.sharedInstance.fetchSeasonDetails(
+			for: lastSeason,
+			tvShow: tvShow,
+			storeIn: &subscriptions
+		) { [weak self] season in
+			guard let self else { return }
+			guard let lastEpisode = season.episodes?.last else { return }
+
+			TrackedTVShowManager.sharedInstance.track(
+				tvShow: tvShow,
+				season: season,
+				episode: lastEpisode,
+				isFinished: true
+			) { _ in }
+
+			applySnapshot()
+		}
 	}
 }

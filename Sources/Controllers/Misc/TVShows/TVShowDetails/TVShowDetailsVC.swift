@@ -33,12 +33,24 @@ final class TVShowDetailsVC: BaseVC {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
-		navigationItem.rightBarButtonItem = .init(
-			image: .init(systemName: "star"),
-			style: .done,
+		navigationItem.leftBarButtonItem = tvShowDetailsView.createBarButtonItem(
+			systemImage: "chevron.backward",
 			target: self,
-			action: #selector(didTapRightBarButton)
+			action: #selector(didTapLeftBarButton)
 		)
+
+		let rateButtonItem = tvShowDetailsView.createBarButtonItem(
+			systemImage: "star",
+			target: self,
+			action: #selector(didTapRateButtonItem)
+		)
+		let markAsWatchedButtonItem = tvShowDetailsView.createBarButtonItem(
+			systemImage: "checkmark",
+			target: self,
+			action: #selector(didTapMarkAsWatchedButtonItem)
+		)
+
+		navigationItem.rightBarButtonItems = [markAsWatchedButtonItem, rateButtonItem]
 		navigationItem.rightBarButtonItem?.tintColor = .label
 	}
 
@@ -52,8 +64,13 @@ final class TVShowDetailsVC: BaseVC {
 	}
 
 	@objc
-	private func didTapRightBarButton() {
+	private func didTapRateButtonItem() {
 		coordinator?.eventOccurred(with: .starButtonTapped(tvShow: tvShowDetailsViewViewModel.tvShow))
+	}
+
+	@objc
+	private func didTapMarkAsWatchedButtonItem() {
+		coordinator?.eventOccurred(with: .markAsWatchedButtonTapped(viewModel: tvShowDetailsViewViewModel))
 	}
 }
 

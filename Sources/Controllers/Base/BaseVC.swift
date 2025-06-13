@@ -12,11 +12,11 @@ class BaseVC: UIViewController {
 
 	/// Function to setup the UI
 	func setupUI() {
+		let roundedBlurredButton: RoundedBlurredButton = .init(systemImage: "chevron.backward")
+		roundedBlurredButton.addTarget(self, action: #selector(didTapLeftBarButton), for: .touchUpInside)
+
 		navigationItem.titleView = titleView
-		navigationItem.leftBarButtonItem = .createBackBarButtonItem(
-			forTarget: self,
-			selector: #selector(didTapLeftBarButton)
-		)
+		navigationItem.leftBarButtonItem = .init(customView: roundedBlurredButton)
 		navigationItem.leftBarButtonItem?.tintColor = .label
 		view.backgroundColor = .systemBackground
 	}

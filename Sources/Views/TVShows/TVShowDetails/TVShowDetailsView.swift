@@ -70,6 +70,21 @@ final class TVShowDetailsView: UIView {
 	}
 }
 
+// ! Public
+
+extension TVShowDetailsView {
+	/// Function to create a `UIBarButtonItem`
+	///
+	/// - Parameters:
+	///		- systemImage: A `String` that represents the image's system name
+	///		- target: The target
+	///		- selector: The `Selector`
+	/// - Returns: `UIBarButtonItem`
+	func createBarButtonItem(systemImage: String, target: Any?, action: Selector) -> UIBarButtonItem {
+		return headerView.createBarButtonItem(systemImage: systemImage, target: target, action: action)
+	}
+}
+
 // ! UITableViewDelegate
 
 extension TVShowDetailsView: UITableViewDelegate {
@@ -86,6 +101,10 @@ extension TVShowDetailsView: UITableViewDelegate {
 		UIView.animate(withDuration: 0.35, delay: 0, options: scrolledEnough ? .curveEaseIn : .curveEaseOut) {
 			self.titleLabel.alpha = scrolledEnough ? 1 : 0
 			if scrolledEnough { self.titleLabel.isHidden = false }
+
+			headerView.roundedBlurredButtons.forEach {
+				$0.setupStyles(for: .header(status: scrolledEnough))
+			}
 		} completion: { isFinished in
 			guard UIDevice.current.hasDynamicIsland else { return }
 
