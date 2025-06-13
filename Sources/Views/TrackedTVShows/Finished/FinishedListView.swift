@@ -7,7 +7,6 @@ protocol FinishedListViewDelegate: AnyObject {
 
 /// Class to represent the finished tracked tv shows list view
 final class FinishedListView: UIView {
-
 	private lazy var viewModel = FinishedListViewViewModel()
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: "Finished")
 
@@ -24,11 +23,15 @@ final class FinishedListView: UIView {
 
 		let listLayout = UICollectionViewCompositionalLayout.list(using: layoutConfig)
 		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: listLayout)
+		collectionView.refreshControl = refreshControl
 		collectionView.backgroundColor = .systemBackground
 		collectionView.showsVerticalScrollIndicator = false
 		collectionView.translatesAutoresizingMaskIntoConstraints = false
+		refreshControl.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
 		return collectionView
 	}()
+
+	private var refreshControl = UIRefreshControl()
 
 	weak var delegate: FinishedListViewDelegate?
 
@@ -47,14 +50,18 @@ final class FinishedListView: UIView {
 		finishedListCollectionView.delegate = viewModel
 	}
 
+	@objc
+	private func didPullToRefresh() {
+		viewModel.refreshState = .refreshing
+		viewModel.fetchRatedShows(ignoringCache: true)
+		viewModel.refreshState = .idle
+	}
 }
 
 // ! FinishedListViewViewModelDelegate
 
 extension FinishedListView: FinishedListViewViewModelDelegate {
-
 	func didSelect(trackedTVShow: TrackedTVShow) {
 		delegate?.finishedListView(self, didSelect: trackedTVShow)
 	}
-
 }

@@ -52,6 +52,22 @@ final class Service {
 			.eraseToAnyPublisher()
 	}
 
+	/// Function to make API calls, ignoring if it comes from the cache or the network
+	/// - Parameters:
+	///		- withURL: The API call url
+	///		- expecting: The given type that conforms to `Codable` from which to decode the JSON data
+	/// - Returns: `AnyPublisher<T, Error>`
+	func fetchTVShows<T: Codable>(request: URLRequest, expecting type: T.Type) -> AnyPublisher<T, Error> {
+		return URLSession.shared.dataTaskPublisher(for: request)
+			.tryMap { data, _ in
+				return data
+			}
+			.decode(type: T.self, decoder: JSONDecoder())
+			.map { $0 }
+			.receive(on: DispatchQueue.main)
+			.eraseToAnyPublisher()
+	}
+
 	/// Function to make API calls
 	/// - Parameters:
 	///		- withURL: The API call url

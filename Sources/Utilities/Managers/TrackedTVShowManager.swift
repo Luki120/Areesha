@@ -43,13 +43,21 @@ extension TrackedTVShowManager {
 	// ! Public
 
 	/// Function to track & save a tv show
+	///
 	/// - Parameters:
 	///		- tvShow: The `TVShow` object
 	///		- season: The `Season` object
 	///		- episode: The `Episode` object
+	///		- isFinished: `Bool` that indicates the tracking status of the show, defaults to `false`
 	///		- completion: `@escaping` closure that takes a `Bool` as argument & returns nothing, to check
-	///     if the given episode is already tracked or not
-	func track(tvShow: TVShow, season: Season, episode: Episode, completion: @escaping (Bool) -> ()) {
+	///		if the given episode is already tracked or not
+	func track(
+		tvShow: TVShow,
+		season: Season,
+		episode: Episode,
+		isFinished: Bool = false,
+		completion: @escaping (Bool) -> ()
+	) {
 		guard let url = Service.imageURL(.episodeStill(episode)),
 			let seasonNumber = season.number,
 			let episodeNumber = episode.number else { return }
@@ -67,6 +75,12 @@ extension TrackedTVShowManager {
 			episode: episode,
 			lastSeen: "Last seen: S\(cleanSeasonNumber)E\(cleanEpisodeNumber)",
 		)
+
+		if isFinished {
+			guard !filteredTrackedTVShows.contains(trackedTVShow) else { return }
+			filteredTrackedTVShows.append(trackedTVShow)
+			return
+		}
 
 		guard !trackedTVShows.contains(trackedTVShow) else {
 			completion(true)

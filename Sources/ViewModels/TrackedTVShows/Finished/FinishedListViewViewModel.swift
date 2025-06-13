@@ -11,6 +11,12 @@ final class FinishedListViewViewModel: NSObject {
 	private var subscriptions: Set<AnyCancellable> = []
 	weak var delegate: FinishedListViewViewModelDelegate?
 
+	enum RefreshState {
+		case idle, refreshing
+	}
+
+	var refreshState: RefreshState = .idle
+
 	// ! UICollectionViewDiffableDataSource
 
 	private typealias CellRegistration = UICollectionView.CellRegistration<TrackedTVShowListCell, TrackedTVShowCellViewModel>
@@ -36,7 +42,7 @@ final class FinishedListViewViewModel: NSObject {
 		fetchRatedShows()
 	}
 
-	private func fetchRatedShows() {
+	func fetchRatedShows(ignoringCache: Bool = false) {
 		guard let url = URL(string: Service.Constants.ratedShowsURL) else { return }
 
 		var urlRequest = URLRequest(url: url)
@@ -45,12 +51,22 @@ final class FinishedListViewViewModel: NSObject {
 			"Authorization": "Bearer \(_Constants.token)"
 		]
 
-		Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
-			.receive(on: DispatchQueue.main)
-			.sink(receiveCompletion: { _ in }) { ratedShows, _ in
-				TrackedTVShowManager.sharedInstance.updateRatings(with: ratedShows.results)
-			}
-			.store(in: &subscriptions)
+		if !ignoringCache {
+			Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
+				.receive(on: DispatchQueue.main)
+				.sink(receiveCompletion: { _ in }) { ratedShows, _ in
+					TrackedTVShowManager.sharedInstance.updateRatings(with: ratedShows.results)
+				}
+				.store(in: &subscriptions)
+		}
+		else {
+			Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
+				.receive(on: DispatchQueue.main)
+				.sink(receiveCompletion: { _ in }) { ratedShows in
+					TrackedTVShowManager.sharedInstance.updateRatings(with: ratedShows.results)
+				}
+				.store(in: &subscriptions)
+		}
 	}
 }
 
@@ -88,6 +104,14 @@ extension FinishedListViewViewModel: UICollectionViewDelegate {
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
 		delegate?.didSelect(trackedTVShow: sortedShows[indexPath.item])
+	}
+
+	func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+		guard let collectionView = scrollView as? UICollectionView else { return }
+
+		if refreshState == .idle && collectionView.refreshControl!.isRefreshing {
+			collectionView.refreshControl?.endRefreshing()
+		}
 	}
 }
 
