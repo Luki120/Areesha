@@ -76,18 +76,19 @@ final class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
 	}
 
 	private func createEmptyResultsLabel() {
-		[whereToWatchLabel, watchProvidersStackView, separatorView, justWatchImageView].forEach {
+		[watchProvidersStackView, separatorView, justWatchImageView].forEach {
 			$0?.removeFromSuperview() 
 		}
 
 		let emptyResultsLabel = UILabel()
-		emptyResultsLabel.text = "Unknown"
+		emptyResultsLabel.text = "No information available"
 		emptyResultsLabel.font = .preferredFont(forTextStyle: .body)
 		emptyResultsLabel.translatesAutoresizingMaskIntoConstraints = false
 		contentView.addSubview(emptyResultsLabel)
 
-		emptyResultsLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
-		emptyResultsLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+		emptyResultsLabel.topAnchor.constraint(equalTo: whereToWatchLabel.bottomAnchor, constant: 10).isActive = true
+		emptyResultsLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20).isActive = true
+		emptyResultsLabel.leadingAnchor.constraint(equalTo: whereToWatchLabel.leadingAnchor).isActive = true
 	}
 }
 
@@ -95,8 +96,7 @@ extension TVShowDetailsProvidersCell {
 	// ! Public
 
 	/// Function to configure the cell with its respective watch provider state
-	/// - Parameters:
-	/// 	- with: The cell's state
+	/// - Parameter with: The cell's state
 	func configure(with state: TVShowDetailsViewViewModel.WatchProvidersState) {		
 		switch state {
 			case .empty: createEmptyResultsLabel()
