@@ -145,7 +145,10 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 	}
 
 	private func configureRating(with viewModel: TrackedTVShowCellViewModel) {
-		guard viewModel.listType == .finished && viewModel.rating != 0 else { return }
+		guard viewModel.listType == .finished && viewModel.rating != 0 else {
+			ratingStarImageView.removeFromSuperview()
+			return
+		}
 
 		addSubview(ratingStarImageView)
 		ratingStarImageView.centerYAnchor.constraint(equalTo: detailsLabel.centerYAnchor).isActive = true
