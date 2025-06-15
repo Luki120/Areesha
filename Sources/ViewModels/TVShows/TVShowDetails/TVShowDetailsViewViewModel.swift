@@ -71,9 +71,11 @@ final class TVShowDetailsViewViewModel {
 
 	private func setupHeaderViewModel() -> TVShowDetailsHeaderViewViewModel {
 		let average = tvShow.voteAverage?.round(to: 1) ?? 0
-		let formattedRating = average == 10.0 ? 10 : average
+		let isWholeNumber = average.truncatingRemainder(dividingBy: 1) == 0
 
-		let rating = String(describing: formattedRating) + "/10"
+		let rating = isWholeNumber
+			? String(format: "%.0f/10", average)
+			: String(describing: average) + "/10"
 
 		guard let url = Service.imageURL(.showBackdrop(tvShow), size: "w1280") else {
 			return .init(
