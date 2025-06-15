@@ -18,7 +18,7 @@ final class TrackedTVShowDetailsView: UIView {
 		tableView.allowsSelection = false
 		tableView.backgroundColor = .systemBackground
 		tableView.register(TrackedTVShowDetailsCell.self, forCellReuseIdentifier: TrackedTVShowDetailsCell.identifier)
-		tableView.register(TrackedTVShowDetailsOverviewCell.self, forCellReuseIdentifier: TrackedTVShowDetailsOverviewCell.identifier)
+		tableView.register(TrackedTVShowDetailsDescriptionCell.self, forCellReuseIdentifier: TrackedTVShowDetailsDescriptionCell.identifier)
 		return tableView
 	}()
 
@@ -36,8 +36,7 @@ final class TrackedTVShowDetailsView: UIView {
 	}
 
 	/// Designated initializer
-	/// - Parameters:
-	///		- viewModel: The view model object for this view
+	/// - Parameter viewModel: The view model object for this view
 	init(viewModel: TrackedTVShowDetailsViewViewModel) {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
@@ -76,7 +75,7 @@ extension TrackedTVShowDetailsView {
 	/// - Parameters:
 	///		- systemImage: A `String` that represents the image's system name
 	///		- target: The target
-	///		- selector: The `Selector`
+	///		- action: The `Selector`
 	/// - Returns: `UIBarButtonItem`
 	func createBarButtonItem(systemImage: String, target: Any?, action: Selector) -> UIBarButtonItem {
 		return headerView.createBarButtonItem(systemImage: systemImage, target: target, action: action)

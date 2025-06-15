@@ -16,7 +16,7 @@ final class TVShowDetailsView: UIView {
 		tableView.allowsSelection = false
 		tableView.backgroundColor = .systemBackground
 		tableView.register(TVShowDetailsGenreCell.self, forCellReuseIdentifier: TVShowDetailsGenreCell.identifier)
-		tableView.register(TVShowDetailsOverviewCell.self, forCellReuseIdentifier: TVShowDetailsOverviewCell.identifier)
+		tableView.register(TVShowDetailsDescriptionCell.self, forCellReuseIdentifier: TVShowDetailsDescriptionCell.identifier)
 		tableView.register(TVShowDetailsCastCell.self, forCellReuseIdentifier: TVShowDetailsCastCell.identifier)
 		tableView.register(TVShowDetailsProvidersCell.self, forCellReuseIdentifier: TVShowDetailsProvidersCell.identifier)
 		return tableView
@@ -38,8 +38,7 @@ final class TVShowDetailsView: UIView {
 	}
 
 	/// Designated initializer
-	/// - Parameters:
-	///		- viewModel: The view model object for this view
+	/// - Parameter viewModel: The view model object for this view
 	init(viewModel: TVShowDetailsViewViewModel) {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
@@ -78,7 +77,7 @@ extension TVShowDetailsView {
 	/// - Parameters:
 	///		- systemImage: A `String` that represents the image's system name
 	///		- target: The target
-	///		- selector: The `Selector`
+	///		- action: The `Selector`
 	/// - Returns: `UIBarButtonItem`
 	func createBarButtonItem(systemImage: String, target: Any?, action: Selector) -> UIBarButtonItem {
 		return headerView.createBarButtonItem(systemImage: systemImage, target: target, action: action)

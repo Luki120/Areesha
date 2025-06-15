@@ -1,8 +1,8 @@
 import UIKit
 
-/// Class to represent the tracked tv show details overview cell
-final class TrackedTVShowDetailsOverviewCell: TVShowDetailsBaseCell {
-	static let identifier = "TrackedTVShowDetailsOverviewCell"
+/// Class to represent the tracked tv show details description cell
+final class TrackedTVShowDetailsDescriptionCell: TVShowDetailsBaseCell {
+	static let identifier = "TrackedTVShowDetailsDescriptionCell"
 
 	@UsesAutoLayout
 	private var descriptionLabel: UILabel = {
@@ -35,13 +35,12 @@ final class TrackedTVShowDetailsOverviewCell: TVShowDetailsBaseCell {
 	}
 }
 
-extension TrackedTVShowDetailsOverviewCell {
+extension TrackedTVShowDetailsDescriptionCell {
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
-	/// - Parameters:
-	/// 	- with: The cell's view model
-	func configure(with viewModel: TrackedTVShowDetailsOverviewCellViewModel) {
+	/// - Parameter with: The cell's view model
+	func configure(with viewModel: TrackedTVShowDetailsDescriptionCellViewModel) {
 		descriptionLabel.text = viewModel.description
 	}
 }

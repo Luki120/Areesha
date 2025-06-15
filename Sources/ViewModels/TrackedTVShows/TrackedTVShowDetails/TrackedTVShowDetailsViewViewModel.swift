@@ -11,7 +11,7 @@ final class TrackedTVShowDetailsViewViewModel {
 			episodeAirDate: trackedTVShow.episode.airDate ?? ""
 		)
 	}
-	private var overviewCellViewModel: TrackedTVShowDetailsOverviewCellViewModel {
+	private var descriptionCellViewModel: TrackedTVShowDetailsDescriptionCellViewModel {
 		return .init(description: trackedTVShow.episode.description ?? "")
 	}
 
@@ -19,13 +19,13 @@ final class TrackedTVShowDetailsViewViewModel {
 
 	private enum CellType: Hashable {
 		case episodeDetails(viewModel: TrackedTVShowDetailsCellViewModel)
-		case overview(viewModel: TrackedTVShowDetailsOverviewCellViewModel)
+		case description(viewModel: TrackedTVShowDetailsDescriptionCellViewModel)
 	}
 
 	private var cells: [CellType] {
 		return [
 			.episodeDetails(viewModel: episodeDetailsCellViewModel),
-			.overview(viewModel: overviewCellViewModel)
+			.description(viewModel: descriptionCellViewModel)
 		]
 	}
 
@@ -41,8 +41,7 @@ final class TrackedTVShowDetailsViewViewModel {
 	private let trackedTVShow: TrackedTVShow
 
 	/// Designated initializer
-	/// - Parameters:
-	///		- trackedTVShow: The tracked tv show model object
+	/// - Parameter trackedTVShow: The `TrackedTVShow` model object
 	init(trackedTVShow: TrackedTVShow) {
 		self.trackedTVShow = trackedTVShow
 	}
@@ -58,8 +57,7 @@ final class TrackedTVShowDetailsViewViewModel {
 
 extension TrackedTVShowDetailsViewViewModel {
 	/// Function to setup the table view's header
-	/// - Parameters:
-	///		- view: The view that owns the table view, therefore the header
+	/// - Parameter view: The view that owns the table view, therefore the header
 	func setupEpisodeHeaderView(forView view: UIView) -> TrackedTVShowDetailsHeaderView {
 		let headerView = TrackedTVShowDetailsHeaderView(addRatingsLabel: false)
 		headerView.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 160)
@@ -68,8 +66,7 @@ extension TrackedTVShowDetailsViewViewModel {
 	}
 
 	/// Function to setup the table view's diffable data source
-	/// - Parameters:
-	///		- tableView: The table view
+	/// - Parameter tableView: The table view
 	func setupTrackedTVShowDetailsTableView(_ tableView: UITableView) {
 		dataSource = DataSource(tableView: tableView) { [weak self] tableView, indexPath, _ in
 			guard let self else { return nil }
@@ -80,9 +77,9 @@ extension TrackedTVShowDetailsViewViewModel {
 					cell.configure(with: episodeDetailsCellViewModel)
 					return cell
 
-				case .overview(let overviewCellViewModel):
-					let cell: TrackedTVShowDetailsOverviewCell = tableView.dequeueReusableCell(for: indexPath)
-					cell.configure(with: overviewCellViewModel)
+				case .description(let descriptionCellViewModel):
+					let cell: TrackedTVShowDetailsDescriptionCell = tableView.dequeueReusableCell(for: indexPath)
+					cell.configure(with: descriptionCellViewModel)
 					return cell
 			}
 		}

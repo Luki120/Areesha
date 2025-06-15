@@ -1,8 +1,8 @@
 import UIKit
 
 /// Class to represent the tv show details overview cell
-final class TVShowDetailsOverviewCell: TVShowDetailsBaseCell {
-	static let identifier = "TVShowDetailsOverviewCell"
+final class TVShowDetailsDescriptionCell: TVShowDetailsBaseCell {
+	static let identifier = "TVShowDetailsDescriptionCell"
 
 	@UsesAutoLayout
 	private var descriptionLabel: UILabel = {
@@ -35,13 +35,12 @@ final class TVShowDetailsOverviewCell: TVShowDetailsBaseCell {
 	}
 }
 
-extension TVShowDetailsOverviewCell {
+extension TVShowDetailsDescriptionCell {
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
-	/// - Parameters:
-	/// 	- with: The cell's view model
-	func configure(with viewModel: TVShowDetailsOverviewCellViewModel) {
+	/// - Parameter with: The cell's view model
+	func configure(with viewModel: TVShowDetailsDescriptionCellViewModel) {
 		descriptionLabel.text = viewModel.description
 	}
 }

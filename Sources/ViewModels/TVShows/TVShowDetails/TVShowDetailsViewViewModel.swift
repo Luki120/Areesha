@@ -8,7 +8,7 @@ final class TVShowDetailsViewViewModel {
 	private var lastSeason: Season!
 
 	private var genreCellViewModel = TVShowDetailsGenreCellViewModel()
-	private var overviewCellViewModel: TVShowDetailsOverviewCellViewModel!
+	private var descriptionCellViewModel: TVShowDetailsDescriptionCellViewModel!
 	private var castCellViewModel = TVShowDetailsCastCellViewModel()
 
 	enum WatchProvidersState {
@@ -57,21 +57,23 @@ final class TVShowDetailsViewViewModel {
 	let tvShow: TVShow
 
 	/// Designated initializer
-	/// - Parameters:
-	///		- tvShow: The `TVShow` model object
+	/// - Parameter tvShow: The `TVShow` model object
 	init(tvShow: TVShow) {
 		self.tvShow = tvShow
 		fetchTVShowCast()
 		fetchTVShowDetails()
 		fetchTVShowWatchProviders()
 
-		overviewCellViewModel = .init(description: tvShow.description)
+		descriptionCellViewModel = .init(description: tvShow.description)
 	}
 
 	// ! Private
 
 	private func setupHeaderViewModel() -> TVShowDetailsHeaderViewViewModel {
-		let rating = String(describing: tvShow.voteAverage?.round(to: 1) ?? 0) + "/10"
+		let average = tvShow.voteAverage?.round(to: 1) ?? 0
+		let formattedRating = average == 10.0 ? 10 : average
+
+		let rating = String(describing: formattedRating) + "/10"
 
 		guard let url = Service.imageURL(.showBackdrop(tvShow), size: "w1280") else {
 			return .init(
@@ -155,8 +157,7 @@ final class TVShowDetailsViewViewModel {
 
 extension TVShowDetailsViewViewModel {
 	/// Function to setup the table view's header
-	/// - Parameters:
-	///		- view: The view that owns the table view, therefore the header
+	/// - Parameter view: The view that owns the table view, therefore the header
 	func setupHeaderView(forView view: UIView) -> TVShowDetailsHeaderView {
 		let headerView = TVShowDetailsHeaderView()
 		headerView.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 160)
@@ -165,8 +166,7 @@ extension TVShowDetailsViewViewModel {
 	}
 
 	/// Function to setup the table view's diffable data source
-	/// - Parameters:
-	///		- tableView: The table view
+	/// - Parameter tableView: The table view
 	func setupTableView(_ tableView: UITableView) {
 		dataSource = DataSource(tableView: tableView) { [weak self] tableView, indexPath, _ in
 			guard let self else { return nil }
@@ -178,8 +178,8 @@ extension TVShowDetailsViewViewModel {
 					return cell
 
 				case .description:
-					let cell: TVShowDetailsOverviewCell = tableView.dequeueReusableCell(for: indexPath)
-					cell.configure(with: overviewCellViewModel)
+					let cell: TVShowDetailsDescriptionCell = tableView.dequeueReusableCell(for: indexPath)
+					cell.configure(with: descriptionCellViewModel)
 					return cell
 
 				case .cast:
