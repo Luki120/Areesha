@@ -61,6 +61,16 @@ final class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
 		setupSizeConstraints(forView: justWatchImageView, width: 80, height: 40)	
 	}
 
+	override func prepareForReuse() {
+		super.prepareForReuse()
+		watchProvidersStackView.subviews.forEach {
+			guard let imageView = $0 as? UIImageView else { return }
+			imageView.image = nil
+		}
+	}
+
+	// ! Private
+
 	private func createImageView(roundingCorners: Bool = true) -> UIImageView {
 		let imageView = UIImageView()
 		imageView.contentMode = .scaleAspectFill
