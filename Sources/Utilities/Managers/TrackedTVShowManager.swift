@@ -73,7 +73,7 @@ extension TrackedTVShowManager {
 			imageURL: url,
 			season: season,
 			episode: episode,
-			lastSeen: "Last seen: S\(cleanSeasonNumber)E\(cleanEpisodeNumber)",
+			lastSeen: "Last seen: S\(cleanSeasonNumber)E\(cleanEpisodeNumber)"
 		)
 
 		if isFinished {

@@ -1,6 +1,6 @@
 import UIKit
 
-/// Class that represents a rounded blur button, to use with navigation items
+/// `UIButton` subclass that represents a rounded blurred button, to use with navigation items
 final class RoundedBlurredButton: UIButton {
 	private lazy var blurEffectView: UIVisualEffectView = {
 		let effectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
