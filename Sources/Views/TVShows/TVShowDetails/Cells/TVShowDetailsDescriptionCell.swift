@@ -1,11 +1,13 @@
 import UIKit
 
 /// Class to represent the tv show details overview cell
-final class TVShowDetailsDescriptionCell: TVShowDetailsBaseCell {
-	static let identifier = "TVShowDetailsDescriptionCell"
+class TVShowDetailsDescriptionCell: TVShowDetailsBaseCell {
+	class var identifier: String {
+		return "TVShowDetailsDescriptionCell"
+	}
 
 	@UsesAutoLayout
-	private var descriptionLabel: UILabel = {
+	private(set) final var descriptionLabel: UILabel = {
 		let label = UILabel()
 		label.textColor = .label
 		label.numberOfLines = 0
@@ -40,7 +42,7 @@ extension TVShowDetailsDescriptionCell {
 
 	/// Function to configure the cell with its respective view model
 	/// - Parameter with: The cell's view model
-	func configure(with viewModel: TVShowDetailsDescriptionCellViewModel) {
+	final func configure(with viewModel: TVShowDetailsDescriptionCellViewModel) {
 		descriptionLabel.text = viewModel.description
 	}
 }
