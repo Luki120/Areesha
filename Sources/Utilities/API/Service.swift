@@ -52,9 +52,9 @@ final class Service {
 			.eraseToAnyPublisher()
 	}
 
-	/// Function to make API calls, ignoring if it comes from the cache or the network
+	/// Function to make API calls, without caching
 	/// - Parameters:
-	///		- withURL: The API call url
+	///		- request: The `URLRequest`
 	///		- expecting: The given type that conforms to `Codable` from which to decode the JSON data
 	/// - Returns: `AnyPublisher<T, Error>`
 	func fetchTVShows<T: Codable>(request: URLRequest, expecting type: T.Type) -> AnyPublisher<T, Error> {
@@ -91,9 +91,9 @@ final class Service {
 	/// Function to add a rating for a given TV show
 	/// - Parameters:
 	///		- for: The `TVShow` object
-	///		- rating: An integer that represents the rating
+	///		- rating: A `Double` that represents the rating
 	/// - Returns: `AnyPublisher<Data, Error>`
-	func addRating(for tvShow: TVShow, rating: Int) -> AnyPublisher<Data, Error> {
+	func addRating(for tvShow: TVShow, rating: Double) -> AnyPublisher<Data, Error> {
 		guard let url = URL(string: "\(Constants.baseURL)tv/\(tvShow.id)/rating") else {
 			return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
 		}
@@ -146,7 +146,7 @@ extension Service {
 	///		- for: The `Season` object
 	///		- tvShow: The `TVShow` object for the season
 	///		- storeIn: A `Set<AnyCancellable>` to store this instance
-	///		- completion: `@escaping` closure that takes a `Seasons` object & returns nothing
+	///		- completion: `@escaping` closure that takes a `Season` object & returns nothing
 	func fetchSeasonDetails(
 		for season: Season,
 		tvShow: TVShow,
@@ -190,7 +190,7 @@ extension Service {
 	/// Function to get the requested image url
 	/// - Parameters:
 	///		- image: The `ImageFetch` object
-	///		- size: A string representing the size of the image
+	///		- size: A `String` representing the size of the image
 	static func imageURL(_ image: ImageFetch, size: String = "w500") -> URL? {
 		guard let path = image.path else { return nil }
 		return URL(string: String(describing: Constants.imageBaseURL + size + "/" + path))

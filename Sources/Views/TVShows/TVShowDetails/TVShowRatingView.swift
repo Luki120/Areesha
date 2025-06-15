@@ -21,7 +21,7 @@ final class TVShowRatingView: UIView {
 			let itemWidth: CGFloat = 28
 			let spacing: CGFloat = 10
 
-			let numberOfItems = 10
+			let numberOfItems = 5
 
 			let totalItemsWidth = CGFloat(numberOfItems) * itemWidth
 			let totalSpacingWidth = CGFloat(max(0, numberOfItems - 1)) * spacing
@@ -36,7 +36,7 @@ final class TVShowRatingView: UIView {
 			let section = NSCollectionLayoutSection(group: group)
 			section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: horizontalInset, bottom: 0, trailing: horizontalInset)
 			return section
-	    }
+		}
 		let config = UICollectionViewCompositionalLayoutConfiguration()
 		config.scrollDirection = .horizontal
 
@@ -64,7 +64,7 @@ final class TVShowRatingView: UIView {
 	@UsesAutoLayout
 	private var rateShowLabel: UILabel = {
 		let label = UILabel()
-		label.font = .boldSystemFont(ofSize: 24)
+		label.font = .boldSystemFont(ofSize: 22)
 		label.text = "How would you rate this show?"
 		return label
 	}()

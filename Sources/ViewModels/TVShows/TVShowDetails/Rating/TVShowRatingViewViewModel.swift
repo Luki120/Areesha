@@ -6,6 +6,7 @@ import UIKit.UIImage
 final class TVShowRatingViewViewModel: NSObject {
 	private var viewModels = [RatingCellViewModel]()
 	private var subscriptions = Set<AnyCancellable>()
+	private var currentRating: Double = 0
 
 	// ! UICollectionViewDiffableDataSource
 
@@ -22,13 +23,12 @@ final class TVShowRatingViewViewModel: NSObject {
 	let tvShow: TVShow
 
 	/// Designated initializer
-	/// - Parameters:
-	///		- tvShow: The tv show model object
+	/// - Parameter tvShow: The tv show model object
 	init(tvShow: TVShow) {
 		self.tvShow = tvShow
 		super.init()
 
-		for _ in 1...10 {
+		for _ in 1...5 {
 			viewModels.append(.init())
 		}
 	}
@@ -38,10 +38,9 @@ final class TVShowRatingViewViewModel: NSObject {
 
 extension TVShowRatingViewViewModel {
 	/// Function to add a rating for a given TV show
-	/// - Parameters:
-	///		- completion: Escaping closure that takes no arguments & returns nothing
+	/// - Parameter completion: `@escaping` closure that takes no arguments & returns nothing
 	func addRating(completion: @escaping () -> Void) {
-		Service.sharedInstance.addRating(for: tvShow, rating: viewModels.filter { $0.image == "star.fill" }.count)
+		Service.sharedInstance.addRating(for: tvShow, rating: currentRating * 2)
 			.receive(on: DispatchQueue.main)
 			.sink(receiveCompletion: { _ in }) { _ in 
 				completion()
@@ -50,8 +49,7 @@ extension TVShowRatingViewViewModel {
 	}
 
 	/// Function to fetch the tv show's poster image in different sizes
-	/// - Parameters:
-	///		- completion: Escaping closure that takes an array of `UIImage` objects as argument & returns nothing
+	/// - Parameter completion: `@escaping` closure that takes an array of `UIImage` objects as argument & returns nothing
 	func fetchTVShowImages(completion: @escaping ([UIImage]) async -> ()) {
 		Task.detached(priority: .background) {
 			guard let imageURL = Service.imageURL(.showPoster(self.tvShow), size: "w1280"),
@@ -69,8 +67,7 @@ extension TVShowRatingViewViewModel {
 
 extension TVShowRatingViewViewModel: UICollectionViewDelegate {
 	/// Function to setup the collection view's diffable data source
-	/// - Parameters:
-	///		- collectionView: The collection view
+	/// - Parameter collectionView: The collection view
 	func setupCollectionViewDiffableDataSource(for collectionView: UICollectionView) {
 		let cellRegistration = CellRegistration { cell, _, viewModel in
 			cell.configure(with: viewModel)
@@ -97,8 +94,26 @@ extension TVShowRatingViewViewModel: UICollectionViewDelegate {
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
 
-		for index in 0..<viewModels.count {
-			viewModels[index].image = index <= indexPath.item ? "star.fill" : "star"
+		let fullRating = Double(indexPath.item + 1)
+		let halfRating = Double(indexPath.item) + 0.5
+
+		currentRating = currentRating == fullRating ? halfRating : fullRating
+		updateStarImage()
+	}
+
+	private func updateStarImage() {
+		for (index, _) in viewModels.enumerated() {
+			let starPosition = Double(index + 1)
+
+			if currentRating >= starPosition {
+				viewModels[index].image = "star.fill"
+			}
+			else if currentRating >= starPosition - 0.5 {
+				viewModels[index].image = "star.leadinghalf.fill"
+			}
+			else {
+				viewModels[index].image = "star"
+			}
 		}
 		applyDiffableDataSourceSnapshot()
 	}
