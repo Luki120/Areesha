@@ -55,6 +55,31 @@ final class TVShowRatingView: UIView {
 	}()
 
 	@UsesAutoLayout
+	private var ratingStackView: UIStackView = {
+		let stackView = UIStackView()
+		stackView.alpha = 0
+		stackView.spacing = 10
+		return stackView
+	}()
+
+	@UsesAutoLayout
+	private var ratingSlider: UISlider = {
+		let slider = UISlider()
+		slider.isContinuous = false
+		slider.minimumValue = 1
+		slider.maximumValue = 10
+		return slider
+	}()
+
+	private lazy var sliderValueLabel: UILabel = {
+		let label = UILabel()
+		label.font = .preferredFont(forTextStyle: .footnote)
+		label.text = String(describing: ratingSlider.value)
+		label.textColor = .systemGray
+		return label
+	}()
+
+	@UsesAutoLayout
 	private var visualEffectView: UIVisualEffectView = {
 		let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
 		visualEffectView.clipsToBounds = true
@@ -71,11 +96,12 @@ final class TVShowRatingView: UIView {
 
 	private lazy var ratingButton = createRoundedButton(title: "Rate") { [weak self] in
 		guard let self else { return }
-		viewModel.addRating {
+		viewModel.addRating(isDecimal: rightBarButtonIsTapped) {
 			self.delegate?.didAddRating(in: self)
-		}		
+		}
 	}
 
+	private var rightBarButtonIsTapped = false
 	weak var delegate: TVShowRatingViewDelegate?
 
 	// ! Lifecycle
@@ -85,8 +111,7 @@ final class TVShowRatingView: UIView {
 	}
 
 	/// Designated initializer
-	/// - Parameters:
-	///		- viewModel: The view model object for this view
+	/// - Parameter viewModel: The view model object for this view
 	init(viewModel: TVShowRatingViewViewModel) {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
@@ -105,10 +130,28 @@ final class TVShowRatingView: UIView {
 	private func setupUI() {
 		insertSubview(tvShowImageView, at: 0)
 		tvShowImageView.addSubview(visualEffectView)
-		addSubviews(tvShowPosterImageView, rateShowLabel, ratingButton)
+		addSubviews(tvShowPosterImageView, rateShowLabel, ratingStackView, ratingButton)
+		ratingStackView.addArrangedSubviews(ratingSlider, sliderValueLabel)
 
+		setupSlider()
 		fetchTVShowImage()
 		layoutUI()
+	}
+
+	private func setupSlider() {
+		ratingSlider.addAction(
+			UIAction { [weak self] action in
+				guard let self else { return }
+				guard let slider = action.sender as? UISlider else { return }
+
+				let roundedValue = round(Double(slider.value) / 0.5) * 0.5
+				slider.value = Float(roundedValue)
+				viewModel.setRating(roundedValue)
+
+				sliderValueLabel.text = String(describing: roundedValue)
+			},
+			for: .valueChanged
+		)		
 	}
 
 	private func layoutUI() {
@@ -127,11 +170,15 @@ final class TVShowRatingView: UIView {
 			ratingCollectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
 			ratingCollectionView.heightAnchor.constraint(equalToConstant: 28),
 
+			ratingStackView.topAnchor.constraint(equalTo: rateShowLabel.bottomAnchor, constant: 35),
+			ratingStackView.centerXAnchor.constraint(equalTo: rateShowLabel.centerXAnchor),
+
 			ratingButton.topAnchor.constraint(equalTo: ratingCollectionView.bottomAnchor, constant: 35),
 			ratingButton.centerXAnchor.constraint(equalTo: centerXAnchor)
 		])
 
 		setupSizeConstraints(forView: tvShowPosterImageView, width: 230, height: 350)
+		setupSizeConstraints(forView: ratingSlider, width: 200, height: 28)
 		setupSizeConstraints(forView: ratingButton, width: 120, height: 50)
 	}
 
@@ -157,5 +204,19 @@ final class TVShowRatingView: UIView {
 		imageView.clipsToBounds = true
 		imageView.translatesAutoresizingMaskIntoConstraints = false
 		return imageView
+	}
+}
+
+// ! Public
+
+extension TVShowRatingView {
+	/// Function to fade in & out the rating stack view
+	func fadeInOutSlider() {
+		rightBarButtonIsTapped.toggle()
+
+		UIView.animate(withDuration: 0.35, delay: 0, options: .transitionCrossDissolve) {
+			self.ratingStackView.alpha = self.rightBarButtonIsTapped ? 1 : 0
+			self.ratingCollectionView.alpha = self.rightBarButtonIsTapped ? 0 : 1
+		}
 	}
 }

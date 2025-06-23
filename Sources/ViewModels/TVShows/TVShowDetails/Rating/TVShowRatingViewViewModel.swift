@@ -23,7 +23,7 @@ final class TVShowRatingViewViewModel: NSObject {
 	let tvShow: TVShow
 
 	/// Designated initializer
-	/// - Parameter tvShow: The tv show model object
+	/// - Parameter tvShow: The `TVShow` model object
 	init(tvShow: TVShow) {
 		self.tvShow = tvShow
 		super.init()
@@ -38,9 +38,11 @@ final class TVShowRatingViewViewModel: NSObject {
 
 extension TVShowRatingViewViewModel {
 	/// Function to add a rating for a given TV show
-	/// - Parameter completion: `@escaping` closure that takes no arguments & returns nothing
-	func addRating(completion: @escaping () -> Void) {
-		Service.sharedInstance.addRating(for: tvShow, rating: currentRating * 2)
+	/// - Parameters:
+	///		- isDecimal: A `Bool` to check wether the rating includes decimals, defaults to `false`
+	///		- completion: `@escaping` closure that takes no arguments & returns nothing
+	func addRating(isDecimal: Bool = false, completion: @escaping () -> Void) {
+		Service.sharedInstance.addRating(for: tvShow, rating: isDecimal ? currentRating.round(to: 1) : currentRating * 2)
 			.receive(on: DispatchQueue.main)
 			.sink(receiveCompletion: { _ in }) { _ in 
 				completion()
@@ -60,6 +62,12 @@ extension TVShowRatingViewViewModel {
 
 			await completion([backgroundImage, posterImage])
 		}
+	}
+
+	/// Function to set the current rating
+	/// Parameter rating: A `Double` that represents the rating
+	func setRating(_ rating: Double) {
+		currentRating = rating
 	}
 }
 

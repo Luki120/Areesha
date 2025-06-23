@@ -14,8 +14,7 @@ final class TVShowRatingVC: BaseVC {
 	}
 
 	/// Designated initializer
-	/// - Parameters:
-	///		- viewModel: The view model object for this vc's view
+	/// - Parameter viewModel: The view model object for this vc's view
 	init(viewModel: TVShowRatingViewViewModel) {
 		self.viewModel = viewModel
 		self.tvShowRatingView = .init(viewModel: viewModel)
@@ -29,6 +28,11 @@ final class TVShowRatingVC: BaseVC {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		tvShowRatingView.delegate = self
+
+		let roundedBlurredButton: RoundedBlurredButton = .init(systemImage: "arrow.up.arrow.down")
+		roundedBlurredButton.addTarget(self, action: #selector(didTapRightBarButton), for: .touchUpInside)
+
+		navigationItem.rightBarButtonItem = .init(customView: roundedBlurredButton)
 	}
 
 	override func viewWillAppear(_ animated: Bool) {
@@ -43,6 +47,11 @@ final class TVShowRatingVC: BaseVC {
 
 	override func didTapLeftBarButton() {
 		coordinator?.eventOccurred(with: .backButtonTapped)
+	}
+
+	@objc
+	private func didTapRightBarButton() {
+		tvShowRatingView.fadeInOutSlider()
 	}
 }
 

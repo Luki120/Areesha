@@ -10,7 +10,9 @@ struct TrackedTVShowCellViewModel: Hashable, ImageFetching {
 	private(set) var rating: Double = 0
 
 	var ratingLabel: String {
-		rating == 0 ? "Not rated yet" : "You rated: " + String(describing: Int(rating)) + "/10"
+		let isWholeNumber = rating.truncatingRemainder(dividingBy: 1) == 0
+		let ratingValue = isWholeNumber ? String(format: "%.0f/10", rating) : String(describing: rating) + "/10"
+		return rating == 0 ? "Not rated yet" : "You rated: " + ratingValue
 	}
 
 	enum ListType {
@@ -18,8 +20,7 @@ struct TrackedTVShowCellViewModel: Hashable, ImageFetching {
 	}
 
 	/// Designated initializer
-	/// - Parameters:
-	///		- model: The `TrackedTVShow` object
+	/// - Parameter model: The `TrackedTVShow` object
 	init(_ model: TrackedTVShow) {
 		self.name = model.name
 		self.lastSeen = model.lastSeen
