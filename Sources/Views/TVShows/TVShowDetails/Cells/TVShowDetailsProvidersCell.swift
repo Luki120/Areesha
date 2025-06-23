@@ -15,6 +15,13 @@ final class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
 	}()
 
 	@UsesAutoLayout
+	private var watchProvidersScrollView: UIScrollView = {
+		let scrollView = UIScrollView()
+		scrollView.showsHorizontalScrollIndicator = false
+		return scrollView
+	}()
+
+	@UsesAutoLayout
 	private var watchProvidersStackView: UIStackView = {
 		let stackView = UIStackView()
 		stackView.spacing = 10
@@ -36,7 +43,9 @@ final class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
 	override func setupUI() {
 		justWatchImageView = createImageView(roundingCorners: false)
 		justWatchImageView.image = UIImage(asset: .justWatch)
-		contentView.addSubviews(whereToWatchLabel, watchProvidersStackView, separatorView, justWatchImageView)
+
+		contentView.addSubviews(whereToWatchLabel, watchProvidersScrollView)
+		watchProvidersScrollView.addSubviews(watchProvidersStackView, separatorView, justWatchImageView)
 
 		super.setupUI()
 	}
@@ -46,19 +55,25 @@ final class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
 			whereToWatchLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
 			whereToWatchLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
 
-			watchProvidersStackView.topAnchor.constraint(equalTo: whereToWatchLabel.bottomAnchor, constant: 10),
-			watchProvidersStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
-			watchProvidersStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+			watchProvidersScrollView.topAnchor.constraint(equalTo: whereToWatchLabel.bottomAnchor, constant: 10),
+			watchProvidersScrollView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
+			watchProvidersScrollView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+			watchProvidersScrollView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+
+			watchProvidersStackView.topAnchor.constraint(equalTo: watchProvidersScrollView.topAnchor),
+			watchProvidersStackView.leadingAnchor.constraint(equalTo: watchProvidersScrollView.leadingAnchor),
+			watchProvidersStackView.heightAnchor.constraint(equalTo: watchProvidersScrollView.heightAnchor),
 
 			separatorView.topAnchor.constraint(equalTo: watchProvidersStackView.topAnchor),
 			separatorView.leadingAnchor.constraint(equalTo: watchProvidersStackView.trailingAnchor, constant: 10),
 
 			justWatchImageView.topAnchor.constraint(equalTo: separatorView.topAnchor),
 			justWatchImageView.leadingAnchor.constraint(equalTo: separatorView.trailingAnchor, constant: 10),
+			justWatchImageView.trailingAnchor.constraint(equalTo: watchProvidersScrollView.trailingAnchor)
 		])
 
 		setupSizeConstraints(forView: separatorView, width: 1, height: 40)
-		setupSizeConstraints(forView: justWatchImageView, width: 80, height: 40)	
+		setupSizeConstraints(forView: justWatchImageView, width: 80, height: 40)
 	}
 
 	override func prepareForReuse() {
@@ -117,7 +132,7 @@ extension TVShowDetailsProvidersCell {
 				viewModels.forEach { viewModel in
 					let watchProviderImageView = createImageView()
 
-					setupSizeConstraints(forView: watchProviderImageView, width: 40, height: 40)			
+					setupSizeConstraints(forView: watchProviderImageView, width: 40, height: 40)
 					watchProvidersStackView.addArrangedSubview(watchProviderImageView)
 
 					Task.detached(priority: .background) {
