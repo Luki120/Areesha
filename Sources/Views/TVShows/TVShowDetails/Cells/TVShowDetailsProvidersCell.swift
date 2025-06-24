@@ -135,7 +135,7 @@ extension TVShowDetailsProvidersCell {
 					setupSizeConstraints(forView: watchProviderImageView, width: 40, height: 40)
 					watchProvidersStackView.addArrangedSubview(watchProviderImageView)
 
-					Task.detached(priority: .background) {
+					Task(priority: .background) {
 						let image = try await viewModel.fetchImage()
 
 						await MainActor.run {

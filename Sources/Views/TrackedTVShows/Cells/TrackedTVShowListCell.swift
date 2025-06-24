@@ -125,7 +125,7 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 	private func configure(with viewModel: TrackedTVShowCellViewModel) {
 		activeViewModel = viewModel
 
-		Task.detached(priority: .background) {
+		Task(priority: .background) {
 			guard let (image, isFromNetwork) = try? await viewModel.fetchImage() else { return }
 			await MainActor.run {
 				guard self.activeViewModel == viewModel else { return }

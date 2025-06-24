@@ -10,7 +10,7 @@ final class TrackedTVShowDetailsHeaderView: BaseHeaderView {
 	func configure(with viewModel: TrackedTVShowDetailsHeaderViewViewModel) {
 		nameLabel.text = viewModel.episodeName
 
-		Task.detached(priority: .background) {
+		Task(priority: .background) {
 			let image = try? await viewModel.fetchImage()
 			await MainActor.run {
 				UIView.transition(with: self.headerImageView, duration: 0.5, options: .transitionCrossDissolve) {

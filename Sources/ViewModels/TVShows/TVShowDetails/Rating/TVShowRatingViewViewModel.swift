@@ -53,7 +53,7 @@ extension TVShowRatingViewViewModel {
 	/// Function to fetch the tv show's poster image in different sizes
 	/// - Parameter completion: `@escaping` closure that takes an array of `UIImage` objects as argument & returns nothing
 	func fetchTVShowImages(completion: @escaping ([UIImage]) async -> ()) {
-		Task.detached(priority: .background) {
+		Task(priority: .background) {
 			guard let imageURL = Service.imageURL(.showPoster(self.tvShow), size: "w1280"),
 				let backgroundImage = try? await ImageManager.sharedInstance.fetchImage(imageURL) else { return }
 

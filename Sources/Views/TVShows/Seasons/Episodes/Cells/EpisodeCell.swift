@@ -97,7 +97,7 @@ extension EpisodeCell {
 		episodeDurationLabel.text = viewModel.episodeDuration
 		episodeDescriptionLabel.text = viewModel.episodeDescription
 
-		Task.detached(priority: .background) {
+		Task(priority: .background) {
 			let image = try? await viewModel.fetchImage()
 			await MainActor.run {
 				guard self.activeViewModel == viewModel else { return }

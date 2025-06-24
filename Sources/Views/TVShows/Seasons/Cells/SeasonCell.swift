@@ -80,7 +80,7 @@ extension SeasonCell {
 		activeViewModel = viewModel
 		seasonNameLabel.text = viewModel.seasonName
 
-		Task.detached(priority: .background) {
+		Task(priority: .background) {
 			let image = try? await viewModel.fetchImage()
 			await MainActor.run {
 				guard self.activeViewModel == viewModel else { return }

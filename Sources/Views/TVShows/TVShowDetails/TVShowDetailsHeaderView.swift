@@ -38,7 +38,7 @@ extension TVShowDetailsHeaderView {
 		nameLabel.text = viewModel.tvShowName
 		ratingsLabel.text = viewModel.rating
 
-		Task.detached(priority: .background) {
+		Task(priority: .background) {
 			let image = try? await viewModel.fetchImage()
 			await MainActor.run {
 				UIView.transition(with: self.headerImageView, duration: 0.5, options: .transitionCrossDissolve) {
