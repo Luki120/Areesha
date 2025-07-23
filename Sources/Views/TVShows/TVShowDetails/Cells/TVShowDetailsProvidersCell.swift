@@ -7,7 +7,7 @@ final class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
 	@UsesAutoLayout
 	private var whereToWatchLabel: UILabel = {
 		let label = UILabel()
-		label.font = .boldSystemFont(ofSize: 16)
+		label.font = .preferredFont(forTextStyle: .callout, weight: .bold)
 		label.text = "Watch on"
 		label.textColor = .label
 		label.numberOfLines = 0
@@ -107,7 +107,7 @@ final class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
 
 		let emptyResultsLabel = UILabel()
 		emptyResultsLabel.text = "No information available"
-		emptyResultsLabel.font = .preferredFont(forTextStyle: .body)
+		emptyResultsLabel.font = .preferredFont(forTextStyle: .callout)
 		emptyResultsLabel.translatesAutoresizingMaskIntoConstraints = false
 		contentView.addSubview(emptyResultsLabel)
 
