@@ -36,8 +36,13 @@ extension NSMutableAttributedString {
 		let rangeOfFullString = NSRange(location: 0, length: fullString.count)
 		let attributedString = NSMutableAttributedString(string: fullString)
 
-		attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: fullStringColor, range: rangeOfFullString)
-		attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: subStringColor, range: rangeOfSubString)
+		let paragraphStyle = NSMutableParagraphStyle()
+		paragraphStyle.alignment = .center
+		paragraphStyle.paragraphSpacing = -1.5
+
+		attributedString.addAttribute(.foregroundColor, value: fullStringColor, range: rangeOfFullString)
+		attributedString.addAttribute(.foregroundColor, value: subStringColor, range: rangeOfSubString)
+		attributedString.addAttribute(.paragraphStyle, value: paragraphStyle, range: rangeOfFullString)
 
 		self.init(attributedString: attributedString)
 	}
@@ -47,10 +52,10 @@ extension NSMutableAttributedString {
 		let rangeOfFullString = NSRange(location: 0, length: fullString.count)
 		let attributedString = NSMutableAttributedString(string: fullString)
 
-		attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.label, range: rangeOfFullString)
-		attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemGray, range: rangeOfSubString)
-		attributedString.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 16), range: rangeOfFullString)
-		attributedString.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 10), range: rangeOfSubString)
+		attributedString.addAttribute(.foregroundColor, value: UIColor.label, range: rangeOfFullString)
+		attributedString.addAttribute(.foregroundColor, value: UIColor.systemGray, range: rangeOfSubString)
+		attributedString.addAttribute(.font, value: UIFont.preferredFont(forTextStyle: .callout), range: rangeOfFullString)
+		attributedString.addAttribute(.font, value: UIFont.preferredFont(forTextStyle: .caption2, size: 10), range: rangeOfSubString)
 
 		self.init(attributedString: attributedString)
 	}
@@ -120,21 +125,23 @@ extension UIImage {
 extension UILabel {
 	static func createTitleLabel(withTitle title: String, isHidden: Bool = false) -> UILabel {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: 16, weight: .semibold)
+		label.font = .preferredFont(forTextStyle: .title3, weight: .semibold, size: 17)
 		label.text = title
 		label.isHidden = isHidden
 		label.numberOfLines = 0
+		label.adjustsFontForContentSizeCategory = true
 		return label
 	}
 
 	static func createContentUnavailableLabel(withMessage message: String) -> UILabel {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: 16)
+		label.font = .preferredFont(forTextStyle: .callout)
 		label.text = message
 		label.alpha = 0
 		label.textColor = .placeholderText
 		label.numberOfLines = 0
 		label.textAlignment = .center
+		label.adjustsFontForContentSizeCategory = true
 		label.translatesAutoresizingMaskIntoConstraints = false
 		return label
 	}
@@ -234,12 +241,13 @@ extension UIView {
 
 	func createToastViewLabel(withMessage message: String) -> UILabel {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: 14)
+		label.font = .preferredFont(forTextStyle: .callout, size: 14)
 		label.text = message
 		label.textColor = .label
 		label.numberOfLines = 1
 		label.textAlignment = .center
 		label.adjustsFontSizeToFitWidth = true
+		label.adjustsFontForContentSizeCategory = true
 		label.translatesAutoresizingMaskIntoConstraints = false
 		return label
 	}

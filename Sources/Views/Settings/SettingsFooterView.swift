@@ -4,8 +4,9 @@ import UIKit
 final class SettingsFooterView: UIView {
 	private lazy var footerLabel: UILabel = {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: 12)
+		label.font = .preferredFont(forTextStyle: .caption1)
 		label.numberOfLines = 0
+		label.textAlignment = .center
 		label.isUserInteractionEnabled = true
 		label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapLabel(_:))))
 		label.translatesAutoresizingMaskIntoConstraints = false
@@ -61,13 +62,13 @@ extension SettingsFooterView {
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
-	/// - Parameters:
-	/// 	- with: The cell's view model
+	/// - Parameter with: The cell's view model
 	func configure(with viewModel: SettingsFooterViewViewModel) {
 		self.viewModel = viewModel
 
 		tmdbImageView.image = viewModel.image
 
+		footerLabel.adjustsFontForContentSizeCategory = true
 		footerLabel.attributedText = NSMutableAttributedString(
 			fullString: viewModel.fullString,
 			fullStringColor: .systemGray,

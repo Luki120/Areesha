@@ -20,18 +20,17 @@ final class TVShowDetailsGenreCell: TVShowDetailsBaseCell {
 
 	override func prepareForReuse() {
 		super.prepareForReuse()
-		genreLabel.text = nil
-		episodeAverageDurationLabel.text = nil
-		lastAirDateLabel.text = nil
-		statusLabel.text = nil
+		[genreLabel, episodeAverageDurationLabel, lastAirDateLabel, statusLabel].forEach {
+			$0?.text = nil
+		}
 	}
 
 	override func setupUI() {
 		genreLabel = createLabel()
 		episodeAverageDurationLabel = createLabel(numberOfLines: 1)
 
-		lastAirDateLabel = createLabel(withWeight: .light)
-		statusLabel = createLabel(withWeight: .light)
+		lastAirDateLabel = createLabel(fontWeight: .light)
+		statusLabel = createLabel(fontWeight: .light)
 
 		contentView.addSubviews(genreLabel, separatorView, episodeAverageDurationLabel, lastAirDateLabel, statusLabel)
 		super.setupUI()
@@ -63,9 +62,9 @@ final class TVShowDetailsGenreCell: TVShowDetailsBaseCell {
 
 	// ! Reusable
 
-	private func createLabel(withWeight weight: UIFont.Weight = .semibold, numberOfLines lines: Int = 0) -> UILabel {
+	private func createLabel(fontWeight: UIFont.Weight = .semibold, numberOfLines lines: Int = 0) -> UILabel {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: 15, weight: weight)
+		label.font = .preferredFont(forTextStyle: .callout, weight: fontWeight, size: 15)
 		label.textColor = .label
 		label.numberOfLines = lines
 		label.translatesAutoresizingMaskIntoConstraints = false
@@ -83,8 +82,7 @@ extension TVShowDetailsGenreCell {
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
-	/// - Parameters:
-	///		- with: The cell's view model
+	/// - Parameter with: The cell's view model
 	func configure(with viewModel: TVShowDetailsGenreCellViewModel) {
 		guard let genre = viewModel.genre,
 			let episodeAverageDuration = viewModel.episodeAverageDuration,

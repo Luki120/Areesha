@@ -19,12 +19,14 @@ final class SearchTextFieldView: UIView {
 	@UsesAutoLayout
 	private var searchTextField: UITextField = {
 		let textField = UITextField()
+		textField.font = .preferredFont(forTextStyle: .headline)
 		textField.leftView = UIView(frame: .init(x: 0, y: 0, width: 45, height: textField.frame.height))
 		textField.rightView = UIView(frame: .init(x: 0, y: 0, width: 45, height: textField.frame.height))
 		textField.leftViewMode = .always
 		textField.rightViewMode = .always
 		textField.textColor = .label
 		textField.placeholder = "Search for TV shows"
+		textField.adjustsFontForContentSizeCategory = true
 		textField.layer.borderColor = UIColor.darkGray.cgColor
 		textField.layer.borderWidth = 1
 		textField.layer.cornerCurve = .continuous

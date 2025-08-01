@@ -63,8 +63,7 @@ extension TVShowSearchListViewViewModel {
 	// ! Public
 
 	/// Function to send the query subject
-	/// - Parameters:
-	///		- subject: A string representing the query subject
+	/// - Parameter subject: A string representing the query subject
 	func sendQuerySubject(_ subject: String) {
 		searchQuerySubject.send(subject)
 	}
@@ -76,7 +75,7 @@ extension UICollectionViewListCell: Configurable {
 	func configure(with viewModel: TVShowSearchListCellViewModel) {
 		var content = defaultContentConfiguration()
 		content.text = viewModel.tvShowName
-		content.textProperties.font = .systemFont(ofSize: 18, weight: .semibold)
+		content.textProperties.font = .preferredFont(forTextStyle: .headline, weight: .semibold, size: 18)
 
 		contentConfiguration = content
 	}

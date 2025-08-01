@@ -18,7 +18,7 @@ final class TVShowDetailsCastCell: TVShowDetailsBaseCell {
 	}
 
 	override func setupUI() {
-		castLabel = createLabel(withWeight: .bold)
+		castLabel = createLabel(fontWeight: .bold)
 		castCrewLabel = createLabel()
 		super.setupUI()
 	}
@@ -35,9 +35,9 @@ final class TVShowDetailsCastCell: TVShowDetailsBaseCell {
 
 	// ! Reusable
 
-	private func createLabel(withWeight weight: UIFont.Weight = .regular) -> UILabel {
+	private func createLabel(fontWeight: UIFont.Weight = .regular) -> UILabel {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: 16, weight: weight)
+		label.font = .preferredFont(forTextStyle: .body, weight: fontWeight, size: 16)
 		label.textColor = .label
 		label.numberOfLines = 0
 		contentView.addSubview(label)
@@ -49,8 +49,7 @@ extension TVShowDetailsCastCell {
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
-	/// - Parameters:
-	/// 	- with: The cell's view model
+	/// - Parameter with: The cell's view model
 	func configure(with viewModel: TVShowDetailsCastCellViewModel) {
 		castLabel.text = viewModel.cast
 		castCrewLabel.text = viewModel.castCrew

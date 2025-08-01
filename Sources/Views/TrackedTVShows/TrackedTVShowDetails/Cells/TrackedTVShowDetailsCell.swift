@@ -39,7 +39,7 @@ final class TrackedTVShowDetailsCell: TVShowDetailsBaseCell {
 
 	private func createLabel() -> UILabel {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: 18)
+		label.font = .preferredFont(forTextStyle: .body, size: 18)
 		label.textColor = .label
 		label.numberOfLines = 0
 		label.translatesAutoresizingMaskIntoConstraints = false
@@ -57,8 +57,7 @@ extension TrackedTVShowDetailsCell {
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
-	/// - Parameters:
-	///		- with: The cell's view model
+	/// - Parameter with: The cell's view model
 	func configure(with viewModel: TrackedTVShowDetailsCellViewModel) {
 		let date = dateFormatter.date(from: viewModel.episodeAirDate) ?? Date()
 

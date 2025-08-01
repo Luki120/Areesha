@@ -13,6 +13,11 @@ final class TrackedTVShowListCell: UICollectionViewListCell {
 
 		contentConfiguration = newConfiguration
 	}
+
+	override func prepareForReuse() {
+		super.prepareForReuse()
+		viewModel = nil
+	}
 }
 
 /// Struct to represent the content configuration for the tracked tv show cell
@@ -86,7 +91,7 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 	// ! Private
 
 	private func setupUI() {
-		tvShowNameLabel = createLabel(withFontWeight: .bold)
+		tvShowNameLabel = createLabel(fontWeight: .bold)
 		detailsLabel = createLabel(textColor: .secondaryLabel)
 
 		addSubviews(seasonImageView, tvShowNameLabel, detailsLabel)
@@ -158,13 +163,14 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 	// ! Reusable
 
 	private func createLabel(
-		withFontWeight weight: UIFont.Weight = .regular,
+		fontWeight weight: UIFont.Weight = .regular,
 		textColor: UIColor = .label
 	) -> UILabel {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: 14, weight: weight)
+		label.font = .preferredFont(forTextStyle: .callout, weight: weight, size: 14)
 		label.textColor = textColor
 		label.numberOfLines = 0
+		label.adjustsFontForContentSizeCategory = true
 		label.translatesAutoresizingMaskIntoConstraints = false
 		return label
 	}

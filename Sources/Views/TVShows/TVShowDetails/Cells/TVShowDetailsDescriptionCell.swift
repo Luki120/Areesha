@@ -6,11 +6,12 @@ class TVShowDetailsDescriptionCell: TVShowDetailsBaseCell {
 		return "TVShowDetailsDescriptionCell"
 	}
 
-	@UsesAutoLayout
-	private(set) final var descriptionLabel: UILabel = {
+	final let descriptionLabel: UILabel = {
 		let label = UILabel()
+		label.font = .preferredFont(forTextStyle: .body)
 		label.textColor = .label
 		label.numberOfLines = 0
+		label.translatesAutoresizingMaskIntoConstraints = false
 		return label
 	}()
 

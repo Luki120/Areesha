@@ -73,9 +73,10 @@ final class TVShowRatingView: UIView {
 
 	private lazy var sliderValueLabel: UILabel = {
 		let label = UILabel()
-		label.font = .preferredFont(forTextStyle: .footnote)
+		label.font = .preferredFont(forTextStyle: .caption1)
 		label.text = String(describing: ratingSlider.value)
 		label.textColor = .systemGray
+		label.adjustsFontForContentSizeCategory = true
 		return label
 	}()
 
@@ -89,8 +90,10 @@ final class TVShowRatingView: UIView {
 	@UsesAutoLayout
 	private var rateShowLabel: UILabel = {
 		let label = UILabel()
-		label.font = .boldSystemFont(ofSize: 22)
+		label.font = .preferredFont(forTextStyle: .title2, weight: .bold)
 		label.text = "How would you rate this show?"
+		label.textAlignment = .center
+		label.adjustsFontForContentSizeCategory = true
 		return label
 	}()
 
@@ -163,7 +166,8 @@ final class TVShowRatingView: UIView {
 			tvShowPosterImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
 
 			rateShowLabel.topAnchor.constraint(equalTo: tvShowPosterImageView.bottomAnchor, constant: 35),
-			rateShowLabel.centerXAnchor.constraint(equalTo: tvShowPosterImageView.centerXAnchor),
+			rateShowLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+			rateShowLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
 
 			ratingCollectionView.topAnchor.constraint(equalTo: rateShowLabel.bottomAnchor, constant: 35),
 			ratingCollectionView.leadingAnchor.constraint(equalTo: leadingAnchor),

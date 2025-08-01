@@ -79,7 +79,7 @@ private extension UITableViewCell {
 	func configure(with viewModel: SourceCodeCellViewModel) {
 		var content = defaultContentConfiguration()
 		content.text = viewModel.text
-		content.textProperties.font = .systemFont(ofSize: 16)
+		content.textProperties.font = .preferredFont(forTextStyle: .callout)
 
 		contentConfiguration = content
 	}

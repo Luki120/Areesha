@@ -40,6 +40,7 @@ extension AppCell {
 	/// - Parameters:
 	///		- with: The cell's view model
 	func configure(with viewModel: AppCellViewModel) {
+		appNameLabel.adjustsFontForContentSizeCategory = true
 		appNameLabel.attributedText = NSMutableAttributedString(
 			fullString: "\(viewModel.app.appName)\n\(viewModel.app.appDescription)",
 			subString: viewModel.app.appDescription

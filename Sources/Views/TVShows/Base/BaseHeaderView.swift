@@ -4,17 +4,17 @@ import UIKit
 class BaseHeaderView: UIView {
 	private let addRatingsLabel: Bool
 
-	@UsesAutoLayout
-	private(set) var containerView: UIView = {
+	let containerView: UIView = {
 		let view = UIView()
+		view.translatesAutoresizingMaskIntoConstraints = false
 		return view
 	}()
 
-	@UsesAutoLayout
-	private(set) var headerImageView: UIImageView = {
+	let headerImageView: UIImageView = {
 		let imageView = UIImageView()
 		imageView.contentMode = .scaleAspectFill
 		imageView.clipsToBounds = true
+		imageView.translatesAutoresizingMaskIntoConstraints = false
 		return imageView
 	}()
 
@@ -32,8 +32,7 @@ class BaseHeaderView: UIView {
 	}
 
 	/// Designated initializer
-	/// - Parameters:
-	///		- addRatingsLabel: Boolean value to decide wether the ratings label should be added or not
+	/// - Parameter addRatingsLabel: `Bool` value to decide wether the ratings label should be added or not
 	init(addRatingsLabel: Bool = true) {
 		self.addRatingsLabel = addRatingsLabel
 
@@ -43,7 +42,7 @@ class BaseHeaderView: UIView {
 
 	/// Function to setup the UI
 	func setupUI() {
-		nameLabel = createLabel(withFontWeight: .heavy)
+		nameLabel = createLabel(fontWeight: .heavy)
 		nameLabel.numberOfLines = 0
 
 		addSubview(containerView)
@@ -76,11 +75,12 @@ class BaseHeaderView: UIView {
 
 	// ! Reusable
 
-	final func createLabel(withFontWeight weight: UIFont.Weight = .bold) -> UILabel {
+	final func createLabel(fontWeight weight: UIFont.Weight = .bold) -> UILabel {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: 24, weight: weight)
+		label.font = .preferredFont(forTextStyle: .title2, weight: weight, size: 24)
 		label.alpha = 0
 		label.textColor = .white
+		label.adjustsFontForContentSizeCategory = true
 		label.translatesAutoresizingMaskIntoConstraints = false
 		return label
 	}
@@ -94,7 +94,7 @@ extension BaseHeaderView {
 	/// - Parameters:
 	///		- systemImage: A `String` that represents the image's system name
 	///		- target: The target
-	///		- selector: The `Selector`
+	///		- action: The `Selector`
 	/// - Returns: `UIBarButtonItem`
 	final func createBarButtonItem(systemImage: String, target: Any?, action: Selector) -> UIBarButtonItem {
 		let roundedBlurredButton: RoundedBlurredButton = .init(systemImage: systemImage, isHeader: true)
@@ -106,8 +106,7 @@ extension BaseHeaderView {
 
 	/// Function to notify the scroll view when the user started scrolling to act accordingly
 	///
-	/// - Parameters:
-	/// 	- scrollView: The scroll view
+	/// - Parameter scrollView: The scroll view
 	final func scrollViewDidScroll(scrollView: UIScrollView) {
 		containerViewHeightConstraint.constant = scrollView.contentInset.top
 

@@ -44,7 +44,7 @@ final class EpisodeCell: UICollectionViewCell {
 
 	private func setupUI() {
 		episodeNameLabel = createLabel()
-		episodeDurationLabel = createLabel(withFontSize: 12, textColor: .secondaryLabel)
+		episodeDurationLabel = createLabel(fontSize: 12, textColor: .secondaryLabel)
 		episodeDescriptionLabel = createLabel(textColor: .secondaryLabel)
 		contentView.addSubviews(episodeImageView, episodeNameLabel, episodeDurationLabel, episodeDescriptionLabel)
 
@@ -74,11 +74,12 @@ final class EpisodeCell: UICollectionViewCell {
 
 	// ! Reusable
 
-	private func createLabel(withFontSize size: CGFloat = 14, textColor: UIColor = .label) -> UILabel {
+	private func createLabel(fontSize size: CGFloat = 14, textColor: UIColor = .label) -> UILabel {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: size)
+		label.font = .preferredFont(forTextStyle: .callout, size: 14)
 		label.textColor = textColor
 		label.numberOfLines = 0
+		label.adjustsFontForContentSizeCategory = true
 		label.translatesAutoresizingMaskIntoConstraints = false
 		return label
 	}
@@ -88,8 +89,7 @@ extension EpisodeCell {
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
-	/// - Parameters:
-	///		- with: The cell's view model
+	/// - Parameter with: The cell's view model
 	func configure(with viewModel: EpisodeCellViewModel) {
 		activeViewModel = viewModel
 

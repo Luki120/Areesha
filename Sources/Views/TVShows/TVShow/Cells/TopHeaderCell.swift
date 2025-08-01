@@ -5,10 +5,11 @@ final class TopHeaderCell: UICollectionViewCell {
 	@UsesAutoLayout
 	private var cellLabel: UILabel = {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: 16, weight: .bold)
+		label.font = .preferredFont(forTextStyle: .headline, weight: .semibold, size: 16)
 		label.textColor = .darkGray
 		label.numberOfLines = 0
 		label.textAlignment = .center
+		label.adjustsFontForContentSizeCategory = true
 		return label
 	}()
 

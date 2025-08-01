@@ -18,10 +18,11 @@ final class SeasonCell: UICollectionViewCell {
 	@UsesAutoLayout
 	private var seasonNameLabel: UILabel = {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: 18, weight: .bold)
+		label.font = .preferredFont(forTextStyle: .title3, weight: .bold, size: 18)
 		label.textColor = .label
 		label.numberOfLines = 2
 		label.textAlignment = .center
+		label.adjustsFontForContentSizeCategory = true
 		return label
 	}()
 
@@ -74,8 +75,7 @@ extension SeasonCell {
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
-	/// - Parameters:
-	/// 	- with: The cell's view model
+	/// - Parameter with: The cell's view model
 	func configure(with viewModel: SeasonCellViewModel) {
 		activeViewModel = viewModel
 		seasonNameLabel.text = viewModel.seasonName

@@ -90,13 +90,13 @@ final class DeveloperCell: UITableViewCell {
 	@objc
 	private func didTapLuki() {
 		guard let url = Developer.lukiGitHubURL else { return }
-		UIApplication.shared.open(url, options: [:], completionHandler: nil)
+		UIApplication.shared.open(url)
 	}
 
 	@objc
 	private func didTapLeptos() {
 		guard let url = Developer.leptosGitHubURL else { return }
-		UIApplication.shared.open(url, options: [:], completionHandler: nil)
+		UIApplication.shared.open(url)
 	}
 
 	// ! Reusable
@@ -114,7 +114,7 @@ final class DeveloperCell: UITableViewCell {
 
 	private func createDeveloperNameLabel() -> UILabel {
 		let label = UILabel()
-		label.font = .systemFont(ofSize: 16)
+		label.font = .preferredFont(forTextStyle: .callout)
 		label.textColor = .label
 		label.textAlignment = .center
 		label.translatesAutoresizingMaskIntoConstraints = false
@@ -126,8 +126,7 @@ extension DeveloperCell {
 	// ! Public
 
 	/// Function to configure the cell with its respective view model
-	/// - Parameters:
-	///		- with: The cell's view model
+	/// - Parameter with: The cell's view model
 	func configure(with viewModel: DeveloperCellViewModel) {
 		lukiNameLabel.text = viewModel.lukiName
 		leptosNameLabel.text = viewModel.leptosName
