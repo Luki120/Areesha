@@ -1,10 +1,6 @@
 import Foundation
 
-/// API model struct
-struct APIResponse: Codable {
-	let results: [TVShow]
-}
-
+/// TV show model struct
 struct TVShow: Codable {
 	let id: Int
 	let name: String
@@ -35,10 +31,12 @@ struct TVShow: Codable {
 	}
 }
 
+/// Genre model struct
 struct Genre: Codable {
 	let name: String
 }
 
+/// Season model struct
 struct Season: Codable {
 	let name: String?
 	let number: Int?
@@ -53,6 +51,7 @@ struct Season: Codable {
 	}
 }
 
+/// Episode model struct
 struct Episode: Codable {
 	let id: Int
 	let name: String?

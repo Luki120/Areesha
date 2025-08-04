@@ -1,11 +1,12 @@
 import Foundation
 
-/// API model struct
+/// Watch provider model struct
 struct WatchProvider: Codable {
 	let id: Int
 	let results: [String: Region]
 }
 
+/// Region model struct
 struct Region: Codable {
 	let link: String?
 	let flatrate: [WatchOption]?
@@ -18,6 +19,7 @@ struct Region: Codable {
 	}
 }
 
+/// Watch option model struct
 struct WatchOption: Codable, Hashable {
 	let logoImage: String?
 
