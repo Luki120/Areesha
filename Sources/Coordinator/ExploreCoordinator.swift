@@ -1,8 +1,10 @@
+import Combine
 import UIKit
 
 /// Explore coordinator, which will take care of any navigation events related to `ExploreVC`
 final class ExploreCoordinator: NSObject, Coordinator {
 	enum Event {
+		case objectCellTapped(object: ObjectType)
 		case tvShowCellTapped(tvShow: TVShow)
 		case backButtonTapped
 		case starButtonTapped(tvShow: TVShow)
@@ -15,6 +17,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 	}
 
 	var navigationController = SwipeableNavigationController()
+	private var subscriptions = Set<AnyCancellable>()
 	private var childCoordinators: [any Coordinator] = []
 
 	override init() {
@@ -39,11 +42,29 @@ final class ExploreCoordinator: NSObject, Coordinator {
 
 	func eventOccurred(with event: Event) {
 		switch event {
-			case .tvShowCellTapped(let tvShow):
-				let viewModel = TVShowDetailsViewViewModel(tvShow: tvShow)
-				let detailVC = TVShowDetailsVC(viewModel: viewModel)
-				detailVC.coordinator = self
-				navigationController.pushViewController(detailVC, animated: true)
+			case .objectCellTapped(let object):
+				switch object.type {
+					case .tv:
+						Service.sharedInstance.fetchDetails(
+							for: object.id,
+							expecting: TVShow.self,
+							storeIn: &subscriptions
+						) { tvShow, _ in
+							self.pushDetailsVC(for: tvShow)
+						}
+
+					case .movie:
+						Service.sharedInstance.fetchDetails(
+							for: object.id,
+							isMovie: true,
+							expecting: Movie.self,
+							storeIn: &subscriptions
+						) { movie, _ in }
+
+					default: break
+				}
+
+			case .tvShowCellTapped(let tvShow): pushDetailsVC(for: tvShow)
 
 			case .backButtonTapped, .closeButtonTapped:
 				navigationController.popViewController(animated: true)
@@ -57,7 +78,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 			case .markAsWatchedButtonTapped(let viewModel): viewModel.markShowAsWatched()
 
 			case .searchButtonTapped:
-				let searchVC = TVShowSearchVC()
+				let searchVC = SearchVC()
 				searchVC.coordinator = self
 				navigationController.pushViewController(searchVC, animated: true)
 
@@ -78,6 +99,13 @@ final class ExploreCoordinator: NSObject, Coordinator {
 	private func childDidFinish(_ child: (any Coordinator)?) {
 		guard let index = childCoordinators.firstIndex(where: { $0 === child }) else { return }
 		childCoordinators.remove(at: index)
+	}
+
+	private func pushDetailsVC(for tvShow: TVShow) {
+		let viewModel = TVShowDetailsViewViewModel(tvShow: tvShow)
+		let detailVC = TVShowDetailsVC(viewModel: viewModel)
+		detailVC.coordinator = self
+		navigationController.pushViewController(detailVC, animated: true)		
 	}
 }
 
