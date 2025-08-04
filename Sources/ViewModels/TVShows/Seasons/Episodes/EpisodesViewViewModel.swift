@@ -34,8 +34,8 @@ final class EpisodesViewViewModel: NSObject {
 
 	/// Designated initializer
 	/// - Parameters:
-	///		- tvShow: The tv show model object
-	///		- season: The season model object
+	///		- tvShow: The `TVShow` model object
+	///		- season: The `Season` model object
 	init(tvShow: TVShow, season: Season) {
 		self.tvShow = tvShow
 		self.season = season
@@ -45,7 +45,7 @@ final class EpisodesViewViewModel: NSObject {
 	}
 
 	private func fetchDetails() {
-		Service.sharedInstance.fetchTVShowDetails(for: tvShow, storeIn: &subscriptions) { tvShow, _ in
+		Service.sharedInstance.fetchDetails(for: tvShow.id, expecting: TVShow.self, storeIn: &subscriptions) { tvShow, _ in
 			self._tvShow = tvShow
 		}
 

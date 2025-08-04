@@ -139,8 +139,7 @@ extension CurrentlyWatchingListViewViewModel: UICollectionViewDelegate {
 
 extension CurrentlyWatchingListViewViewModel {
 	/// Function to delete an item from the collection view at the given index path
-	/// - Parameters:
-	///		- at: The index path for the item
+	/// - Parameter at: The `IndexPath` for the item
 	func deleteItem(at indexPath: IndexPath) {
 		guard let index = getModelIndex(for: indexPath),
 			let item = dataSource.itemIdentifier(for: indexPath) else { return }
@@ -157,16 +156,14 @@ extension CurrentlyWatchingListViewViewModel {
 	}
 
 	/// Function to sort the tv show models according to the given option
-	/// - Parameters:
-	///		- withOption: The option
+	/// - Parameter option: The `SortOption`
 	func didSortDataSource(withOption option: TrackedTVShowManager.SortOption) {
 		trackedManager.didSortModels(withOption: option)
 		applyDiffableDataSourceSnapshot(withModels: trackedManager.trackedTVShows)
 	}
 
 	/// Function to mark a tv show as finished
-	/// - Parameters:
-	///		- at: The index path for the item
+	/// - Parameter at: The `IndexPath` for the item
 	func finishedShow(at indexPath: IndexPath) {
 		guard let index = getModelIndex(for: indexPath) else { return }
 
@@ -177,8 +174,8 @@ extension CurrentlyWatchingListViewViewModel {
 
 	/// Function to mark a currently watching show as returning series
 	/// - Parameters:
-	///		- at: The index path for the tv show
-	///		- toggle: Boolean value to toggle between returning series or currently watching
+	///		- at: The `IndexPath` for the tv show
+	///		- toggle: `Bool` value to toggle between returning series or currently watching
 	func markShowAsReturningSeries(at indexPath: IndexPath, toggle: Bool = true) {
 		guard let index = getModelIndex(for: indexPath) else { return }
 
@@ -187,15 +184,13 @@ extension CurrentlyWatchingListViewViewModel {
 	}
 
 	/// Function to setup the diffable data source for the collection view
-	/// - Parameters:
-	///		- for: The collection view
+	/// - Parameter collectionView: The `UICollectionView`
 	func setupDiffableDataSource(for collectionView: UICollectionView) {
 		setupCollectionViewDiffableDataSource(for: collectionView)
 	}
 
 	/// Function to track the next episode if available
-	/// - Parameters:
-	///		- at: The current index path for the item
+	/// - Parameter at: The current `IndexPath` for the item
 	func trackNextEpisode(at indexPath: IndexPath) {
 		guard let index = getModelIndex(for: indexPath) else { return }
 
@@ -203,7 +198,11 @@ extension CurrentlyWatchingListViewViewModel {
 		let currentSeason = trackedManager.trackedTVShows[index].season
 		let currentEpisode = trackedManager.trackedTVShows[index].episode
 
-		Service.sharedInstance.fetchTVShowDetails(for: tvShow, storeIn: &subscriptions) { [weak self] tvShow, _ in
+		Service.sharedInstance.fetchDetails(
+			for: tvShow.id,
+			expecting: TVShow.self,
+			storeIn: &subscriptions
+		) { [weak self] tvShow, _ in
 			guard let self else { return }
 			self.tvShow = tvShow
 

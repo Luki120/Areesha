@@ -102,8 +102,9 @@ final class TVShowDetailsViewViewModel {
 	}
 
 	private func fetchTVShowDetails() {
-		Service.sharedInstance.fetchTVShowDetails(
-			for: tvShow,
+		Service.sharedInstance.fetchDetails(
+			for: tvShow.id,
+			expecting: TVShow.self,
 			storeIn: &subscriptions
 		) { [weak self] tvShow, isFromCache in
 			guard let self else { return }

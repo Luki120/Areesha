@@ -35,8 +35,9 @@ final class SeasonsViewViewModel: NSObject {
 		self.tvShow = tvShow
 		super.init()
 
-		Service.sharedInstance.fetchTVShowDetails(
-			for: tvShow,
+		Service.sharedInstance.fetchDetails(
+			for: tvShow.id,
+			expecting: TVShow.self,
 			storeIn: &subscriptions
 		) { [weak self] tvShow, _ in
 			guard let self else { return }

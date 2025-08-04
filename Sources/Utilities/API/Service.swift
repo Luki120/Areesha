@@ -16,7 +16,7 @@ final class Service {
 		static let ratedShowsURL = "\(baseURL)/account/\(_Constants.accountID)/rated/tv"
 		static let topRatedTVShowsURL = "\(baseURL)tv/top_rated?\(apiKey)"
 		static let trendingTVShowsURL = "\(baseURL)trending/tv/day?\(apiKey)"
-		static let searchTVShowBaseURL = "\(baseURL)search/tv?\(apiKey)"
+		static let searchQueryBaseURL = "\(baseURL)search/multi?\(apiKey)"
 	}
 
 	/// Function to make API calls
@@ -120,30 +120,35 @@ final class Service {
 // ! Reusable
 
 extension Service {
-	/// Function to fetch tv show details for a given tv show
+	/// Function to fetch the details for a given tv show or movie
 	/// - Parameters:
-	///		- for: The `TVShow` object
+	///		- id: An `Int` that represents the tv show or movie
+	///		- isMovie: `Bool` that checks wether we should fetch the details for a movie
+	///		- type: The given type that conforms to `Codable` from which to decode the JSON data
 	///		- storeIn: A `Set<AnyCancellable>` to store this instance
-	///		- completion: `@escaping` closure that takes a tuple of `TVShow` & `Bool` and returns nothing
-	func fetchTVShowDetails(
-		for tvShow: TVShow,
+	///		- completion: `@escaping` closure that takes a tuple of `T` & `Bool` and returns nothing
+	func fetchDetails<T: Codable>(
+		for id: Int,
+		isMovie: Bool = false,
+		expecting type: T.Type,
 		storeIn subscriptions: inout Set<AnyCancellable>,
-		completion: @escaping (TVShow, Bool) -> ()
+		completion: @escaping (T, Bool) -> ()
 	) {
-		let urlString = "\(Constants.baseURL)tv/\(tvShow.id)?\(Constants.apiKey)"
+		let mediaType = isMovie ? "movie" : "tv"
+		let urlString = "\(Constants.baseURL)\(mediaType)/\(id)?\(Constants.apiKey)"
 		guard let url = URL(string: urlString) else { return }
 
-		fetchTVShows(withURL: url, expecting: TVShow.self)
+		fetchTVShows(withURL: url, expecting: type.self)
 			.receive(on: DispatchQueue.main)
-			.sink(receiveCompletion: { _ in }) { tvShow, isFromCache in
-				completion(tvShow, isFromCache)
+			.sink(receiveCompletion: { _ in }) { object, isFromCache in
+				completion(object, isFromCache)
 			}
 			.store(in: &subscriptions)
 	}
 
 	/// Function to fetch season details for a given season
 	/// - Parameters:
-	///		- for: The `Season` object
+	///		- season: The `Season` object
 	///		- tvShow: The `TVShow` object for the season
 	///		- storeIn: A `Set<AnyCancellable>` to store this instance
 	///		- completion: `@escaping` closure that takes a `Season` object & returns nothing
