@@ -2,24 +2,28 @@ import Combine
 import UIKit
 
 
-protocol TVShowSearchListViewViewModelDelegate: AnyObject {
-	func didSelect(tvShow: TVShow)
+protocol SearchListViewViewModelDelegate: AnyObject {
+	func didSelect(object: ObjectType)
 	func shouldAnimateNoResultsLabel(isDataSourceEmpty: Bool)
 }
 
-/// View model class for `TVShowSearchListView`
-final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCell>, ObservableObject {
+/// View model class for `SearchListView`
+final class SearchListViewViewModel: BaseViewModel<UICollectionViewListCell>, ObservableObject {
 	private let searchQuerySubject = PassthroughSubject<String, Never>()
-	private var searchedTVShows = [TVShow]() {
+	private var searchedResults = [ObjectType]() {
 		didSet {
-			orderedViewModels += searchedTVShows.compactMap { tvShow in
-				return TVShowSearchListCellViewModel(id: tvShow.id, tvShowName: tvShow.name)
+			orderedViewModels += searchedResults.compactMap { media in
+				switch media.type {
+					case .tv: return SearchListCellViewModel(id: media.id, name: media.name ?? "")
+					case .movie: return SearchListCellViewModel(id: media.id, name: media.title ?? "")
+					default: return nil
+				}
 			}
 		}
 	}
 
 	private var subscriptions = Set<AnyCancellable>()
-	weak var delegate: TVShowSearchListViewViewModelDelegate?
+	weak var delegate: SearchListViewViewModelDelegate?
 
 	override init(collectionView: UICollectionView) {
 		super.init(collectionView: collectionView)
@@ -29,21 +33,21 @@ final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCel
 		setupSearchQuerySubject()
 	}
 
-	private func fetchSearchedTVShow(withQuery query: String? = nil) {
+	private func fetch(query: String? = nil) {
 		guard let query,
-			let urlString = "\(Service.Constants.searchTVShowBaseURL)&query=\(query)"
+			let urlString = "\(Service.Constants.searchQueryBaseURL)&query=\(query)"
 				.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
 			let url = URL(string: urlString) else { return }
 
-		Service.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)
-			.catch { _ in Just(APIResponse(results: [])) }
+		Service.sharedInstance.fetchTVShows(withURL: url, expecting: SearchResponse.self)
+			.catch { _ in Just(SearchResponse(results: [])) }
 			.receive(on: DispatchQueue.main)
-			.sink { [weak self] searchedTVShows in
+			.sink { [weak self] response in
 				guard let self else { return }
-				self.searchedTVShows = searchedTVShows.results
+				self.searchedResults = response.results.compactMap { $0 }
 				applySnapshot(isOrderedSet: true)
 
-				delegate?.shouldAnimateNoResultsLabel(isDataSourceEmpty: self.searchedTVShows.isEmpty)
+				delegate?.shouldAnimateNoResultsLabel(isDataSourceEmpty: self.searchedResults.isEmpty)
 			}
 			.store(in: &subscriptions)
 	}
@@ -53,17 +57,17 @@ final class TVShowSearchListViewViewModel: BaseViewModel<UICollectionViewListCel
 			.debounce(for: .seconds(0.8), scheduler: DispatchQueue.main)
 			.sink { [weak self] in
 				self?.orderedViewModels.removeAll()
-				self?.fetchSearchedTVShow(withQuery: $0)
+				self?.fetch(query: $0)
 			}
 			.store(in: &subscriptions)
 	}
 }
 
-extension TVShowSearchListViewViewModel {
-	// ! Public
+// ! Public
 
+extension SearchListViewViewModel {
 	/// Function to send the query subject
-	/// - Parameter subject: A string representing the query subject
+	/// - Parameter subject: A `String` representing the query subject
 	func sendQuerySubject(_ subject: String) {
 		searchQuerySubject.send(subject)
 	}
@@ -72,18 +76,20 @@ extension TVShowSearchListViewViewModel {
 // ! CollectionView
 
 extension UICollectionViewListCell: Configurable {
-	func configure(with viewModel: TVShowSearchListCellViewModel) {
+	func configure(with viewModel: SearchListCellViewModel) {
 		var content = defaultContentConfiguration()
-		content.text = viewModel.tvShowName
+		content.text = viewModel.name
 		content.textProperties.font = .preferredFont(forTextStyle: .headline, weight: .semibold, size: 18)
 
 		contentConfiguration = content
 	}
 }
 
-extension TVShowSearchListViewViewModel: UICollectionViewDelegate {
+extension SearchListViewViewModel: UICollectionViewDelegate {
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
-		delegate?.didSelect(tvShow: searchedTVShows[indexPath.item])
+
+		let filteredResults = searchedResults.filter { $0.type == .tv || $0.type == .movie }
+		delegate?.didSelect(object: filteredResults[indexPath.item])
 	}
 }

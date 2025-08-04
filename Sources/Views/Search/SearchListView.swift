@@ -1,15 +1,15 @@
 import UIKit
 
 // https://stackoverflow.com/questions/37102504/proper-naming-convention-for-a-delegate-method-with-no-arguments-except-the-dele
-protocol TVShowSearchListViewDelegate: AnyObject {
+protocol SearchListViewDelegate: AnyObject {
 	func didTapCloseButton(in searchTextFieldView: SearchTextFieldView)
 	func didTapClearButton(in searchTextFieldView: SearchTextFieldView)
-	func tvShowSearchListView(_ tvShowSearchListView: TVShowSearchListView, didSelect tvShow: TVShow)
+	func searchListView(_ searchListView: SearchListView, didSelect object: ObjectType)
 }
 
-/// Class that'll show the searched tv shows in a collection view
-final class TVShowSearchListView: UIView {
-	private lazy var viewModel = TVShowSearchListViewViewModel(collectionView: listCollectionView)
+/// Class that'll show the searched tv shows or movies in a collection view
+final class SearchListView: UIView {
+	private lazy var viewModel = SearchListViewViewModel(collectionView: listCollectionView)
 
 	@UsesAutoLayout
 	private var searchTextFieldView: SearchTextFieldView = {
@@ -30,7 +30,7 @@ final class TVShowSearchListView: UIView {
 
 	private var noResultsLabel: UILabel = .createContentUnavailableLabel(withMessage: "No results were found for this query.")
 
-	weak var delegate: TVShowSearchListViewDelegate?
+	weak var delegate: SearchListViewDelegate?
 
 	// ! Lifecycle
 
@@ -82,7 +82,7 @@ final class TVShowSearchListView: UIView {
 	}
 }
 
-extension TVShowSearchListView {
+extension SearchListView {
 	// ! Public
 
 	/// Function to become the text field's first responder when needed
@@ -120,7 +120,7 @@ extension TVShowSearchListView {
 
 // ! SearchTextFieldViewDelegate
 
-extension TVShowSearchListView: SearchTextFieldViewDelegate {
+extension SearchListView: SearchTextFieldViewDelegate {
 	func didTapCloseButton(in searchTextFieldView: SearchTextFieldView) {
 		delegate?.didTapCloseButton(in: searchTextFieldView)
 	}
@@ -130,11 +130,11 @@ extension TVShowSearchListView: SearchTextFieldViewDelegate {
 	}
 }
 
-// ! TVShowSearchListViewViewModelDelegate
+// ! SearchListViewViewModelDelegate
 
-extension TVShowSearchListView: TVShowSearchListViewViewModelDelegate {
-	func didSelect(tvShow: TVShow) {
-		delegate?.tvShowSearchListView(self, didSelect: tvShow)
+extension SearchListView: SearchListViewViewModelDelegate {
+	func didSelect(object: ObjectType) {
+		delegate?.searchListView(self, didSelect: object)
 	}
 
 	func shouldAnimateNoResultsLabel(isDataSourceEmpty: Bool) {
@@ -153,7 +153,7 @@ extension TVShowSearchListView: TVShowSearchListViewViewModelDelegate {
 
 // ! UITextFieldDelegate
 
-extension TVShowSearchListView: UITextFieldDelegate {
+extension SearchListView: UITextFieldDelegate {
 	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 		searchTextFieldView.textField.resignFirstResponder()
 		return true

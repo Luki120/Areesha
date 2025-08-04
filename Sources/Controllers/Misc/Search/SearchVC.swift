@@ -1,42 +1,42 @@
 import UIKit
 
-/// Controller that'll show the TV show search list view
-final class TVShowSearchVC: UIViewController {
+/// Controller that'll show the TV show / movies search list view
+final class SearchVC: UIViewController {
 	var coordinator: ExploreCoordinator?
 
-	private let tvShowSearchListView = TVShowSearchListView()
+	private let searchListView = SearchListView()
 
 	// ! Lifecycle
 
-	override func loadView() { view = tvShowSearchListView }
+	override func loadView() { view = searchListView }
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		view.backgroundColor = .systemBackground
 		navigationItem.leftBarButtonItem = UIBarButtonItem()
-		tvShowSearchListView.delegate = self
+		searchListView.delegate = self
 	}
 
  	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		coordinator?.eventOccurred(with: .pushedVC)
-		tvShowSearchListView.fadeInTextField()
-		tvShowSearchListView.becomeTextFieldFirstResponder()
+		searchListView.fadeInTextField()
+		searchListView.becomeTextFieldFirstResponder()
 	}
 
  	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
 		coordinator?.eventOccurred(with: .poppedVC)
-		tvShowSearchListView.fadeOutTextField()
-		tvShowSearchListView.resignTextFieldFirstResponder()
+		searchListView.fadeOutTextField()
+		searchListView.resignTextFieldFirstResponder()
 	}
 }
 
-// ! TVShowSearchListViewDelegate
+// ! SearchListViewDelegate
 
-extension TVShowSearchVC: TVShowSearchListViewDelegate {
-	func tvShowSearchListView(_ tvShowSearchListView: TVShowSearchListView, didSelect tvShow: TVShow) {
-		coordinator?.eventOccurred(with: .tvShowCellTapped(tvShow: tvShow))
+extension SearchVC: SearchListViewDelegate {
+	func searchListView(_ searchListView: SearchListView, didSelect object: ObjectType) {
+		coordinator?.eventOccurred(with: .objectCellTapped(object: object))
 	}
 
 	func didTapCloseButton(in searchTextFieldView: SearchTextFieldView) {
