@@ -10,6 +10,11 @@ struct SearchResponse: Codable {
 	let results: [ObjectType]
 }
 
+/// Genre model struct
+struct Genre: Codable {
+	let name: String
+}
+
 /// Object type model struct
 struct ObjectType: Codable {
 	let id: Int

@@ -31,11 +31,6 @@ struct TVShow: Codable {
 	}
 }
 
-/// Genre model struct
-struct Genre: Codable {
-	let name: String
-}
-
 /// Season model struct
 struct Season: Codable {
 	let name: String?
