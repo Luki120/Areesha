@@ -38,12 +38,12 @@ class TVShowDetailsDescriptionCell: TVShowDetailsBaseCell {
 	}
 }
 
-extension TVShowDetailsDescriptionCell {
-	// ! Public
+// ! Public
 
+extension TVShowDetailsDescriptionCell {
 	/// Function to configure the cell with its respective view model
 	/// - Parameter with: The cell's view model
 	final func configure(with viewModel: TVShowDetailsDescriptionCellViewModel) {
-		descriptionLabel.text = viewModel.description
+		descriptionLabel.text = viewModel.description.isEmpty ? "No description available" : viewModel.description
 	}
 }
