@@ -1,8 +1,10 @@
 import UIKit
 
 /// Class to represent the tv show details providers cell
-final class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
-	static let identifier = "TVShowDetailsProvidersCell"
+class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
+	class var identifier: String {
+		return String(describing: self)
+	}
 
 	@UsesAutoLayout
 	private var whereToWatchLabel: UILabel = {
@@ -29,13 +31,6 @@ final class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
 		return stackView
 	}()
 
-	@UsesAutoLayout
-	private var separatorView: UIView = {
-		let view = UIView()
-		view.backgroundColor = .systemGray
-		return view
-	}()
-
 	private var justWatchImageView: UIImageView!
 
 	// ! Lifecycle
@@ -52,12 +47,12 @@ final class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
 
 	override func layoutUI() {
 		NSLayoutConstraint.activate([
-			whereToWatchLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
+			whereToWatchLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15),
 			whereToWatchLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
 
 			watchProvidersScrollView.topAnchor.constraint(equalTo: whereToWatchLabel.bottomAnchor, constant: 10),
-			watchProvidersScrollView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
-			watchProvidersScrollView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+			watchProvidersScrollView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15),
+			watchProvidersScrollView.leadingAnchor.constraint(equalTo: whereToWatchLabel.leadingAnchor),
 			watchProvidersScrollView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
 
 			watchProvidersStackView.topAnchor.constraint(equalTo: watchProvidersScrollView.topAnchor),
@@ -112,17 +107,17 @@ final class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
 		contentView.addSubview(emptyResultsLabel)
 
 		emptyResultsLabel.topAnchor.constraint(equalTo: whereToWatchLabel.bottomAnchor, constant: 10).isActive = true
-		emptyResultsLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20).isActive = true
+		emptyResultsLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15).isActive = true
 		emptyResultsLabel.leadingAnchor.constraint(equalTo: whereToWatchLabel.leadingAnchor).isActive = true
 	}
 }
 
-extension TVShowDetailsProvidersCell {
-	// ! Public
+// ! Public
 
+extension TVShowDetailsProvidersCell {
 	/// Function to configure the cell with its respective watch provider state
 	/// - Parameter with: The cell's state
-	func configure(with state: TVShowDetailsViewViewModel.WatchProvidersState) {		
+	final func configure(with state: WatchProvidersState) {		
 		switch state {
 			case .empty: createEmptyResultsLabel()
 

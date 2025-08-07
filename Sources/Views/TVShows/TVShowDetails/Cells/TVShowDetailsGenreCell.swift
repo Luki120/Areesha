@@ -6,16 +6,6 @@ final class TVShowDetailsGenreCell: TVShowDetailsBaseCell {
 
 	private var genreLabel, episodeAverageDurationLabel, lastAirDateLabel, statusLabel: UILabel!
 
-	@UsesAutoLayout
-	private var separatorView: UIView = {
-		let view = UIView()
-		view.backgroundColor = .systemGray
-		return view
-	}()
-
-	private lazy var dateFormatter = createDateFormatter(withDateFormat: "yyyy-MM-dd")
-	private lazy var shortDateFormatter = createDateFormatter(withDateFormat: "MMM d, yyyy")
-
 	// ! Lifecycle
 
 	override func prepareForReuse() {
@@ -37,15 +27,15 @@ final class TVShowDetailsGenreCell: TVShowDetailsBaseCell {
 	}
 
 	override func layoutUI() {
-		genreLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
+		genreLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15).isActive = true
 		genreLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
 		genreLabel.trailingAnchor.constraint(equalTo: separatorView.leadingAnchor, constant: -10).isActive = true
 
-		separatorView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
+		separatorView.topAnchor.constraint(equalTo: genreLabel.topAnchor).isActive = true
 		separatorView.trailingAnchor.constraint(equalTo: episodeAverageDurationLabel.leadingAnchor, constant: -10).isActive = true
 		setupSizeConstraints(forView: separatorView, width: 1, height: 20)
 
-		episodeAverageDurationLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
+		episodeAverageDurationLabel.topAnchor.constraint(equalTo: separatorView.topAnchor).isActive = true
 		episodeAverageDurationLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
 
 		// took me a while to figure out this fuckery 💀, but here's a ref for it:
@@ -53,8 +43,8 @@ final class TVShowDetailsGenreCell: TVShowDetailsBaseCell {
 		episodeAverageDurationLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
 
 		lastAirDateLabel.topAnchor.constraint(equalTo: genreLabel.bottomAnchor, constant: 10).isActive = true
-		lastAirDateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10).isActive = true
-		lastAirDateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
+		lastAirDateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15).isActive = true
+		lastAirDateLabel.leadingAnchor.constraint(equalTo: genreLabel.leadingAnchor).isActive = true
 
 		statusLabel.topAnchor.constraint(equalTo: lastAirDateLabel.topAnchor).isActive = true
 		statusLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
@@ -69,12 +59,6 @@ final class TVShowDetailsGenreCell: TVShowDetailsBaseCell {
 		label.numberOfLines = lines
 		label.translatesAutoresizingMaskIntoConstraints = false
 		return label
-	}
-
-	private func createDateFormatter(withDateFormat format: String) -> DateFormatter {
-		let dateFormatter = DateFormatter()
-		dateFormatter.dateFormat = format
-		return dateFormatter
 	}
 }
 

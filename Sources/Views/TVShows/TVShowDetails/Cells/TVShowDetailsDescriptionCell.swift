@@ -3,7 +3,7 @@ import UIKit
 /// Class to represent the tv show details overview cell
 class TVShowDetailsDescriptionCell: TVShowDetailsBaseCell {
 	class var identifier: String {
-		return "TVShowDetailsDescriptionCell"
+		return String(describing: self)
 	}
 
 	final let descriptionLabel: UILabel = {
@@ -30,8 +30,8 @@ class TVShowDetailsDescriptionCell: TVShowDetailsBaseCell {
 	override func layoutUI() {
 		contentView.pinViewToAllEdges(
 			descriptionLabel,
-			topConstant: 20,
-			bottomConstant: -20,
+			topConstant: 15,
+			bottomConstant: -15,
 			leadingConstant: 20,
 			trailingConstant: -20
 		)

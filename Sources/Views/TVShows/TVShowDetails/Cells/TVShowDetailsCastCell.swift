@@ -1,57 +1,47 @@
 import UIKit
 
 /// Class to represent the tv show details cast cell
-final class TVShowDetailsCastCell: TVShowDetailsBaseCell {
-	static let identifier = "TVShowDetailsCastCell"
+class TVShowDetailsCastCell: TVShowDetailsBaseCell {
+	class var identifier: String {
+		String(describing: self)
+	}
 
-	@UsesAutoLayout
-	private var castLabel = UILabel()
-
-	@UsesAutoLayout
-	private var castCrewLabel = UILabel()
+	final let castLabel: UILabel = {
+		let label = UILabel()
+		label.font = .preferredFont(forTextStyle: .body, size: 16)
+		label.textColor = .label
+		label.numberOfLines = 0
+		label.translatesAutoresizingMaskIntoConstraints = false
+		return label
+	}()
 
 	// ! Lifecycle
 
 	override func prepareForReuse() {
 		super.prepareForReuse()
-		castCrewLabel.text = nil
+		castLabel.text = nil
 	}
 
 	override func setupUI() {
-		castLabel = createLabel(fontWeight: .bold)
-		castCrewLabel = createLabel()
+		contentView.addSubview(castLabel)
 		super.setupUI()
 	}
 
 	override func layoutUI() {
-		castLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
+		castLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15).isActive = true
+		castLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15).isActive = true
 		castLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
-
-		castCrewLabel.topAnchor.constraint(equalTo: castLabel.topAnchor).isActive = true
-		castCrewLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20).isActive = true
-		castCrewLabel.leadingAnchor.constraint(equalTo: castLabel.trailingAnchor, constant: 20).isActive = true
-		castCrewLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
-	}
-
-	// ! Reusable
-
-	private func createLabel(fontWeight: UIFont.Weight = .regular) -> UILabel {
-		let label = UILabel()
-		label.font = .preferredFont(forTextStyle: .body, weight: fontWeight, size: 16)
-		label.textColor = .label
-		label.numberOfLines = 0
-		contentView.addSubview(label)
-		return label
+		castLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
 	}
 }
 
-extension TVShowDetailsCastCell {
-	// ! Public
+// ! Public
 
+extension TVShowDetailsCastCell {
 	/// Function to configure the cell with its respective view model
-	/// - Parameter with: The cell's view model
-	func configure(with viewModel: TVShowDetailsCastCellViewModel) {
-		castLabel.text = viewModel.cast
-		castCrewLabel.text = viewModel.castCrew
+	/// - Parameter viewModel: The cell's view model
+	final func configure(with viewModel: TVShowDetailsCastCellViewModel) {
+		guard let cast = viewModel.cast else { return }
+		castLabel.text = cast.isEmpty ? "Cast unknown" : viewModel.cast
 	}
 }

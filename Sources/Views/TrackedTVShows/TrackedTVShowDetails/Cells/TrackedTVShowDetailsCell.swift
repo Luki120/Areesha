@@ -6,9 +6,6 @@ final class TrackedTVShowDetailsCell: TVShowDetailsBaseCell {
 
 	private var episodeNumberLabel, episodeAirDateLabel: UILabel!
 
-	private lazy var dateFormatter = createDateFormatter(withDateFormat: "yyyy-MM-dd")
-	private lazy var shortDateFormatter = createDateFormatter(withDateFormat: "MMM d, yyyy")
-
 	// ! Lifecycle
 
 	override func prepareForReuse() {
@@ -44,12 +41,6 @@ final class TrackedTVShowDetailsCell: TVShowDetailsBaseCell {
 		label.numberOfLines = 0
 		label.translatesAutoresizingMaskIntoConstraints = false
 		return label
-	}
-
-	private func createDateFormatter(withDateFormat format: String) -> DateFormatter {
-		let dateFormatter = DateFormatter()
-		dateFormatter.dateFormat = format
-		return dateFormatter
 	}
 }
 
