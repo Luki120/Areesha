@@ -2,7 +2,6 @@ import Foundation
 
 /// Watch provider model struct
 struct WatchProvider: Codable {
-	let id: Int
 	let results: [String: Region]
 }
 
