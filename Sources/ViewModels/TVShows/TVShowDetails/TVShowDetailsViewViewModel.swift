@@ -2,7 +2,7 @@ import Combine
 import UIKit
 
 /// View model class for `TVShowDetailsView`
-final class TVShowDetailsViewViewModel {
+final class TVShowDetailsViewViewModel: WatchProviderPresentable {
 	var title: String { return tvShow.name }
 
 	private var lastSeason: Season!
@@ -11,27 +11,11 @@ final class TVShowDetailsViewViewModel {
 	private var descriptionCellViewModel: TVShowDetailsDescriptionCellViewModel!
 	private var castCellViewModel = TVShowDetailsCastCellViewModel()
 
-	enum WatchProvidersState {
-		case empty
-		case available([TVShowDetailsProvidersCellViewModel])
-	}
-
-	private var watchProvidersState: WatchProvidersState = .available([])
+	private var providersState: WatchProvidersState = .available([])
 
 	private var watchProvider: WatchProvider? {
 		didSet {
-			guard let arRegion = watchProvider?.results["AR"] else {
-				watchProvidersState = .empty
-				return
-			}
-
-			let providers = Set((arRegion.additionals ?? []) + (arRegion.flatrate ?? []))
-
-			let viewModels: [TVShowDetailsProvidersCellViewModel] = providers.compactMap { watchOption in
-				guard let url = Service.imageURL(.watchProviderLogo(watchOption), size: "w200") else { return nil }
-				return TVShowDetailsProvidersCellViewModel(imageURL: url)
-			}
-			watchProvidersState = .available(viewModels)
+			providersState = makeState(from: watchProvider)
 		}
 	}
 
@@ -149,10 +133,8 @@ final class TVShowDetailsViewViewModel {
 	}
 
 	private func updateCastCrewNames(with castCrew: [Cast]) {
-		let castCrewNames = OrderedSet(castCrew.map(\.name))
-		let castCrewText = castCrewNames.isEmpty ? "Unknown" : castCrewNames.joined(separator: ", ")
-
-		castCellViewModel = .init(cast: "Cast", castCrew: castCrewText)
+		let cast = OrderedSet(castCrew.map(\.name))
+		castCellViewModel = .init(cast: cast.joined(separator: ", "))
 	}
 }
 
@@ -192,7 +174,7 @@ extension TVShowDetailsViewViewModel {
 
 				case .providers:
 					let cell: TVShowDetailsProvidersCell = tableView.dequeueReusableCell(for: indexPath)
-					cell.configure(with: watchProvidersState)
+					cell.configure(with: providersState)
 					return cell
 			}
 		}
