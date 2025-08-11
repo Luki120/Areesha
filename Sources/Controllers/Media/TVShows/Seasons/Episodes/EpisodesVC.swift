@@ -12,7 +12,7 @@ final class EpisodesVC: BaseVC {
 
 	enum CoordinatorType {
 		case details(TVShowDetailsCoordinator)
-		case tracked(TrackedTVShowsCoordinator)
+		case tracked(TrackedMediaCoordinator)
 	}
 
 	// ! Lifecycle
@@ -40,8 +40,8 @@ final class EpisodesVC: BaseVC {
 			case .details(let tvShowDetailsCoordinator):
 				tvShowDetailsCoordinator.eventOccurred(with: .backButtonTapped)
 
-			case .tracked(let trackedTVShowsCoordinator):
-				trackedTVShowsCoordinator.eventOccurred(with: .backButtonTapped)
+			case .tracked(let trackedMediaCoordinator):
+				trackedMediaCoordinator.eventOccurred(with: .backButtonTapped)
 		}
 	}
 }

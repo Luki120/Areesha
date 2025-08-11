@@ -12,7 +12,7 @@ final class SeasonsVC: BaseVC {
 
 	enum CoordinatorType {
 		case details(TVShowDetailsCoordinator)
-		case tracked(TrackedTVShowsCoordinator)
+		case tracked(TrackedMediaCoordinator)
 	}
 
 	// ! Lifecycle
@@ -46,8 +46,8 @@ final class SeasonsVC: BaseVC {
 			case .details(let tvShowDetailsCoordinator):
 				tvShowDetailsCoordinator.eventOccurred(with: .backButtonTapped)
 
-			case .tracked(let trackedTVShowsCoordinator):
-				trackedTVShowsCoordinator.eventOccurred(with: .backButtonTapped)
+			case .tracked(let trackedMediaCoordinator):
+				trackedMediaCoordinator.eventOccurred(with: .backButtonTapped)
 		}
 	}
 
@@ -67,8 +67,8 @@ extension SeasonsVC: SeasonsViewDelegate {
 			case .details(let tvShowDetailsCoordinator):
 				tvShowDetailsCoordinator.eventOccurred(with: .seasonCellTapped(tvShow: tvShow, season: season))
 
-			case .tracked(let trackedTVShowsCoordinator):
-				trackedTVShowsCoordinator.eventOccurred(with: .seasonCellTapped(tvShow: tvShow, season: season))
+			case .tracked(let trackedMediaCoordinator):
+				trackedMediaCoordinator.eventOccurred(with: .seasonCellTapped(tvShow: tvShow, season: season))
 		}
 	}
 }

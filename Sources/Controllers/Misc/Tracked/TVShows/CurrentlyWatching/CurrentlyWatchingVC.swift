@@ -5,7 +5,7 @@ final class CurrentlyWatchingVC: BaseVC {
 	private let currentlyWatchingListView = CurrentlyWatchingListView()
 	private let roundedBlurredButton: RoundedBlurredButton = .init(systemImage: "arrow.up.arrow.down")
 
-	var coordinator: TrackedTVShowsCoordinator?
+	var coordinator: TrackedMediaCoordinator?
 	override var titleView: UIView { return currentlyWatchingListView.titleLabel }
 
 	// ! Lifecycle

@@ -5,7 +5,7 @@ final class TrackedTVShowDetailsVC: BaseVC {
 	let trackedTVShowDetailsViewViewModel: TrackedTVShowDetailsViewViewModel
 	private let trackedTVShowDetailsView: TrackedTVShowDetailsView
 
-	var coordinator: TrackedTVShowsCoordinator?
+	var coordinator: TrackedMediaCoordinator?
 
 	override var titleView: UIView {
 		return trackedTVShowDetailsView.titleLabel

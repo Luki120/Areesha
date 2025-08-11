@@ -3,7 +3,7 @@ import UIKit
 /// Root view controller, which will show our tabs
 final class TabBarVC: UITabBarController {
 	private let exploreCoordinator = ExploreCoordinator()
-	private let trackedTVShowsCoordinator = TrackedTVShowsCoordinator()
+	private let trackedMediaCoordinator = TrackedMediaCoordinator()
 	private let settingsCoordinator = SettingsCoordinator()
 
 	// ! Lifecycle
@@ -16,7 +16,7 @@ final class TabBarVC: UITabBarController {
 		super.init(nibName: nil, bundle: nil)
 		viewControllers = [
 			exploreCoordinator.navigationController,
-			trackedTVShowsCoordinator.navigationController,
+			trackedMediaCoordinator.navigationController,
 			settingsCoordinator.navigationController
 		]
 	}

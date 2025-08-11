@@ -1,24 +1,23 @@
 import UIKit
 
-
-protocol TrackedTVShowListViewViewModelDelegate: AnyObject {
+protocol TrackedMediaListViewViewModelDelegate: AnyObject {
 	func didSelectItem(at indexPath: IndexPath)
 }
 
-/// View model struct for `TrackedTVShowsListView`
-final class TrackedTVShowListViewViewModel: NSObject {
-	weak var delegate: TrackedTVShowListViewViewModelDelegate?
+/// View model struct for `TrackedMediaListView`
+final class TrackedMediaListViewViewModel: NSObject {
+	weak var delegate: TrackedMediaListViewViewModelDelegate?
 
-	private let cellViewModels: [TrackedTVShowListCellViewModel] = [
+	private let cellViewModels: [TrackedMediaListCellViewModel] = [
 		.init(text: "Currently watching", imageName: "play"),
 		.init(text: "Finished", imageName: "checkmark")
 	]
 
 	// ! UICollectionViewDiffableDataSource
 
-	private typealias CellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, TrackedTVShowListCellViewModel>
-	private typealias DataSource = UICollectionViewDiffableDataSource<Section, TrackedTVShowListCellViewModel>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, TrackedTVShowListCellViewModel>
+	private typealias CellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, TrackedMediaListCellViewModel>
+	private typealias DataSource = UICollectionViewDiffableDataSource<Section, TrackedMediaListCellViewModel>
+	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, TrackedMediaListCellViewModel>
 
 	private var dataSource: DataSource!
 
@@ -30,7 +29,7 @@ final class TrackedTVShowListViewViewModel: NSObject {
 // ! CollectionView
 
 extension UICollectionViewListCell {
-	func configureCell(with viewModel: TrackedTVShowListCellViewModel) {
+	func configureCell(with viewModel: TrackedMediaListCellViewModel) {
 		var content = defaultContentConfiguration()
 		content.text = viewModel.text
 		content.image = UIImage(systemName: viewModel.imageName)
@@ -40,11 +39,10 @@ extension UICollectionViewListCell {
 	}
 }
 
-extension TrackedTVShowListViewViewModel: UICollectionViewDelegate {
+extension TrackedMediaListViewViewModel: UICollectionViewDelegate {
 	/// Function to setup the collection view's diffable data source
-	/// - Parameters:
-	///		- collectionView: The collection view
-	func setupCollectionViewDiffableDataSource(for collectionView: UICollectionView) {
+	/// - Parameter collectionView: The collection view
+	func setupDiffableDataSource(for collectionView: UICollectionView) {
 		let cellRegistration = CellRegistration { cell, _, viewModel in
 			cell.configureCell(with: viewModel)
 		}
@@ -57,10 +55,10 @@ extension TrackedTVShowListViewViewModel: UICollectionViewDelegate {
 			)
 			return cell
 		}
-		applyDiffableDataSourceSnapshot()
+		applySnapshot()
 	}
 
-	private func applyDiffableDataSourceSnapshot() {
+	private func applySnapshot() {
 		var snapshot = Snapshot()
 		snapshot.appendSections([.main])
 		snapshot.appendItems(cellViewModels)

@@ -4,7 +4,7 @@ import UIKit
 final class FinishedVC: BaseVC {
 	private let finishedListView = FinishedListView()
 
-	var coordinator: TrackedTVShowsCoordinator?
+	var coordinator: TrackedMediaCoordinator?
 
 	override var titleView: UIView { return finishedListView.titleLabel }
 

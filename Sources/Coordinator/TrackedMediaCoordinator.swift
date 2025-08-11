@@ -1,7 +1,7 @@
 import UIKit
 
-/// Tracked tv shows coordinator, which will take care of any navigation events related to `TrackedTVShowsVC`
-final class TrackedTVShowsCoordinator: Coordinator {
+/// Tracked media coordinator, which will take care of any navigation events related to `TrackedMediaVC`
+final class TrackedMediaCoordinator: Coordinator {
 	enum Event {
 		case cellTapped(indexPath: IndexPath)
 		case backButtonTapped
@@ -17,12 +17,12 @@ final class TrackedTVShowsCoordinator: Coordinator {
 	var navigationController = SwipeableNavigationController()
 
 	init() {
-		let trackedTVShowsVC = TrackedTVShowsVC()
-		trackedTVShowsVC.coordinator = self
-		trackedTVShowsVC.title = "Shows"
-		trackedTVShowsVC.tabBarItem = UITabBarItem(title: "Shows", image: UIImage(asset: .movie), tag: 2)
+		let trackedMediaVC = TrackedMediaVC()
+		trackedMediaVC.coordinator = self
+		trackedMediaVC.title = "Media"
+		trackedMediaVC.tabBarItem = UITabBarItem(title: "Media", image: UIImage(asset: .movie), tag: 2)
 
-		navigationController.viewControllers = [trackedTVShowsVC]
+		navigationController.viewControllers = [trackedMediaVC]
 	}
 
 	func eventOccurred(with event: Event) {
