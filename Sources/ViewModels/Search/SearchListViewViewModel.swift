@@ -1,7 +1,6 @@
 import Combine
 import UIKit
 
-
 protocol SearchListViewViewModelDelegate: AnyObject {
 	func didSelect(object: ObjectType)
 	func shouldAnimateNoResultsLabel(isDataSourceEmpty: Bool)
@@ -12,12 +11,11 @@ final class SearchListViewViewModel: BaseViewModel<UICollectionViewListCell>, Ob
 	private let searchQuerySubject = PassthroughSubject<String, Never>()
 	private var searchedResults = [ObjectType]() {
 		didSet {
-			orderedViewModels += searchedResults.compactMap { media in
-				switch media.type {
-					case .tv: return SearchListCellViewModel(id: media.id, name: media.name ?? "")
-					case .movie: return SearchListCellViewModel(id: media.id, name: media.title ?? "")
-					default: return nil
-				}
+			orderedViewModels += searchedResults.map { media in
+				return SearchListCellViewModel(
+					id: media.id,
+					name: (media.type == .movie ? media.title : media.name) ?? ""
+				)
 			}
 		}
 	}
@@ -44,7 +42,8 @@ final class SearchListViewViewModel: BaseViewModel<UICollectionViewListCell>, Ob
 			.receive(on: DispatchQueue.main)
 			.sink { [weak self] response in
 				guard let self else { return }
-				self.searchedResults = response.results.compactMap { $0 }
+				let filteredResults = response.results.filter { $0.type == .movie || $0.type == .tv }
+				self.searchedResults = filteredResults
 				applySnapshot(isOrderedSet: true)
 
 				delegate?.shouldAnimateNoResultsLabel(isDataSourceEmpty: self.searchedResults.isEmpty)
@@ -88,8 +87,6 @@ extension UICollectionViewListCell: Configurable {
 extension SearchListViewViewModel: UICollectionViewDelegate {
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
-
-		let filteredResults = searchedResults.filter { $0.type == .tv || $0.type == .movie }
-		delegate?.didSelect(object: filteredResults[indexPath.item])
+		delegate?.didSelect(object: searchedResults[indexPath.item])
 	}
 }
