@@ -75,10 +75,10 @@ final class ExploreCoordinator: NSObject, Coordinator {
 				navigationController.popViewController(animated: true)
 
 			case .starButtonTapped(let object):
-				let viewModel = TVShowRatingViewViewModel(object: object, posterPath: object.coverImage ?? "")
-				let tvShowRatingVC = TVShowRatingVC(viewModel: viewModel)
-				tvShowRatingVC.coordinator = self
-				navigationController.pushViewController(tvShowRatingVC, animated: true)
+				let viewModel = RatingViewViewModel(object: object, posterPath: object.coverImage ?? "")
+				let ratingVC = RatingVC(viewModel: viewModel)
+				ratingVC.coordinator = self
+				navigationController.pushViewController(ratingVC, animated: true)
 
 			case .markAsWatchedButtonTapped(let viewModel): viewModel.markShowAsWatched()
 

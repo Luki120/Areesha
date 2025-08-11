@@ -2,8 +2,8 @@ import Combine
 import Foundation
 import UIKit.UIImage
 
-/// View model class for `TVShowRatingView`
-final class TVShowRatingViewViewModel: NSObject {
+/// View model class for `RatingView`
+final class RatingViewViewModel: NSObject {
 	private var viewModels = [RatingCellViewModel]()
 	private var subscriptions = Set<AnyCancellable>()
 	private var currentRating: Double = 0
@@ -21,10 +21,12 @@ final class TVShowRatingViewViewModel: NSObject {
 	}
 
 	let object: ObjectType
-	let posterPath: String
+	private let posterPath: String
 
 	/// Designated initializer
-	/// - Parameter tvShow: The `TVShow` model object
+	/// - Parameters:
+	///		- object: The `ObjectType` model
+	///		- posterPath: A `String` that represents the object's poster path
 	init(object: ObjectType, posterPath: String) {
 		self.object = object
 		self.posterPath = posterPath
@@ -38,8 +40,8 @@ final class TVShowRatingViewViewModel: NSObject {
 
 // ! Public
 
-extension TVShowRatingViewViewModel {
-	/// Function to add a rating for a given TV show
+extension RatingViewViewModel {
+	/// Function to add a rating for a given tv show or movie
 	/// - Parameters:
 	///		- isDecimal: A `Bool` to check wether the rating includes decimals, defaults to `false`
 	///		- completion: `@escaping` closure that takes no arguments & returns nothing
@@ -54,9 +56,9 @@ extension TVShowRatingViewViewModel {
 			.store(in: &subscriptions)
 	}
 
-	/// Function to fetch the tv show's poster image in different sizes
+	/// Function to fetch the object's poster image in different sizes
 	/// - Parameter completion: `@escaping` closure that takes an array of `UIImage` objects as argument & returns nothing
-	func fetchTVShowImages(completion: @escaping ([UIImage]) async -> ()) {
+	func fetchImages(completion: @escaping ([UIImage]) async -> ()) {
 		Task(priority: .background) {
 			guard let imageURL = Service.imageURL(.mediaPoster(posterPath), size: "w1280"),
 				let backgroundImage = try? await ImageManager.sharedInstance.fetchImage(imageURL) else { return }
@@ -77,10 +79,10 @@ extension TVShowRatingViewViewModel {
 
 // ! UICollectionView
 
-extension TVShowRatingViewViewModel: UICollectionViewDelegate {
+extension RatingViewViewModel: UICollectionViewDelegate {
 	/// Function to setup the collection view's diffable data source
 	/// - Parameter collectionView: The collection view
-	func setupCollectionViewDiffableDataSource(for collectionView: UICollectionView) {
+	func setupDiffableDataSource(for collectionView: UICollectionView) {
 		let cellRegistration = CellRegistration { cell, _, viewModel in
 			cell.configure(with: viewModel)
 		}
@@ -93,10 +95,10 @@ extension TVShowRatingViewViewModel: UICollectionViewDelegate {
 			)
 			return cell
 		}
-		applyDiffableDataSourceSnapshot()
+		applySnapshot()
 	}
 
-	private func applyDiffableDataSourceSnapshot() {
+	private func applySnapshot() {
 		var snapshot = Snapshot()
 		snapshot.appendSections([.main])
 		snapshot.appendItems(viewModels)
@@ -127,6 +129,6 @@ extension TVShowRatingViewViewModel: UICollectionViewDelegate {
 				viewModels[index].image = "star"
 			}
 		}
-		applyDiffableDataSourceSnapshot()
+		applySnapshot()
 	}
 }

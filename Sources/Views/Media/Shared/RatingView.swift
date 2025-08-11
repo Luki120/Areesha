@@ -1,16 +1,15 @@
 import UIKit
 
-
-protocol TVShowRatingViewDelegate: AnyObject {
-	func didAddRating(in tvShowRatingView: TVShowRatingView)
+protocol RatingViewDelegate: AnyObject {
+	func didAddRating(in ratingView: RatingView)
 }
 
-/// Class to represent the TV show rating view
-final class TVShowRatingView: UIView {
-	private let viewModel: TVShowRatingViewViewModel
+/// Class to represent the rating view
+final class RatingView: UIView {
+	private let viewModel: RatingViewViewModel
 
-	private lazy var tvShowPosterImageView = createImageView()
-	private lazy var tvShowImageView = createImageView()
+	private lazy var posterImageView = createImageView()
+	private lazy var backgroundImageView = createImageView()
 
 	private let compositionalLayout: UICollectionViewCompositionalLayout = {
 		let layout = UICollectionViewCompositionalLayout { _, layoutEnvironment in
@@ -88,7 +87,7 @@ final class TVShowRatingView: UIView {
 	}()
 
 	@UsesAutoLayout
-	private var rateShowLabel: UILabel = {
+	private var rateLabel: UILabel = {
 		let label = UILabel()
 		label.font = .preferredFont(forTextStyle: .title2, weight: .bold)
 		label.textAlignment = .center
@@ -104,7 +103,7 @@ final class TVShowRatingView: UIView {
 	}
 
 	private var rightBarButtonIsTapped = false
-	weak var delegate: TVShowRatingViewDelegate?
+	weak var delegate: RatingViewDelegate?
 
 	// ! Lifecycle
 
@@ -114,12 +113,12 @@ final class TVShowRatingView: UIView {
 
 	/// Designated initializer
 	/// - Parameter viewModel: The view model object for this view
-	init(viewModel: TVShowRatingViewViewModel) {
+	init(viewModel: RatingViewViewModel) {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
 		setupUI()
 
-		viewModel.setupCollectionViewDiffableDataSource(for: ratingCollectionView)
+		viewModel.setupDiffableDataSource(for: ratingCollectionView)
 	}
 
 	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -130,17 +129,16 @@ final class TVShowRatingView: UIView {
 	// ! Private
 
 	private func setupUI() {
-		insertSubview(tvShowImageView, at: 0)
-		tvShowImageView.addSubview(visualEffectView)
-		addSubviews(tvShowPosterImageView, rateShowLabel, ratingStackView, ratingButton)
+		insertSubview(backgroundImageView, at: 0)
+		backgroundImageView.addSubview(visualEffectView)
+		addSubviews(posterImageView, rateLabel, ratingStackView, ratingButton)
 		ratingStackView.addArrangedSubviews(ratingSlider, sliderValueLabel)
 
 		let media = viewModel.object.type == .movie ? "movie" : "show"
-
-		rateShowLabel.text = "How would you rate this \(media)?"
+		rateLabel.text = "How would you rate this \(media)?"
 
 		setupSlider()
-		fetchTVShowImage()
+		fetchImage()
 		layoutUI()
 	}
 
@@ -161,43 +159,43 @@ final class TVShowRatingView: UIView {
 	}
 
 	private func layoutUI() {
-		pinViewToAllEdges(tvShowImageView)
-		tvShowImageView.pinViewToAllEdges(visualEffectView)
+		pinViewToAllEdges(backgroundImageView)
+		backgroundImageView.pinViewToAllEdges(visualEffectView)
 
 		NSLayoutConstraint.activate([
-			tvShowPosterImageView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 30),
-			tvShowPosterImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+			posterImageView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 30),
+			posterImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
 
-			rateShowLabel.topAnchor.constraint(equalTo: tvShowPosterImageView.bottomAnchor, constant: 35),
-			rateShowLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-			rateShowLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+			rateLabel.topAnchor.constraint(equalTo: posterImageView.bottomAnchor, constant: 35),
+			rateLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+			rateLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
 
-			ratingCollectionView.topAnchor.constraint(equalTo: rateShowLabel.bottomAnchor, constant: 35),
+			ratingCollectionView.topAnchor.constraint(equalTo: rateLabel.bottomAnchor, constant: 35),
 			ratingCollectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
 			ratingCollectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
 			ratingCollectionView.heightAnchor.constraint(equalToConstant: 28),
 
-			ratingStackView.topAnchor.constraint(equalTo: rateShowLabel.bottomAnchor, constant: 35),
-			ratingStackView.centerXAnchor.constraint(equalTo: rateShowLabel.centerXAnchor),
+			ratingStackView.topAnchor.constraint(equalTo: rateLabel.bottomAnchor, constant: 35),
+			ratingStackView.centerXAnchor.constraint(equalTo: rateLabel.centerXAnchor),
 
 			ratingButton.topAnchor.constraint(equalTo: ratingCollectionView.bottomAnchor, constant: 35),
 			ratingButton.centerXAnchor.constraint(equalTo: centerXAnchor)
 		])
 
-		setupSizeConstraints(forView: tvShowPosterImageView, width: 230, height: 350)
+		setupSizeConstraints(forView: posterImageView, width: 230, height: 350)
 		setupSizeConstraints(forView: ratingSlider, width: 200, height: 28)
 		setupSizeConstraints(forView: ratingButton, width: 120, height: 50)
 	}
 
-	private func fetchTVShowImage() {
-		viewModel.fetchTVShowImages { [weak self] images in
+	private func fetchImage() {
+		viewModel.fetchImages { [weak self] images in
 			guard let self else { return }
 
 			await MainActor.run {
-				self.tvShowImageView.image = images.first!
+				self.backgroundImageView.image = images.first!
 
-				UIView.transition(with: self.tvShowPosterImageView, duration: 0.5, options: .transitionCrossDissolve) {
-					self.tvShowPosterImageView.image = images[1]
+				UIView.transition(with: self.posterImageView, duration: 0.5, options: .transitionCrossDissolve) {
+					self.posterImageView.image = images[1]
 				}
 			}
 		}
@@ -216,7 +214,7 @@ final class TVShowRatingView: UIView {
 
 // ! Public
 
-extension TVShowRatingView {
+extension RatingView {
 	/// Function to fade in & out the rating stack view
 	func fadeInOutSlider() {
 		rightBarButtonIsTapped.toggle()

@@ -1,9 +1,9 @@
 import UIKit
 
-/// Controller that'll show the tv show rating view
-final class TVShowRatingVC: BaseVC {
-	private let viewModel: TVShowRatingViewViewModel
-	private let tvShowRatingView: TVShowRatingView
+/// Controller that'll show the rating view
+final class RatingVC: BaseVC {
+	private let viewModel: RatingViewViewModel
+	private let ratingView: RatingView
 
 	var coordinator: ExploreCoordinator?
 
@@ -15,19 +15,19 @@ final class TVShowRatingVC: BaseVC {
 
 	/// Designated initializer
 	/// - Parameter viewModel: The view model object for this vc's view
-	init(viewModel: TVShowRatingViewViewModel) {
+	init(viewModel: RatingViewViewModel) {
 		self.viewModel = viewModel
-		self.tvShowRatingView = .init(viewModel: viewModel)
+		self.ratingView = .init(viewModel: viewModel)
 		super.init(nibName: nil, bundle: nil)
 	}
 
 	override func loadView() {
-		view = tvShowRatingView
+		view = ratingView
 	}
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		tvShowRatingView.delegate = self
+		ratingView.delegate = self
 
 		let roundedBlurredButton: RoundedBlurredButton = .init(systemImage: "arrow.up.arrow.down")
 		roundedBlurredButton.addTarget(self, action: #selector(didTapRightBarButton), for: .touchUpInside)
@@ -51,14 +51,14 @@ final class TVShowRatingVC: BaseVC {
 
 	@objc
 	private func didTapRightBarButton() {
-		tvShowRatingView.fadeInOutSlider()
+		ratingView.fadeInOutSlider()
 	}
 }
 
-// ! TVShowRatingViewDelegate
+// ! RatingViewDelegate
 
-extension TVShowRatingVC: TVShowRatingViewDelegate {
-	func didAddRating(in tvShowRatingView: TVShowRatingView) {
+extension RatingVC: RatingViewDelegate {
+	func didAddRating(in ratingView: RatingView) {
 		coordinator?.eventOccurred(with: .popVC)
 	}
 }
