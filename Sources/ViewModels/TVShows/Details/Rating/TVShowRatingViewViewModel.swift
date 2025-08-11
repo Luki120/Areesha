@@ -20,12 +20,14 @@ final class TVShowRatingViewViewModel: NSObject {
 		case main
 	}
 
-	let tvShow: TVShow
+	let object: ObjectType
+	let posterPath: String
 
 	/// Designated initializer
 	/// - Parameter tvShow: The `TVShow` model object
-	init(tvShow: TVShow) {
-		self.tvShow = tvShow
+	init(object: ObjectType, posterPath: String) {
+		self.object = object
+		self.posterPath = posterPath
 		super.init()
 
 		for _ in 1...5 {
@@ -42,9 +44,11 @@ extension TVShowRatingViewViewModel {
 	///		- isDecimal: A `Bool` to check wether the rating includes decimals, defaults to `false`
 	///		- completion: `@escaping` closure that takes no arguments & returns nothing
 	func addRating(isDecimal: Bool = false, completion: @escaping () -> Void) {
-		Service.sharedInstance.addRating(for: tvShow, rating: isDecimal ? currentRating.round(to: 1) : currentRating * 2)
+		let rating = isDecimal ? currentRating.round(to: 1) : currentRating * 2
+
+		Service.sharedInstance.addRating(for: object, rating: rating)
 			.receive(on: DispatchQueue.main)
-			.sink(receiveCompletion: { _ in }) { _ in 
+			.sink(receiveCompletion: { _ in }) { _ in
 				completion()
 			}
 			.store(in: &subscriptions)
@@ -54,10 +58,10 @@ extension TVShowRatingViewViewModel {
 	/// - Parameter completion: `@escaping` closure that takes an array of `UIImage` objects as argument & returns nothing
 	func fetchTVShowImages(completion: @escaping ([UIImage]) async -> ()) {
 		Task(priority: .background) {
-			guard let imageURL = Service.imageURL(.showPoster(self.tvShow), size: "w1280"),
+			guard let imageURL = Service.imageURL(.mediaPoster(posterPath), size: "w1280"),
 				let backgroundImage = try? await ImageManager.sharedInstance.fetchImage(imageURL) else { return }
 
-			guard let imageURL = Service.imageURL(.showPoster(self.tvShow)),
+			guard let imageURL = Service.imageURL(.mediaPoster(posterPath)),
 				let posterImage = try? await ImageManager.sharedInstance.fetchImage(imageURL) else { return }
 
 			await completion([backgroundImage, posterImage])

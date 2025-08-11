@@ -91,7 +91,6 @@ final class TVShowRatingView: UIView {
 	private var rateShowLabel: UILabel = {
 		let label = UILabel()
 		label.font = .preferredFont(forTextStyle: .title2, weight: .bold)
-		label.text = "How would you rate this show?"
 		label.textAlignment = .center
 		label.adjustsFontForContentSizeCategory = true
 		return label
@@ -135,6 +134,10 @@ final class TVShowRatingView: UIView {
 		tvShowImageView.addSubview(visualEffectView)
 		addSubviews(tvShowPosterImageView, rateShowLabel, ratingStackView, ratingButton)
 		ratingStackView.addArrangedSubviews(ratingSlider, sliderValueLabel)
+
+		let media = viewModel.object.type == .movie ? "movie" : "show"
+
+		rateShowLabel.text = "How would you rate this \(media)?"
 
 		setupSlider()
 		fetchTVShowImage()

@@ -18,8 +18,7 @@ final class TVShowDetailsVC: BaseVC {
 	}
 
 	/// Designated initializer
-	/// - Parameters:
-	///		- viewModel: The view model object for this vc's view
+	/// - Parameter viewModel: The view model object for this vc's view
 	init(viewModel: TVShowDetailsViewViewModel) {
 		self.tvShowDetailsViewViewModel = viewModel
 		self.tvShowDetailsView = .init(viewModel: viewModel)
@@ -42,12 +41,12 @@ final class TVShowDetailsVC: BaseVC {
 		let rateButtonItem = tvShowDetailsView.createBarButtonItem(
 			systemImage: "star",
 			target: self,
-			action: #selector(didTapRateButtonItem)
+			action: #selector(didTapRateButton)
 		)
 		let markAsWatchedButtonItem = tvShowDetailsView.createBarButtonItem(
 			systemImage: "checkmark",
 			target: self,
-			action: #selector(didTapMarkAsWatchedButtonItem)
+			action: #selector(didTapMarkAsWatchedButton)
 		)
 
 		navigationItem.rightBarButtonItems = [markAsWatchedButtonItem, rateButtonItem]
@@ -64,12 +63,13 @@ final class TVShowDetailsVC: BaseVC {
 	}
 
 	@objc
-	private func didTapRateButtonItem() {
-		coordinator?.eventOccurred(with: .starButtonTapped(tvShow: tvShowDetailsViewViewModel.tvShow))
+	private func didTapRateButton() {
+		let object = ObjectType(from: tvShowDetailsViewViewModel.tvShow)
+		coordinator?.eventOccurred(with: .starButtonTapped(object: object))
 	}
 
 	@objc
-	private func didTapMarkAsWatchedButtonItem() {
+	private func didTapMarkAsWatchedButton() {
 		coordinator?.eventOccurred(with: .markAsWatchedButtonTapped(viewModel: tvShowDetailsViewViewModel))
 	}
 }
