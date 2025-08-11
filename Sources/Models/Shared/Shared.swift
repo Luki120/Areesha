@@ -21,16 +21,40 @@ struct ObjectType: Codable {
 	let name: String?
 	let title: String?
 	let mediaType: String
+	let coverImage: String?
 
 	enum CodingKeys: String, CodingKey {
 		case id
 		case name
 		case title
 		case mediaType = "media_type"
+		case coverImage = "poster_path"
 	}
 
 	var type: MediaType {
 		return .init(rawValue: mediaType) ?? .unknown
+	}
+}
+
+extension ObjectType {
+	/// Initializer to create an `ObjectType` from a `TVShow` object
+	/// - Parameter tvShow: The `TVShow` object
+	init(from tvShow: TVShow) {
+		self.id = tvShow.id
+		self.name = tvShow.name
+		self.title = nil
+		self.mediaType = "tv"
+		self.coverImage = tvShow.coverImage
+	}
+
+	/// Initializer to create an `ObjectType` from a `Movie` object
+	/// - Parameter movie: The `Movie` object
+	init(from movie: Movie) {
+		self.id = movie.id
+		self.name = nil
+		self.title = movie.title
+		self.mediaType = "movie"
+		self.coverImage = movie.coverImage
 	}
 }
 

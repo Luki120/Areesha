@@ -7,7 +7,7 @@ struct Movie: Codable {
 	let genres: [Genre]?
 	let credits: Credits?
 	let revenue: Int?
-	let runtime: Int?
+	let runtime: Double?
 	let coverImage: String?
 	let releaseDate: String?
 	let description: String
