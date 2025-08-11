@@ -6,7 +6,7 @@ protocol SearchTextFieldViewDelegate: AnyObject {
 	func didTapClearButton(in searchTextFieldView: SearchTextFieldView)
 }
 
-/// UIView subclass to display a custom text field to search for TV shows
+/// UIView subclass to display a custom text field to search for movies or tv shows
 final class SearchTextFieldView: UIView {
 	@UsesAutoLayout
 	private var textFieldStackView: UIStackView = {
@@ -25,7 +25,7 @@ final class SearchTextFieldView: UIView {
 		textField.leftViewMode = .always
 		textField.rightViewMode = .always
 		textField.textColor = .label
-		textField.placeholder = "Search for TV shows"
+		textField.placeholder = "Search for movies, tv shows"
 		textField.adjustsFontForContentSizeCategory = true
 		textField.layer.borderColor = UIColor.darkGray.cgColor
 		textField.layer.borderWidth = 1
