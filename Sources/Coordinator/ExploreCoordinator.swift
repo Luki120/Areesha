@@ -7,7 +7,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 		case objectCellTapped(object: ObjectType)
 		case tvShowCellTapped(tvShow: TVShow)
 		case backButtonTapped
-		case starButtonTapped(tvShow: TVShow)
+		case starButtonTapped(object: ObjectType)
 		case markAsWatchedButtonTapped(viewModel: TVShowDetailsViewViewModel)
 		case searchButtonTapped
 		case closeButtonTapped
@@ -59,7 +59,12 @@ final class ExploreCoordinator: NSObject, Coordinator {
 							isMovie: true,
 							expecting: Movie.self,
 							storeIn: &subscriptions
-						) { movie, _ in }
+						) { movie, _ in
+							let viewModel = MovieDetailsViewViewModel(movie: movie)
+							let detailVC = MovieDetailsVC(viewModel: viewModel)
+							detailVC.coordinator = self
+							self.navigationController.pushViewController(detailVC, animated: true)
+						}
 
 					default: break
 				}
@@ -69,8 +74,8 @@ final class ExploreCoordinator: NSObject, Coordinator {
 			case .backButtonTapped, .closeButtonTapped:
 				navigationController.popViewController(animated: true)
 
-			case .starButtonTapped(let tvShow):
-				let viewModel = TVShowRatingViewViewModel(tvShow: tvShow)
+			case .starButtonTapped(let object):
+				let viewModel = TVShowRatingViewViewModel(object: object, posterPath: object.coverImage ?? "")
 				let tvShowRatingVC = TVShowRatingVC(viewModel: viewModel)
 				tvShowRatingVC.coordinator = self
 				navigationController.pushViewController(tvShowRatingVC, animated: true)
@@ -105,7 +110,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 		let viewModel = TVShowDetailsViewViewModel(tvShow: tvShow)
 		let detailVC = TVShowDetailsVC(viewModel: viewModel)
 		detailVC.coordinator = self
-		navigationController.pushViewController(detailVC, animated: true)		
+		navigationController.pushViewController(detailVC, animated: true)
 	}
 }
 

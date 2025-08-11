@@ -88,13 +88,15 @@ final class Service {
 			.eraseToAnyPublisher()
 	}
 
-	/// Function to add a rating for a given TV show
+	/// Function to add a rating for a given tv show or movie
 	/// - Parameters:
-	///		- for: The `TVShow` object
+	///		- for: The `ObjectType`
 	///		- rating: A `Double` that represents the rating
 	/// - Returns: `AnyPublisher<Data, Error>`
-	func addRating(for tvShow: TVShow, rating: Double) -> AnyPublisher<Data, Error> {
-		guard let url = URL(string: "\(Constants.baseURL)tv/\(tvShow.id)/rating") else {
+	func addRating(for object: ObjectType, rating: Double) -> AnyPublisher<Data, Error> {
+		let media = object.type == .movie ? "movie" : "tv"
+
+		guard let url = URL(string: "\(Constants.baseURL)\(media)/\(object.id)/rating") else {
 			return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
 		}
 
@@ -135,7 +137,8 @@ extension Service {
 		completion: @escaping (T, Bool) -> ()
 	) {
 		let mediaType = isMovie ? "movie" : "tv"
-		let urlString = "\(Constants.baseURL)\(mediaType)/\(id)?\(Constants.apiKey)"
+		var urlString = "\(Constants.baseURL)\(mediaType)/\(id)?\(Constants.apiKey)"
+		if isMovie { urlString.append("&append_to_response=credits") }
 		guard let url = URL(string: urlString) else { return }
 
 		fetchTVShows(withURL: url, expecting: type.self)
@@ -176,7 +179,9 @@ extension Service {
 	/// Enum to represent the different types of images
 	enum ImageFetch {
 		case showPoster(TVShow)
+		case mediaPoster(String)
 		case showBackdrop(TVShow)
+		case showMovieBackdrop(Movie)
 		case seasonPoster(Season)
 		case episodeStill(Episode)
 		case watchProviderLogo(WatchOption)
@@ -184,7 +189,9 @@ extension Service {
 		var path: String? {
 			switch self {
 				case .showPoster(let show): return show.coverImage
+				case .mediaPoster(let path): return path 
 				case .showBackdrop(let show): return show.backgroundCoverImage
+				case .showMovieBackdrop(let movie): return movie.backgroundCoverImage
 				case .seasonPoster(let season): return season.coverImage
 				case .episodeStill(let episode): return episode.coverImage
 				case .watchProviderLogo(let watchOption): return watchOption.logoImage
