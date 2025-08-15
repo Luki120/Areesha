@@ -13,16 +13,16 @@ final class MovieDetailsViewViewModel: WatchProviderPresentable {
 		)
 	}
 
-	private var genreCellViewModel: MovieDetailsGenreCellViewModel {
+	private var genreCellViewModel: TVShowDetailsGenreCellViewModel {
 		let genres = movie.genres?.map(\.name) ?? []
 		return .init(genre: genres.joined(separator: ", "), revenue: movie.revenue ?? 0)
 	}
 
-	private var descriptionCellViewModel: MovieDetailsDescriptionCellViewModel {
+	private var descriptionCellViewModel: TVShowDetailsDescriptionCellViewModel {
 		.init(description: movie.description)
 	}
 
-	private var castCellViewModel: MovieDetailsCastCellViewModel {
+	private var castCellViewModel: TVShowDetailsCastCellViewModel {
 		let cast = movie.credits?.cast.map(\.name) ?? []
 		return .init(cast: cast.joined(separator: ", "))
 	}

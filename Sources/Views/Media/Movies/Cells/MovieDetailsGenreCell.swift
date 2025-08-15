@@ -48,8 +48,13 @@ private extension Formatter {
 extension MovieDetailsGenreCell {
 	/// Function to configure the cell with its respective view model
 	/// - Parameter with: The cell's view model
-	func configure(with viewModel: MovieDetailsGenreCellViewModel) {
-		genreLabel.text = viewModel.genre.isEmpty ? "Unknown genre" : viewModel.genre
+	func configure(with viewModel: TVShowDetailsGenreCellViewModel) {
+		guard let genre = viewModel.genre else {
+			genreLabel.text = "Unknown genre"
+			return
+		}
+
+		genreLabel.text = genre
 
 		guard viewModel.revenue != 0,
 			let revenue = Formatter.currencyFormatter.string(for: viewModel.revenue) else { return }

@@ -6,10 +6,4 @@ final class MovieDetailsCastCell: TVShowDetailsCastCell {
 	class var identifier: String {
 		return String(describing: self)
 	}
-
-	/// Function to configure the cell with its respective view model
-	/// - Parameter viewModel: The cell's view model
-	func configure(with viewModel: MovieDetailsCastCellViewModel) {
-		castLabel.text = viewModel.cast.isEmpty ? "Cast unknown" : viewModel.cast
-	}
 }
