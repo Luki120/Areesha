@@ -14,6 +14,6 @@ extension TrackedTVShowDetailsDescriptionCell {
 	/// Function to configure the cell with its respective view model
 	/// - Parameter with: The cell's view model
 	func configure(with viewModel: TrackedTVShowDetailsDescriptionCellViewModel) {
-		descriptionLabel.text = viewModel.description
+		descriptionLabel.text = viewModel.description.isEmpty ? "No description available" : viewModel.description
 	}
 }
