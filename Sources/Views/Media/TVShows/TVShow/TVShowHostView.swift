@@ -1,6 +1,6 @@
 import UIKit
 
-
+@MainActor
 protocol TVShowHostViewDelegate: AnyObject {
 	func tvShowHostView(_ tvShowHostView: TVShowHostView, didSelect tvShow: TVShow)
 }
@@ -56,25 +56,23 @@ final class TVShowHostView: UIView {
 	// ! Private
 
 	private func setupCollectionView() {
-		hostCollectionView.dataSource = viewModel
 		hostCollectionView.delegate = self
 		hostCollectionView.isPagingEnabled = true
 		hostCollectionView.setCollectionViewLayout(compositionalLayout, animated: true)
-		hostCollectionView.register(TopRatedTVShowsCell.self, forCellWithReuseIdentifier: TopRatedTVShowsCell.identifier)
-		hostCollectionView.register(TrendingTVShowsCell.self, forCellWithReuseIdentifier: TrendingTVShowsCell.identifier)
+		viewModel.setupDiffableDataSource(for: hostCollectionView)
 	}
 
 	private func layoutUI() {
 		NSLayoutConstraint.activate([
 			topHeaderView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 10),
-			topHeaderView.leadingAnchor.constraint(equalTo: leadingAnchor),
-			topHeaderView.trailingAnchor.constraint(equalTo: trailingAnchor),
+			topHeaderView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+			topHeaderView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
 			topHeaderView.heightAnchor.constraint(equalToConstant: 50),
 
 			hostCollectionView.topAnchor.constraint(equalTo: topHeaderView.bottomAnchor),
 			hostCollectionView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
-			hostCollectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
-			hostCollectionView.trailingAnchor.constraint(equalTo: trailingAnchor)
+			hostCollectionView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+			hostCollectionView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor)
 		])
 	}
 
@@ -121,9 +119,9 @@ extension TVShowHostView: UICollectionViewDelegate {
 	}
 }
 
-extension TVShowHostView {
-	// ! Public
+// ! Public
 
+extension TVShowHostView {
 	/// Function to scroll the tv shows list collection view to the top when tapping a tab bar item
 	func scrollToTop() {
 		// credits ⇝ https://stackoverflow.com/a/56380938
