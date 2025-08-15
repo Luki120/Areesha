@@ -23,12 +23,11 @@ final class RatingCell: UICollectionViewCell {
 	}
 }
 
-extension RatingCell {
-	// ! Public
+// ! Configurable
 
+extension RatingCell: Configurable {
 	/// Function to configure the cell with its respective view model
-	/// - Parameters:
-	/// 	- with: The cell's view model
+	/// - Parameter with: The cell's view model
 	func configure(with viewModel: RatingCellViewModel) {
 		starImageView.image = .init(systemName: viewModel.image)
 	}

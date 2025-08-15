@@ -1,33 +1,22 @@
 import Combine
 import UIKit
 
+@MainActor
 protocol EpisodesViewViewModelDelegate: AnyObject {
 	func didShowToastView()
 	func shouldAnimateNoEpisodesLabel(isDataSourceEmpty: Bool)
 }
 
 /// View model class for EpisodesView
-final class EpisodesViewViewModel: NSObject {
+@MainActor
+final class EpisodesViewViewModel: BaseViewModel<EpisodeCell> {
 	var seasonName: String { return season.name ?? "" }
 
 	private var _tvShow: TVShow!
 	private var episodes = [Episode]()
-	private var viewModels = OrderedSet<EpisodeCellViewModel>()
 	private var subscriptions = Set<AnyCancellable>()
 
 	weak var delegate: EpisodesViewViewModelDelegate?
-
-	// ! UICollectionViewDiffableDataSource
-
-	private typealias CellRegistration = UICollectionView.CellRegistration<EpisodeCell, EpisodeCellViewModel>
-	private typealias DataSource = UICollectionViewDiffableDataSource<Section, EpisodeCellViewModel>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, EpisodeCellViewModel>
-
-	private var dataSource: DataSource!
-
-	private enum Section {
-		case main
-	}
 
 	private let tvShow: TVShow
 	private let season: Season
@@ -41,26 +30,34 @@ final class EpisodesViewViewModel: NSObject {
 		self.season = season
 		super.init()
 
-		fetchDetails()
+		onCellRegistration = { cell, viewModel in
+			cell.configure(with: viewModel)
+		}
+
+		Task {
+			await fetchDetails()
+		}
 	}
 
-	private func fetchDetails() {
-		Service.sharedInstance.fetchDetails(for: tvShow.id, expecting: TVShow.self, storeIn: &subscriptions) { tvShow, _ in
-			self._tvShow = tvShow
-		}
+	private func fetchDetails() async {
+		await Service.sharedInstance.fetchDetails(for: tvShow.id, expecting: TVShow.self)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveCompletion: { _ in }) { [weak self] tvShow, _ in
+				self?._tvShow = tvShow
+			}
+			.store(in: &subscriptions)
 
-		Service.sharedInstance.fetchSeasonDetails(
-			for: season,
-			tvShow: tvShow,
-			storeIn: &subscriptions
-		) { [weak self] season in
-			guard let self else { return }
-			episodes = season.episodes ?? []
-			updateViewModels(with: episodes)
-			applyDiffableDataSourceSnapshot()
+		await Service.sharedInstance.fetchSeasonDetails(for: season, tvShow: tvShow)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveCompletion: { _ in }) { [weak self] season in
+				guard let self else { return }
+				episodes = season.episodes ?? []
+				updateViewModels(with: episodes)
+				applySnapshot()
 
-			delegate?.shouldAnimateNoEpisodesLabel(isDataSourceEmpty: viewModels.isEmpty)
-		}
+				delegate?.shouldAnimateNoEpisodesLabel(isDataSourceEmpty: viewModels.isEmpty)
+			}
+			.store(in: &subscriptions)
 	}
 
 	private func updateViewModels(with episodes: [Episode]) {
@@ -77,64 +74,36 @@ final class EpisodesViewViewModel: NSObject {
 	}
 }
 
+// ! Public
+
 extension EpisodesViewViewModel {
-	// ! Public
-
 	/// Function to fetch the tv show's poster image
-	/// - Parameter completion: `@escaping` closure that takes a `UIImage` as argument & returns nothing
-	func fetchTVShowImage(completion: @escaping (UIImage) async -> ()) {
-		Task(priority: .background) {
-			guard let imageURL = Service.imageURL(.showPoster(self.tvShow), size: "w1280"),
-				let image = try? await ImageManager.sharedInstance.fetchImage(imageURL) else { return }
+	/// - Returns: `UIImage`
+	nonisolated func fetchTVShowImage() async -> UIImage {
+		guard let imageURL = Service.imageURL(.showPoster(tvShow), size: "w1280"),
+			let image = try? await ImageActor.sharedInstance.fetchImage(imageURL) else { return .init() }
 
-			await completion(image)
-		}
+		return image
 	}
 }
 
-// ! UICollectionView
+// ! UICollectionViewDelegate
 
 extension EpisodesViewViewModel: UICollectionViewDelegate {
-	/// Function to setup the collection view's diffable data source
-	/// - Parameters:
-	///		- collectionView: The collection view
-	func setupCollectionViewDiffableDataSource(for collectionView: UICollectionView) {
-		let cellRegistration = CellRegistration { cell, _, viewModel in
-			cell.configure(with: viewModel)
-		}
-
-		dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, identifier in
-			let cell = collectionView.dequeueConfiguredReusableCell(
-				using: cellRegistration,
-				for: indexPath,
-				item: identifier
-			)
-			return cell
-		}
-		applyDiffableDataSourceSnapshot()
-	}
-
-	private func applyDiffableDataSourceSnapshot() {
-		var snapshot = Snapshot()
-		snapshot.appendSections([.main])
-		snapshot.appendItems(Array(viewModels))
-		dataSource.apply(snapshot)
-	}
-
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
 
-		TrackedTVShowManager.sharedInstance.track(
+		let isTracked = TrackedTVShowManager.sharedInstance.track(
 			tvShow: tvShow,
 			season: season,
 			episode: episodes[indexPath.item]
-		) { isTracked in
-			if !isTracked {
-				self.delegate?.didShowToastView()
+		)
 
-				Task {
-					await NotificationManager.sharedInstance.postNewEpisodeNotification(for: self._tvShow)
-				}
+		if !isTracked {
+			delegate?.didShowToastView()
+
+			Task {
+				await NotificationActor.sharedInstance.postNewEpisodeNotification(for: _tvShow)
 			}
 		}
 	}

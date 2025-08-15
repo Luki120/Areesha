@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 protocol EpisodesViewDelegate: AnyObject {
 	func didShowToastView(in episodesView: EpisodesView)
 }
@@ -65,13 +66,12 @@ final class EpisodesView: UIView {
 	}
 
 	/// Designated initializer
-	/// - Parameters:
-	///		- viewModel: The view model object for this view
+	/// - Parameter viewModel: The view model object for this view
 	init(viewModel: EpisodesViewViewModel) {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
 		viewModel.delegate = self
-		viewModel.setupCollectionViewDiffableDataSource(for: episodesCollectionView)
+		viewModel.bind(to: episodesCollectionView)
 
 		setupUI()
 	}
@@ -106,8 +106,8 @@ final class EpisodesView: UIView {
 	}
 
 	private func fetchTVShowImage() {
-		viewModel.fetchTVShowImage { [weak self] image in
-			guard let self else { return }
+		Task {
+			let image = await viewModel.fetchTVShowImage()
 
 			await MainActor.run {
 				UIView.transition(with: self.tvShowImageView, duration: 0.5, options: .transitionCrossDissolve) {
@@ -118,9 +118,9 @@ final class EpisodesView: UIView {
 	}
 }
 
-extension EpisodesView {
-	// ! Public
+// ! Public
 
+extension EpisodesView {
 	/// Function to fade in & out the toast view
 	func fadeInOutToastView() {
 		animateToastView(trackedEpisodeToastView)
@@ -135,15 +135,9 @@ extension EpisodesView: EpisodesViewViewModelDelegate {
 	}
 
 	func shouldAnimateNoEpisodesLabel(isDataSourceEmpty: Bool) {
-		UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut) {	
-			if isDataSourceEmpty {
-				self.noEpisodesLabel.alpha = 1
-				self.episodesCollectionView.alpha = 0
-			}
-			else {
-				self.noEpisodesLabel.alpha = 0
-				self.episodesCollectionView.alpha = 1
-			}
+		UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut) {
+			self.noEpisodesLabel.alpha = isDataSourceEmpty ? 1 : 0
+			self.episodesCollectionView.alpha = isDataSourceEmpty ? 0 : 1
 		}
 	}
 }

@@ -3,34 +3,29 @@ import Foundation
 import UIKit.UIImage
 
 /// View model class for `RatingView`
-final class RatingViewViewModel: NSObject {
-	private var viewModels = [RatingCellViewModel]()
+@MainActor
+final class RatingViewViewModel: BaseViewModel<RatingCell> {
 	private var subscriptions = Set<AnyCancellable>()
 	private var currentRating: Double = 0
 
-	// ! UICollectionViewDiffableDataSource
-
-	private typealias CellRegistration = UICollectionView.CellRegistration<RatingCell, RatingCellViewModel>
-	private typealias DataSource = UICollectionViewDiffableDataSource<Section, RatingCellViewModel>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, RatingCellViewModel>
-
-	private var dataSource: DataSource!
-
-	private enum Section {
-		case main
-	}
-
 	let object: ObjectType
 	private let posterPath: String
+	private let backdropPath: String
 
 	/// Designated initializer
 	/// - Parameters:
 	///		- object: The `ObjectType` model
 	///		- posterPath: A `String` that represents the object's poster path
-	init(object: ObjectType, posterPath: String) {
+	///		- backdropPath: A `String` that represents the object's backdrop path
+	init(object: ObjectType, posterPath: String, backdropPath: String) {
 		self.object = object
 		self.posterPath = posterPath
+		self.backdropPath = backdropPath
 		super.init()
+
+		onCellRegistration = { cell, viewModel in
+			cell.configure(with: viewModel)
+		}
 
 		for _ in 1...5 {
 			viewModels.append(.init())
@@ -48,26 +43,31 @@ extension RatingViewViewModel {
 	func addRating(isDecimal: Bool = false, completion: @escaping () -> Void) {
 		let rating = isDecimal ? currentRating.round(to: 1) : currentRating * 2
 
-		Service.sharedInstance.addRating(for: object, rating: rating)
-			.receive(on: DispatchQueue.main)
-			.sink(receiveCompletion: { _ in }) { _ in
-				completion()
+		Task {
+			await Service.sharedInstance.addRating(for: object, rating: rating)
+				.receive(on: DispatchQueue.main)
+				.sink(receiveCompletion: { _ in }) { [weak self] _ in
+					completion()
+
+					guard self?.object.type == .movie else { return }
+					Task {
+						await Service.sharedInstance.resetCache()
+					}
+				}
+				.store(in: &subscriptions)
 			}
-			.store(in: &subscriptions)
 	}
 
-	/// Function to fetch the object's poster image in different sizes
-	/// - Parameter completion: `@escaping` closure that takes an array of `UIImage` objects as argument & returns nothing
-	func fetchImages(completion: @escaping ([UIImage]) async -> ()) {
-		Task(priority: .background) {
-			guard let imageURL = Service.imageURL(.mediaPoster(posterPath), size: "w1280"),
-				let backgroundImage = try? await ImageManager.sharedInstance.fetchImage(imageURL) else { return }
+	/// Function to fetch the object's images in different sizes
+	/// - Returns: `[UIImage]`
+	nonisolated func fetchImages() async -> [UIImage] {
+		guard let imageURL = Service.imageURL(.mediaPoster(backdropPath), size: "w1280"),
+			let backgroundImage = try? await ImageActor.sharedInstance.fetchImage(imageURL) else { return [] }
 
-			guard let imageURL = Service.imageURL(.mediaPoster(posterPath)),
-				let posterImage = try? await ImageManager.sharedInstance.fetchImage(imageURL) else { return }
+		guard let imageURL = Service.imageURL(.mediaPoster(posterPath)),
+			let posterImage = try? await ImageActor.sharedInstance.fetchImage(imageURL) else { return [] }
 
-			await completion([backgroundImage, posterImage])
-		}
+		return [backgroundImage, posterImage]
 	}
 
 	/// Function to set the current rating
@@ -80,31 +80,6 @@ extension RatingViewViewModel {
 // ! UICollectionView
 
 extension RatingViewViewModel: UICollectionViewDelegate {
-	/// Function to setup the collection view's diffable data source
-	/// - Parameter collectionView: The collection view
-	func setupDiffableDataSource(for collectionView: UICollectionView) {
-		let cellRegistration = CellRegistration { cell, _, viewModel in
-			cell.configure(with: viewModel)
-		}
-
-		dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, identifier in
-			let cell = collectionView.dequeueConfiguredReusableCell(
-				using: cellRegistration,
-				for: indexPath,
-				item: identifier
-			)
-			return cell
-		}
-		applySnapshot()
-	}
-
-	private func applySnapshot() {
-		var snapshot = Snapshot()
-		snapshot.appendSections([.main])
-		snapshot.appendItems(viewModels)
-		dataSource.apply(snapshot)
-	}
-
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
 

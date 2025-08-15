@@ -2,7 +2,7 @@ import Combine
 import Foundation
 
 /// Singleton service to make API calls
-final class Service {
+final actor Service {
 	static let sharedInstance = Service()
 	private init() {}
 
@@ -14,6 +14,7 @@ final class Service {
 		static let baseURL = "https://api.themoviedb.org/3/"
 		static let imageBaseURL = "https://image.tmdb.org/t/p/"
 		static let ratedShowsURL = "\(baseURL)/account/\(_Constants.accountID)/rated/tv"
+		static let ratedMoviesURL = "\(baseURL)/account/\(_Constants.accountID)/rated/movies"
 		static let topRatedTVShowsURL = "\(baseURL)tv/top_rated?\(apiKey)"
 		static let trendingTVShowsURL = "\(baseURL)trending/tv/day?\(apiKey)"
 		static let searchQueryBaseURL = "\(baseURL)search/multi?\(apiKey)"
@@ -90,7 +91,7 @@ final class Service {
 
 	/// Function to add a rating for a given tv show or movie
 	/// - Parameters:
-	///		- for: The `ObjectType`
+	///		- object: The `ObjectType`
 	///		- rating: A `Double` that represents the rating
 	/// - Returns: `AnyPublisher<Data, Error>`
 	func addRating(for object: ObjectType, rating: Double) -> AnyPublisher<Data, Error> {
@@ -117,6 +118,11 @@ final class Service {
 			.receive(on: DispatchQueue.main)
 			.eraseToAnyPublisher()
 	}
+
+	/// Function to reset the cache for the rated movies
+	func resetCache() {
+		apiCache.removeValue(forKey: Constants.ratedMoviesURL)
+	}
 }
 
 // ! Reusable
@@ -125,51 +131,41 @@ extension Service {
 	/// Function to fetch the details for a given tv show or movie
 	/// - Parameters:
 	///		- id: An `Int` that represents the tv show or movie
-	///		- isMovie: `Bool` that checks wether we should fetch the details for a movie
+	///		- isMovie: `Bool` that checks wether we should fetch the details for a movie, defaults to false
 	///		- type: The given type that conforms to `Codable` from which to decode the JSON data
-	///		- storeIn: A `Set<AnyCancellable>` to store this instance
-	///		- completion: `@escaping` closure that takes a tuple of `T` & `Bool` and returns nothing
-	func fetchDetails<T: Codable>(
-		for id: Int,
-		isMovie: Bool = false,
-		expecting type: T.Type,
-		storeIn subscriptions: inout Set<AnyCancellable>,
-		completion: @escaping (T, Bool) -> ()
-	) {
+	/// - Returns: `AnyPublisher<(T, Bool), Error>`
+	func fetchDetails<T: Codable>(for id: Int, isMovie: Bool = false, expecting type: T.Type) -> AnyPublisher<(T, Bool), Error> {
 		let mediaType = isMovie ? "movie" : "tv"
 		var urlString = "\(Constants.baseURL)\(mediaType)/\(id)?\(Constants.apiKey)"
 		if isMovie { urlString.append("&append_to_response=credits") }
-		guard let url = URL(string: urlString) else { return }
 
-		fetchTVShows(withURL: url, expecting: type.self)
-			.receive(on: DispatchQueue.main)
-			.sink(receiveCompletion: { _ in }) { object, isFromCache in
-				completion(object, isFromCache)
-			}
-			.store(in: &subscriptions)
+		guard let url = URL(string: urlString) else {
+			return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
+		}
+
+		var request = URLRequest(url: url)
+		request.allHTTPHeaderFields = [
+			"accept": "application/json",
+			"Authorization": "Bearer \(_Constants.token)"
+		]
+
+		return fetchTVShows(request: request, expecting: T.self)
+			.eraseToAnyPublisher()
 	}
 
 	/// Function to fetch season details for a given season
 	/// - Parameters:
 	///		- season: The `Season` object
 	///		- tvShow: The `TVShow` object for the season
-	///		- storeIn: A `Set<AnyCancellable>` to store this instance
-	///		- completion: `@escaping` closure that takes a `Season` object & returns nothing
-	func fetchSeasonDetails(
-		for season: Season,
-		tvShow: TVShow,
-		storeIn subscriptions: inout Set<AnyCancellable>,
-		completion: @escaping (Season) -> ()
-	) {
+	/// - Returns : `AnyPublisher<Season, Error>`
+	func fetchSeasonDetails(for season: Season, tvShow: TVShow) -> AnyPublisher<Season, Error> {
 		let urlString = "\(Constants.baseURL)tv/\(tvShow.id)/season/\(season.number ?? 0)?\(Constants.apiKey)"
-		guard let url = URL(string: urlString) else { return }
+		guard let url = URL(string: urlString) else {
+			return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
+		}
 
-		fetchTVShows(withURL: url, expecting: Season.self)
-			.receive(on: DispatchQueue.main)
-			.sink(receiveCompletion: { _ in }) { season in
-				completion(season)
-			}
-			.store(in: &subscriptions)
+		return fetchTVShows(withURL: url, expecting: Season.self)
+			.eraseToAnyPublisher()
 	}
 }
 
@@ -181,9 +177,10 @@ extension Service {
 		case showPoster(TVShow)
 		case mediaPoster(String)
 		case showBackdrop(TVShow)
-		case showMovieBackdrop(Movie)
+		case movieBackdrop(Movie)
 		case seasonPoster(Season)
 		case episodeStill(Episode)
+		case ratedMoviePoster(RatedMovie)
 		case watchProviderLogo(WatchOption)
 
 		var path: String? {
@@ -191,9 +188,10 @@ extension Service {
 				case .showPoster(let show): return show.coverImage
 				case .mediaPoster(let path): return path 
 				case .showBackdrop(let show): return show.backgroundCoverImage
-				case .showMovieBackdrop(let movie): return movie.backgroundCoverImage
+				case .movieBackdrop(let movie): return movie.backgroundCoverImage
 				case .seasonPoster(let season): return season.coverImage
 				case .episodeStill(let episode): return episode.coverImage
+				case .ratedMoviePoster(let ratedMovie): return ratedMovie.coverImage
 				case .watchProviderLogo(let watchOption): return watchOption.logoImage
 			}
 		}
@@ -205,6 +203,6 @@ extension Service {
 	///		- size: A `String` representing the size of the image
 	static func imageURL(_ image: ImageFetch, size: String = "w500") -> URL? {
 		guard let path = image.path else { return nil }
-		return URL(string: String(describing: Constants.imageBaseURL + size + "/" + path))
+		return URL(string: Constants.imageBaseURL + size + "/" + path)
 	}
 }

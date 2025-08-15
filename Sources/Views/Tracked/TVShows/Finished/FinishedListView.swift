@@ -1,13 +1,13 @@
 import UIKit
 
-
+@MainActor
 protocol FinishedListViewDelegate: AnyObject {
 	func finishedListView(_ finishedListView: FinishedListView, didSelect trackedTVShow: TrackedTVShow)
 }
 
 /// Class to represent the finished tracked tv shows list view
 final class FinishedListView: UIView {
-	private lazy var viewModel = FinishedListViewViewModel()
+	private lazy var viewModel = FinishedListViewViewModel(collectionView: finishedListCollectionView)
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: "Finished")
 
 	private lazy var finishedListCollectionView: UICollectionView = {
@@ -44,7 +44,6 @@ final class FinishedListView: UIView {
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		viewModel.delegate = self
-		viewModel.setupDiffableDataSource(for: finishedListCollectionView)
 		addSubview(finishedListCollectionView)
 		pinViewToSafeAreas(finishedListCollectionView)
 		finishedListCollectionView.delegate = viewModel
@@ -52,9 +51,9 @@ final class FinishedListView: UIView {
 
 	@objc
 	private func didPullToRefresh() {
-		viewModel.refreshState = .refreshing
-		viewModel.fetchRatedShows(ignoringCache: true)
-		viewModel.refreshState = .idle
+		Task {
+			await viewModel.fetchRatedShows(ignoringCache: true)
+		}
 	}
 }
 

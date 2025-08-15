@@ -85,9 +85,9 @@ final class EpisodeCell: UICollectionViewCell {
 	}
 }
 
-extension EpisodeCell {
-	// ! Public
+// ! Configurable
 
+extension EpisodeCell: Configurable {
 	/// Function to configure the cell with its respective view model
 	/// - Parameter with: The cell's view model
 	func configure(with viewModel: EpisodeCellViewModel) {
@@ -97,7 +97,7 @@ extension EpisodeCell {
 		episodeDurationLabel.text = viewModel.episodeDuration
 		episodeDescriptionLabel.text = viewModel.episodeDescription
 
-		Task(priority: .background) {
+		Task {
 			let image = try? await viewModel.fetchImage()
 			await MainActor.run {
 				guard self.activeViewModel == viewModel else { return }

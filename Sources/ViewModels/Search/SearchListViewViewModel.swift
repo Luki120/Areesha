@@ -1,13 +1,15 @@
 import Combine
 import UIKit
 
+@MainActor
 protocol SearchListViewViewModelDelegate: AnyObject {
 	func didSelect(object: ObjectType)
 	func shouldAnimateNoResultsLabel(isDataSourceEmpty: Bool)
 }
 
 /// View model class for `SearchListView`
-final class SearchListViewViewModel: BaseViewModel<UICollectionViewListCell>, ObservableObject {
+@MainActor
+final class SearchListViewViewModel: BaseViewModel<SearchListCell>, ObservableObject {
 	private let searchQuerySubject = PassthroughSubject<String, Never>()
 	private var searchedResults = [ObjectType]() {
 		didSet {
@@ -37,18 +39,20 @@ final class SearchListViewViewModel: BaseViewModel<UICollectionViewListCell>, Ob
 				.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
 			let url = URL(string: urlString) else { return }
 
-		Service.sharedInstance.fetchTVShows(withURL: url, expecting: SearchResponse.self)
-			.catch { _ in Just(SearchResponse(results: [])) }
-			.receive(on: DispatchQueue.main)
-			.sink { [weak self] response in
-				guard let self else { return }
-				let filteredResults = response.results.filter { $0.type == .movie || $0.type == .tv }
-				self.searchedResults = filteredResults
-				applySnapshot(isOrderedSet: true)
+			Task {
+				await Service.sharedInstance.fetchTVShows(withURL: url, expecting: SearchResponse.self)
+					.catch { _ in Just(SearchResponse(results: [])) }
+					.receive(on: DispatchQueue.main)
+					.sink { [weak self] response in
+						guard let self else { return }
+						let filteredResults = response.results.filter { $0.type == .movie || $0.type == .tv }
+						searchedResults = filteredResults
+						applySnapshot(isOrderedSet: true)
 
-				delegate?.shouldAnimateNoResultsLabel(isDataSourceEmpty: self.searchedResults.isEmpty)
+						delegate?.shouldAnimateNoResultsLabel(isDataSourceEmpty: searchedResults.isEmpty)
+					}
+					.store(in: &subscriptions)
 			}
-			.store(in: &subscriptions)
 	}
 
 	private func setupSearchQuerySubject() {
@@ -74,7 +78,9 @@ extension SearchListViewViewModel {
 
 // ! CollectionView
 
-extension UICollectionViewListCell: Configurable {
+final class SearchListCell: UICollectionViewListCell, Configurable {}
+
+extension SearchListCell {
 	func configure(with viewModel: SearchListCellViewModel) {
 		var content = defaultContentConfiguration()
 		content.text = viewModel.name

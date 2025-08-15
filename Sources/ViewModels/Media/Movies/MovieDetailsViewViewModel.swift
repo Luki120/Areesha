@@ -60,14 +60,17 @@ final class MovieDetailsViewViewModel: WatchProviderPresentable {
 	/// - Parameter movie: The `Movie` model object
 	init(movie: Movie) {
 		self.movie = movie
-		fetchMovieWatchProviders()
+
+		Task {
+			await fetchMovieWatchProviders()
+		}
 	}
 
-	private func fetchMovieWatchProviders() {
+	private func fetchMovieWatchProviders() async {
 		let urlString = "\(Service.Constants.baseURL)movie/\(movie.id)/watch/providers?\(Service.Constants.apiKey)"
 		guard let url = URL(string: urlString) else { return }
 
-		Service.sharedInstance.fetchTVShows(withURL: url, expecting: WatchProvider.self)
+		await Service.sharedInstance.fetchTVShows(withURL: url, expecting: WatchProvider.self)
 			.receive(on: DispatchQueue.main)
 			.sink(receiveCompletion: { _ in }) { [weak self] watchProvider, isFromCache in
 				guard let self else { return }
@@ -89,7 +92,7 @@ final class MovieDetailsViewViewModel: WatchProviderPresentable {
 			? String(format: "%.0f/10", average)
 			: String(describing: average) + "/10"
 
-		guard let url = Service.imageURL(.showMovieBackdrop(movie), size: "w1280") else {
+		guard let url = Service.imageURL(.movieBackdrop(movie), size: "w1280") else {
 			return .init(
 				imageURL: Bundle.main.url(forResource: "Placeholder", withExtension: "jpg"),
 				tvShowName: movie.title,
@@ -143,7 +146,7 @@ extension MovieDetailsViewViewModel {
 				case .providers:
 					let cell: MovieDetailsProvidersCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: providersState)
-					return cell					
+					return cell
 			}
 		}
 		applySnapshot()

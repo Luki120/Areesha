@@ -4,8 +4,14 @@ import UIKit
 final class RatingVC: BaseVC {
 	private let viewModel: RatingViewViewModel
 	private let ratingView: RatingView
+	private let coordinatorType: CoordinatorType
 
 	var coordinator: ExploreCoordinator?
+
+	enum CoordinatorType {
+		case explore
+		case tracked(TrackedMediaCoordinator)
+	}
 
 	// ! Lifecycle
 
@@ -14,10 +20,13 @@ final class RatingVC: BaseVC {
 	}
 
 	/// Designated initializer
-	/// - Parameter viewModel: The view model object for this vc's view
-	init(viewModel: RatingViewViewModel) {
+	/// - Parameters:
+	///		- viewModel: The view model object for this vc's view
+	///		- coordinatorType: The `CoordinatorType` object that'll handle this vc's events
+	init(viewModel: RatingViewViewModel, coordinatorType: CoordinatorType) {
 		self.viewModel = viewModel
 		self.ratingView = .init(viewModel: viewModel)
+		self.coordinatorType = coordinatorType
 		super.init(nibName: nil, bundle: nil)
 	}
 
@@ -35,18 +44,11 @@ final class RatingVC: BaseVC {
 		navigationItem.rightBarButtonItem = .init(customView: roundedBlurredButton)
 	}
 
-	override func viewWillAppear(_ animated: Bool) {
-		super.viewWillAppear(animated)
-		(UIApplication.shared.delegate as! AppDelegate).restrictRotation = .portrait
-	}
-
-	override func viewWillDisappear(_ animated: Bool) {
-		super.viewWillDisappear(animated)
-		(UIApplication.shared.delegate as! AppDelegate).restrictRotation = .all
-	}
-
 	override func didTapLeftBarButton() {
-		coordinator?.eventOccurred(with: .backButtonTapped)
+		switch coordinatorType {
+			case .explore: coordinator?.eventOccurred(with: .backButtonTapped)
+			case .tracked(let trackedCoordinator): trackedCoordinator.eventOccurred(with: .backButtonTapped)
+		}
 	}
 
 	@objc
@@ -59,6 +61,9 @@ final class RatingVC: BaseVC {
 
 extension RatingVC: RatingViewDelegate {
 	func didAddRating(in ratingView: RatingView) {
-		coordinator?.eventOccurred(with: .popVC)
+		switch coordinatorType {
+			case .explore: coordinator?.eventOccurred(with: .popVC)
+			case .tracked(let trackedCoordinator): trackedCoordinator.eventOccurred(with: .popVC)
+		}
 	}
 }

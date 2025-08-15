@@ -27,4 +27,13 @@ struct TrackedTVShowCellViewModel: Hashable, ImageFetching {
 		self.imageURL = model.imageURL
 		self.rating = model.rating ?? 0
 	}
+
+	nonisolated func hash(into hasher: inout Hasher) {
+		hasher.combine(name)
+	}
+
+	nonisolated
+	static func == (lhs: TrackedTVShowCellViewModel, rhs: TrackedTVShowCellViewModel) -> Bool {
+		return lhs.name == rhs.name
+	}
 }

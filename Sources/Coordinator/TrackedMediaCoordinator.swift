@@ -1,20 +1,26 @@
 import UIKit
 
-/// Tracked media coordinator, which will take care of any navigation events related to `TrackedMediaVC`
+/// Coordinator class for managing navigation events related to `TrackedMediaVC`
+@MainActor
 final class TrackedMediaCoordinator: Coordinator {
 	enum Event {
 		case cellTapped(indexPath: IndexPath)
 		case backButtonTapped
+		case starButtonTapped(object: ObjectType)
 		case trackedTVShowCellTapped(trackedTVShow: TrackedTVShow)
 		case sortButtonTapped(
 			viewModel: CurrentlyWatchingListViewViewModel,
 			option: TrackedTVShowManager.SortOption
 		)
+		case ratedMovieCellTapped(movie: Movie)
 		case seasonsButtonTapped(tvShow: TVShow)
 		case seasonCellTapped(tvShow: TVShow, season: Season)
+		case markAsWatchedButtonTapped(viewModel: TVShowDetailsViewViewModel)
+		case popVC
 	}
 
 	var navigationController = SwipeableNavigationController()
+	private var childCoordinators = [any Coordinator]()
 
 	init() {
 		let trackedMediaVC = TrackedMediaVC()
@@ -23,6 +29,13 @@ final class TrackedMediaCoordinator: Coordinator {
 		trackedMediaVC.tabBarItem = UITabBarItem(title: "Media", image: UIImage(asset: .movie), tag: 2)
 
 		navigationController.viewControllers = [trackedMediaVC]
+		navigationController.completion = { [weak self] fromVC in
+			guard let seasonsVC = fromVC as? SeasonsVC else { return }
+			switch seasonsVC.coordinatorType {
+				case .details: break
+				case .tracked(let trackedCoordinator): self?.childDidFinish(trackedCoordinator)
+			}			
+		}
 	}
 
 	func eventOccurred(with event: Event) {
@@ -38,21 +51,46 @@ final class TrackedMediaCoordinator: Coordinator {
 						let finishedTrackedTVShowsVC = FinishedVC()
 						finishedTrackedTVShowsVC.coordinator = self
 						navigationController.pushViewController(finishedTrackedTVShowsVC, animated: true)
+
+					case 2:
+						let ratedMoviesVC = RatedMoviesVC()
+						ratedMoviesVC.coordinator = self
+						navigationController.pushViewController(ratedMoviesVC, animated: true)
 	
 					default: break
 				}
 
-			case .backButtonTapped:
-				navigationController.popViewController(animated: true)
+			case .backButtonTapped, .popVC: navigationController.popViewController(animated: true)
+
+			case .starButtonTapped(let object):
+				let viewModel = RatingViewViewModel(
+					object: object,
+					posterPath: object.coverImage ?? "",
+					backdropPath: object.backgroundCoverImage ?? ""
+				)
+				let ratingVC = RatingVC(viewModel: viewModel, coordinatorType: .tracked(self))
+				navigationController.pushViewController(ratingVC, animated: true)
 
 			case .trackedTVShowCellTapped(let trackedTVShow):
-				let viewModel = TrackedTVShowDetailsViewViewModel(trackedTVShow: trackedTVShow)
-				let trackedTVShowDetailsVC = TrackedTVShowDetailsVC(viewModel: viewModel)
-				trackedTVShowDetailsVC.coordinator = self
-				navigationController.pushViewController(trackedTVShowDetailsVC, animated: true)
+				if trackedTVShow.isFinished {
+					let viewModel = TVShowDetailsViewViewModel(tvShow: trackedTVShow.tvShow)
+					let detailsVC = TVShowDetailsVC(viewModel: viewModel, coordinatorType: .tracked(self))
+					navigationController.pushViewController(detailsVC, animated: true)
+				}
+				else {
+					let viewModel = TrackedTVShowDetailsViewViewModel(trackedTVShow: trackedTVShow)
+					let trackedTVShowDetailsVC = TrackedTVShowDetailsVC(viewModel: viewModel)
+					trackedTVShowDetailsVC.coordinator = self
+					navigationController.pushViewController(trackedTVShowDetailsVC, animated: true)					
+				}
 
 			case .sortButtonTapped(let viewModel, let sortOption):
 				viewModel.didSortDataSource(withOption: sortOption)
+
+			case .ratedMovieCellTapped(let movie):
+				let viewModel = MovieDetailsViewViewModel(movie: movie)
+				let detailVC = MovieDetailsVC(viewModel: viewModel, coordinatorType: .tracked(self))
+				self.navigationController.pushViewController(detailVC, animated: true)
 
 			case .seasonsButtonTapped(let tvShow):
 				let viewModel = SeasonsViewViewModel(tvShow: tvShow)
@@ -63,6 +101,20 @@ final class TrackedMediaCoordinator: Coordinator {
 				let viewModel = EpisodesViewViewModel(tvShow: tvShow, season: season)
 				let episodesVC = EpisodesVC(viewModel: viewModel, coordinatorType: .tracked(self))
 				navigationController.pushViewController(episodesVC, animated: true)
+
+			case .markAsWatchedButtonTapped(let viewModel): viewModel.markShowAsWatched()				
 		}
+	}
+
+	func pushSeasonsVC(for tvShow: TVShow) {
+		let child = TVShowDetailsCoordinator()
+		child.navigationController = navigationController
+		childCoordinators.append(child)
+		child.eventOccurred(with: .seasonsButtonTapped(tvShow: tvShow))	
+	}
+
+	private func childDidFinish(_ child: (any Coordinator)?) {
+		guard let index = childCoordinators.firstIndex(where: { $0 === child }) else { return }
+		childCoordinators.remove(at: index)
 	}
 }

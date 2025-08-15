@@ -1,10 +1,8 @@
 import UIKit
 
-
-@UIApplicationMain
+@main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
 	var window: UIWindow?
-	var restrictRotation: UIInterfaceOrientationMask = .all
 
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
 		window = UIWindow()
@@ -12,11 +10,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 		window?.rootViewController = TabBarVC()
 		window?.makeKeyAndVisible()
 
-		NotificationManager.sharedInstance.requestAuthorization()
-		return true
-	}
+		Task {
+			await NotificationActor.sharedInstance.requestAuthorization()
+		}
 
-	func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-		return restrictRotation
+		return true
 	}
 }

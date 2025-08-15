@@ -2,6 +2,7 @@ import Combine
 import UIKit
 
 /// View model class for `TVShowDetailsView`
+@MainActor
 final class TVShowDetailsViewViewModel: WatchProviderPresentable {
 	var title: String { return tvShow.name }
 
@@ -10,7 +11,6 @@ final class TVShowDetailsViewViewModel: WatchProviderPresentable {
 	private var genreCellViewModel = TVShowDetailsGenreCellViewModel()
 	private var descriptionCellViewModel: TVShowDetailsDescriptionCellViewModel!
 	private var castCellViewModel = TVShowDetailsCastCellViewModel()
-
 	private var providersState: WatchProvidersState = .available([])
 
 	private var watchProvider: WatchProvider? {
@@ -44,9 +44,12 @@ final class TVShowDetailsViewViewModel: WatchProviderPresentable {
 	/// - Parameter tvShow: The `TVShow` model object
 	init(tvShow: TVShow) {
 		self.tvShow = tvShow
-		fetchTVShowCast()
-		fetchTVShowDetails()
-		fetchTVShowWatchProviders()
+
+		Task {
+			await fetchTVShowCast()
+			await fetchTVShowDetails()
+			await fetchTVShowWatchProviders()
+		}
 
 		descriptionCellViewModel = .init(description: tvShow.description)
 	}
@@ -72,11 +75,11 @@ final class TVShowDetailsViewViewModel: WatchProviderPresentable {
 		return .init(imageURL: url, tvShowName: tvShow.name, rating: rating)
 	}
 
-	private func fetchTVShowCast() {
+	private func fetchTVShowCast() async {
 		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)/credits?\(Service.Constants.apiKey)"
 		guard let url = URL(string: urlString) else { return }
 
-		Service.sharedInstance.fetchTVShows(withURL: url, expecting: Credits.self)
+		await Service.sharedInstance.fetchTVShows(withURL: url, expecting: Credits.self)
 			.receive(on: DispatchQueue.main)
 			.sink(receiveCompletion: { _ in }) { [weak self] credits, isFromCache in
 				self?.updateCastCrewNames(with: credits.cast)
@@ -85,27 +88,25 @@ final class TVShowDetailsViewViewModel: WatchProviderPresentable {
 			.store(in: &subscriptions)
 	}
 
-	private func fetchTVShowDetails() {
-		Service.sharedInstance.fetchDetails(
-			for: tvShow.id,
-			expecting: TVShow.self,
-			storeIn: &subscriptions
-		) { [weak self] tvShow, isFromCache in
-			guard let self else { return }
+	private func fetchTVShowDetails() async {
+		await Service.sharedInstance.fetchDetails(for: tvShow.id, expecting: TVShow.self)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveCompletion: { _ in }) { [weak self] tvShow, isFromCache in
+				guard let self else { return }
+				updateGenresNames(with: tvShow.genres ?? [], for: tvShow)
+				reloadSnapshot(animatingDifferences: !isFromCache)
 
-			updateGenresNames(with: tvShow.genres ?? [], for: tvShow)
-			reloadSnapshot(animatingDifferences: !isFromCache)
-
-			guard let lastSeason = tvShow.seasons?.last else { return }
-			self.lastSeason = lastSeason
-		}
+				guard let lastSeason = tvShow.seasons?.last else { return }
+				self.lastSeason = lastSeason
+			}
+			.store(in: &subscriptions)
 	}
 
-	private func fetchTVShowWatchProviders() {
+	private func fetchTVShowWatchProviders() async {
 		let urlString = "\(Service.Constants.baseURL)tv/\(tvShow.id)/watch/providers?\(Service.Constants.apiKey)"
 		guard let url = URL(string: urlString) else { return }
 
-		Service.sharedInstance.fetchTVShows(withURL: url, expecting: WatchProvider.self)
+		await Service.sharedInstance.fetchTVShows(withURL: url, expecting: WatchProvider.self)
 			.receive(on: DispatchQueue.main)
 			.sink(receiveCompletion: { _ in }) { [weak self] watchProvider, isFromCache in
 				guard let self else { return }
@@ -204,22 +205,26 @@ extension TVShowDetailsViewViewModel {
 	func markShowAsWatched() {
 		guard let lastSeason else { return }
 
-		Service.sharedInstance.fetchSeasonDetails(
-			for: lastSeason,
-			tvShow: tvShow,
-			storeIn: &subscriptions
-		) { [weak self] season in
-			guard let self else { return }
-			guard let lastEpisode = season.episodes?.last else { return }
+		Task {
+			await Service.sharedInstance.fetchSeasonDetails(for: lastSeason, tvShow: tvShow)
+				.receive(on: DispatchQueue.main)
+				.sink(receiveCompletion: { _ in }) { [weak self] season in
+					guard let self else { return }
+					guard let lastEpisode = season.episodes?.last else { return }
 
-			TrackedTVShowManager.sharedInstance.track(
-				tvShow: tvShow,
-				season: season,
-				episode: lastEpisode,
-				isFinished: true
-			) { _ in }
+					TrackedTVShowManager.sharedInstance.track(
+						tvShow: tvShow,
+						season: season,
+						episode: lastEpisode,
+						isFinished: true
+					)
 
-			applySnapshot()
+					applySnapshot()
+				}
+				.store(in: &subscriptions)
 		}
 	}
 }
+
+extension AnyCancellable: @retroactive @unchecked Sendable {}
+extension AnyPublisher: @retroactive @unchecked Sendable {}

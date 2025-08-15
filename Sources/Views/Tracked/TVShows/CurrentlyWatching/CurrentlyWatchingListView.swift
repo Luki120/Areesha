@@ -1,6 +1,6 @@
 import UIKit
 
-
+@MainActor
 protocol CurrentlyWatchingListViewDelegate: AnyObject {
 	func currentlyWatchingListView(
 		_ currentlyWatchingListView: CurrentlyWatchingListView,
@@ -11,16 +11,19 @@ protocol CurrentlyWatchingListViewDelegate: AnyObject {
 
 /// Class to represent the currently watching tracked tv shows list view
 final class CurrentlyWatchingListView: UIView {
-
-	private(set) lazy var viewModel = CurrentlyWatchingListViewViewModel()
+	let viewModel = CurrentlyWatchingListViewViewModel()
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: "Currently watching")
 
 	private lazy var toastView = createToastView()
 	private lazy var toastViewLabel = createToastViewLabel(withMessage: "Already watched.")
 
 	private lazy var currentlyWatchingTrackedTVShowListCollectionView: UICollectionView = {
-		let sectionProvider = { sectionIndex, layoutEnvironment in
-			self.setupListConfig(sectionIndex: sectionIndex, layoutEnvironment: layoutEnvironment)
+		let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { sectionIndex, layoutEnvironment in
+
+			switch self.viewModel.sectionIdentifiers[sectionIndex] {
+				case .currentlyWatching: return self.setupListConfig(sectionIndex: sectionIndex, layoutEnvironment: layoutEnvironment)
+				case .returningSeries: return self.setupListConfig(sectionIndex: sectionIndex, layoutEnvironment: layoutEnvironment)
+			}
 		}
 
 		let listLayout = UICollectionViewCompositionalLayout(sectionProvider: sectionProvider)
@@ -113,24 +116,20 @@ final class CurrentlyWatchingListView: UIView {
 
 		return NSCollectionLayoutSection.list(using: listConfig, layoutEnvironment: layoutEnvironment)
 	}
-
 }
 
 // ! Public
 
 extension CurrentlyWatchingListView {
-
 	/// Function to fade in & out the toast view
 	func fadeInOutToastView() {
 		animateToastView(toastView)
 	}
-
 }
 
 // ! CurrentlyWatchingListViewViewModelDelegate
 
 extension CurrentlyWatchingListView: CurrentlyWatchingListViewViewModelDelegate {
-
 	func didSelect(trackedTVShow: TrackedTVShow) {
 		delegate?.currentlyWatchingListView(self, didSelect: trackedTVShow)
 	}
@@ -138,5 +137,4 @@ extension CurrentlyWatchingListView: CurrentlyWatchingListViewViewModelDelegate 
 	func didShowToastView() {
 		delegate?.didShowToastView(in: self)
 	}
-
 }

@@ -131,8 +131,8 @@ extension DeveloperCell {
 		lukiNameLabel.text = viewModel.lukiName
 		leptosNameLabel.text = viewModel.leptosName
 
-		viewModel.fetchImages() { [weak self] images in
-			guard let self else { return }
+		Task {
+			let images = await viewModel.fetchImages()
 
 			await MainActor.run {
 				UIView.transition(with: self.lukiImageView, duration: 0.5, options: .transitionCrossDissolve) {

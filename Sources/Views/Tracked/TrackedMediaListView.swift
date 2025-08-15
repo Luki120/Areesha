@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 protocol TrackedMediaListViewDelegate: AnyObject {
 	func trackedMediaListView(
 		_ trackedMediaListView: TrackedMediaListView,
@@ -9,7 +10,7 @@ protocol TrackedMediaListViewDelegate: AnyObject {
 
 /// Class to represent the tracked media list view
 final class TrackedMediaListView: UIView {
-	private lazy var viewModel = TrackedMediaListViewViewModel()
+	private lazy var viewModel = TrackedMediaListViewViewModel(collectionView: trackedMediaListCollectionView)
 
 	private lazy var trackedMediaListCollectionView: UICollectionView = {
 		var layoutConfig = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
@@ -36,7 +37,6 @@ final class TrackedMediaListView: UIView {
 		trackedMediaListCollectionView.delegate = viewModel
 
 		viewModel.delegate = self
-		viewModel.setupDiffableDataSource(for: trackedMediaListCollectionView)
 	}
 }
 

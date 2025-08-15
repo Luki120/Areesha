@@ -2,13 +2,19 @@ import UIKit
 
 /// Controller that'll show the movie details view
 final class MovieDetailsVC: BaseVC {
-	let viewModel: MovieDetailsViewViewModel
+	private let viewModel: MovieDetailsViewViewModel
+	private let coordinatorType: CoordinatorType
 	private let movieDetailsView: MovieDetailsView
 
 	var coordinator: ExploreCoordinator?
 
 	override var titleView: UIView {
 		return movieDetailsView.titleLabel
+	}
+
+	enum CoordinatorType {
+		case explore
+		case tracked(TrackedMediaCoordinator)
 	}
 
 	// ! Lifecycle
@@ -18,9 +24,12 @@ final class MovieDetailsVC: BaseVC {
 	}
 
 	/// Designated initializer
-	/// - Parameter viewModel: The view model object for this vc's view
-	init(viewModel: MovieDetailsViewViewModel) {
+	/// - Parameters:
+	///		- viewModel: The view model object for this vc's view
+	///		- coordinatorType: The `CoordinatorType` object that'll handle this vc's events
+	init(viewModel: MovieDetailsViewViewModel, coordinatorType: CoordinatorType) {
 		self.viewModel = viewModel
+		self.coordinatorType = coordinatorType
 		self.movieDetailsView = .init(viewModel: viewModel)
 		super.init(nibName: nil, bundle: nil)
 	}
@@ -46,12 +55,21 @@ final class MovieDetailsVC: BaseVC {
 	}
 
 	override func didTapLeftBarButton() {
-		coordinator?.eventOccurred(with: .backButtonTapped)
+		switch coordinatorType {
+			case .explore: coordinator?.eventOccurred(with: .backButtonTapped)
+			case .tracked(let trackedCoordinator): trackedCoordinator.eventOccurred(with: .backButtonTapped)
+		}
 	}
 
 	@objc
 	private func didTapRightBarButton() {
 		let object = ObjectType(from: viewModel.movie)
-		coordinator?.eventOccurred(with: .starButtonTapped(object: object))
+
+		switch coordinatorType {
+			case .explore: coordinator?.eventOccurred(with: .starButtonTapped(object: object))
+
+			case .tracked(let trackedCoordinator):
+				trackedCoordinator.eventOccurred(with: .starButtonTapped(object: object))
+		}
 	}
 }

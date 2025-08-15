@@ -1,7 +1,8 @@
 import Combine
 import UIKit
 
-/// Explore coordinator, which will take care of any navigation events related to `ExploreVC`
+/// Coordinator class for managing navigation events related to `ExploreVC`
+@MainActor
 final class ExploreCoordinator: NSObject, Coordinator {
 	enum Event {
 		case objectCellTapped(object: ObjectType)
@@ -45,25 +46,33 @@ final class ExploreCoordinator: NSObject, Coordinator {
 			case .objectCellTapped(let object):
 				switch object.type {
 					case .tv:
-						Service.sharedInstance.fetchDetails(
-							for: object.id,
-							expecting: TVShow.self,
-							storeIn: &subscriptions
-						) { tvShow, _ in
-							self.pushDetailsVC(for: tvShow)
+						Task {
+							await Service.sharedInstance.fetchDetails(for: object.id, expecting: TVShow.self)
+								.receive(on: DispatchQueue.main)
+								.sink(receiveCompletion: { _ in }) { [weak self] tvShow, _ in
+									self?.pushDetailsVC(for: tvShow)
+								}
+								.store(in: &subscriptions)
 						}
 
 					case .movie:
-						Service.sharedInstance.fetchDetails(
-							for: object.id,
-							isMovie: true,
-							expecting: Movie.self,
-							storeIn: &subscriptions
-						) { movie, _ in
-							let viewModel = MovieDetailsViewViewModel(movie: movie)
-							let detailVC = MovieDetailsVC(viewModel: viewModel)
-							detailVC.coordinator = self
-							self.navigationController.pushViewController(detailVC, animated: true)
+						Task {
+							await Service.sharedInstance.fetchDetails(
+								for: object.id,
+								isMovie: true,
+								expecting: Movie.self
+							)
+							.receive(on: DispatchQueue.main)
+							.sink(receiveCompletion: { _ in }) { [weak self] movie, _ in
+								let viewModel = MovieDetailsViewViewModel(movie: movie)
+								let detailVC = MovieDetailsVC(
+									viewModel: viewModel,
+									coordinatorType: .explore
+								)
+								detailVC.coordinator = self
+								self?.navigationController.pushViewController(detailVC, animated: true)
+							}
+							.store(in: &subscriptions)
 						}
 
 					default: break
@@ -75,8 +84,12 @@ final class ExploreCoordinator: NSObject, Coordinator {
 				navigationController.popViewController(animated: true)
 
 			case .starButtonTapped(let object):
-				let viewModel = RatingViewViewModel(object: object, posterPath: object.coverImage ?? "")
-				let ratingVC = RatingVC(viewModel: viewModel)
+				let viewModel = RatingViewViewModel(
+					object: object,
+					posterPath: object.coverImage ?? "",
+					backdropPath: object.backgroundCoverImage ?? ""
+				)
+				let ratingVC = RatingVC(viewModel: viewModel, coordinatorType: .explore)
 				ratingVC.coordinator = self
 				navigationController.pushViewController(ratingVC, animated: true)
 
@@ -108,13 +121,14 @@ final class ExploreCoordinator: NSObject, Coordinator {
 
 	private func pushDetailsVC(for tvShow: TVShow) {
 		let viewModel = TVShowDetailsViewViewModel(tvShow: tvShow)
-		let detailVC = TVShowDetailsVC(viewModel: viewModel)
+		let detailVC = TVShowDetailsVC(viewModel: viewModel, coordinatorType: .explore)
 		detailVC.coordinator = self
 		navigationController.pushViewController(detailVC, animated: true)
 	}
 }
 
-/// Custom UINavigationController subclass to reenable swipe behavior with custom push/pop transitions
+/// Custom `UINavigationController` subclass to reenable swipe behavior with custom push/pop transitions
+@MainActor
 final class SwipeableNavigationController: UINavigationController {
 	var completion: ((UIViewController) -> Void)?
 	private var isPushAnimation = false
@@ -128,11 +142,6 @@ final class SwipeableNavigationController: UINavigationController {
 	init() {
 		super.init(nibName: nil, bundle: nil)
 		delegate = self
-	}
-
-	deinit {
-		delegate = nil
-		interactivePopGestureRecognizer?.delegate = nil
 	}
 
 	override func viewDidLoad() {

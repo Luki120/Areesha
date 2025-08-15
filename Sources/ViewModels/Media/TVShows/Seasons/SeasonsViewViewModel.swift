@@ -1,14 +1,15 @@
 import Combine
 import UIKit
 
-
+@MainActor
 protocol SeasonsViewViewModelDelegate: AnyObject {
 	func didLoadTVShowSeasons()
 	func didSelect(season: Season, from tvShow: TVShow)
 	func shouldAnimateNoSeasonsLabel(isDataSourceEmpty: Bool)
 }
 
-/// View model class for SeasonsView
+/// View model class for `SeasonsView`
+@MainActor
 final class SeasonsViewViewModel: NSObject {
 	var title: String { return tvShow.name }
 
@@ -29,22 +30,23 @@ final class SeasonsViewViewModel: NSObject {
 	private let tvShow: TVShow
 
 	/// Designated initializer
-	/// - Parameters:
-	///		- tvShow: The tv show model object
+	/// - Parameter tvShow: The `TVShow` model object
 	init(tvShow: TVShow) {
 		self.tvShow = tvShow
 		super.init()
 
-		Service.sharedInstance.fetchDetails(
-			for: tvShow.id,
-			expecting: TVShow.self,
-			storeIn: &subscriptions
-		) { [weak self] tvShow, _ in
-			guard let self else { return }
-			guard let seasons = tvShow.seasons else { return }
-			self.seasons = seasons.filter { $0[keyPath: \.name!].contains("Specials") == false }
-			self.delegate?.didLoadTVShowSeasons()
-			self.delegate?.shouldAnimateNoSeasonsLabel(isDataSourceEmpty: viewModels.isEmpty)
+		Task {
+			await Service.sharedInstance.fetchDetails(for: tvShow.id, expecting: TVShow.self)
+				.receive(on: DispatchQueue.main)
+				.sink(receiveCompletion: { _ in }) { [weak self] tvShow, _ in
+					guard let self else { return }
+					guard let seasons = tvShow.seasons else { return }
+					self.seasons = seasons.filter { $0[keyPath: \.name!].contains("Specials") == false }
+
+					delegate?.didLoadTVShowSeasons()
+					delegate?.shouldAnimateNoSeasonsLabel(isDataSourceEmpty: viewModels.isEmpty)
+				}
+				.store(in: &subscriptions)
 		}
 	}
 }

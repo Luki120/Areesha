@@ -1,15 +1,14 @@
 import UIKit
 
 /// Singleton manager to handle the image fetching logic
-final class ImageManager {
-	static let sharedInstance = ImageManager()
+final actor ImageActor {
+	static let sharedInstance = ImageActor()
 	private init() {}
 
 	private let imageCache = NSCache<NSString, UIImage>()
  
-	/// Function that'll handle the image fetching data task
-	/// - Parameters:
-	///		- url: The image's url, optional as it may be nil
+	/// Function to fetch images
+	/// - Parameter url: The image's `URL`, optional as it may be nil
 	/// - Returns: `(UIImage, Bool)`
 	@_disfavoredOverload
 	func fetchImage(_ url: URL?) async throws -> (UIImage, Bool) {
@@ -33,9 +32,8 @@ final class ImageManager {
 		}
 	}
 
-	/// Function that'll handle the image fetching data task
-	/// - Parameters:
-	///		- url: The image's url, optional as it may be nil
+	/// Function to fetch images
+	/// - Parameter url: The image's `URL`, optional as it may be nil
 	/// - Returns: `UIImage`
 	func fetchImage(_ url: URL?) async throws -> UIImage {
 		guard let url else { throw URLError(.badURL) }

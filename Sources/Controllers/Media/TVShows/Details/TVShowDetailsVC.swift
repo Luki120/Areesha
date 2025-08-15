@@ -3,12 +3,18 @@ import UIKit
 /// Controller that'll show the tv show details view
 final class TVShowDetailsVC: BaseVC {
 	let tvShowDetailsViewViewModel: TVShowDetailsViewViewModel
+	private let coordinatorType: CoordinatorType
 	private let tvShowDetailsView: TVShowDetailsView
 
 	var coordinator: ExploreCoordinator?
 
 	override var titleView: UIView {
 		return tvShowDetailsView.titleLabel
+	}
+
+	enum CoordinatorType {
+		case explore
+		case tracked(TrackedMediaCoordinator)
 	}
 
 	// ! Lifecycle
@@ -18,10 +24,13 @@ final class TVShowDetailsVC: BaseVC {
 	}
 
 	/// Designated initializer
-	/// - Parameter viewModel: The view model object for this vc's view
-	init(viewModel: TVShowDetailsViewViewModel) {
+	/// - Parameters:
+	///		- viewModel: The view model object for this vc's view
+	///		- coordinatorType: The type of coordinator that'll handle this vc's events
+	init(viewModel: TVShowDetailsViewViewModel, coordinatorType: CoordinatorType) {
 		self.tvShowDetailsViewViewModel = viewModel
 		self.tvShowDetailsView = .init(viewModel: viewModel)
+		self.coordinatorType = coordinatorType
 		super.init(nibName: nil, bundle: nil)
 
 		tvShowDetailsView.delegate = self
@@ -59,18 +68,33 @@ final class TVShowDetailsVC: BaseVC {
 	}
 
 	override func didTapLeftBarButton() {
-		coordinator?.eventOccurred(with: .backButtonTapped)
+		switch coordinatorType {
+			case .explore: coordinator?.eventOccurred(with: .backButtonTapped)
+			case .tracked(let trackedCoordinator): trackedCoordinator.eventOccurred(with: .backButtonTapped)
+		}
 	}
 
 	@objc
 	private func didTapRateButton() {
 		let object = ObjectType(from: tvShowDetailsViewViewModel.tvShow)
-		coordinator?.eventOccurred(with: .starButtonTapped(object: object))
+
+		switch coordinatorType {
+			case .explore: coordinator?.eventOccurred(with: .starButtonTapped(object: object))
+
+			case .tracked(let trackedCoordinator):
+				trackedCoordinator.eventOccurred(with: .starButtonTapped(object: object))
+		}
 	}
 
 	@objc
 	private func didTapMarkAsWatchedButton() {
-		coordinator?.eventOccurred(with: .markAsWatchedButtonTapped(viewModel: tvShowDetailsViewViewModel))
+		switch coordinatorType {
+			case .explore:
+				coordinator?.eventOccurred(with: .markAsWatchedButtonTapped(viewModel: tvShowDetailsViewViewModel))
+
+			case .tracked(let trackedCoordinator):
+				trackedCoordinator.eventOccurred(with: .markAsWatchedButtonTapped(viewModel: tvShowDetailsViewViewModel))
+		}
 	}
 }
 
@@ -78,6 +102,11 @@ final class TVShowDetailsVC: BaseVC {
 
 extension TVShowDetailsVC: TVShowDetailsViewDelegate {
 	func didTapSeasonsButton(in tvShowDetailsView: TVShowDetailsView) {
-		coordinator?.pushSeasonsVC(for: tvShowDetailsViewViewModel.tvShow)
+		switch coordinatorType {
+			case .explore: coordinator?.pushSeasonsVC(for: tvShowDetailsViewViewModel.tvShow)
+
+			case .tracked(let trackedCoordinator):
+				trackedCoordinator.pushSeasonsVC(for: tvShowDetailsViewViewModel.tvShow)
+		}
 	}
 }

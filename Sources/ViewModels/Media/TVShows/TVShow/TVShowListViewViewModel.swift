@@ -1,13 +1,14 @@
 import Combine
 import UIKit
 
-
+@MainActor
 protocol TVShowListViewViewModelDelegate: AnyObject {
 	func didLoadTVShows()
 	func didSelect(tvShow: TVShow)
 }
 
 /// View model class for TopRatedTVShowsCell's collection view
+@MainActor
 final class TVShowListViewViewModel: BaseViewModel<TVShowCell> {
 	private var tvShows = [TVShow]() {
 		didSet {
@@ -24,29 +25,29 @@ final class TVShowListViewViewModel: BaseViewModel<TVShowCell> {
 	override init(collectionView: UICollectionView) {
 		super.init(collectionView: collectionView)
 		onCellRegistration = { cell, viewModel in
-			Task {
-				await cell.configure(with: viewModel)
-			}
+			cell.configure(with: viewModel)
 		}
 	}
 
 	private func fetchTVShows(withURL url: URL?) {
 		guard let url else { return }
 
-		Service.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)
-			.catch { _ in Just(APIResponse(results: [])) }
-			.receive(on: DispatchQueue.main)
-			.sink { [weak self] tvShows in
-				self?.tvShows = tvShows.results
-				self?.delegate?.didLoadTVShows()
-			}
-			.store(in: &subscriptions)
+		Task {
+			await Service.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)
+				.catch { _ in Just(APIResponse(results: [])) }
+				.receive(on: DispatchQueue.main)
+				.sink { [weak self] tvShows in
+					self?.tvShows = tvShows.results
+					self?.delegate?.didLoadTVShows()
+				}
+				.store(in: &subscriptions)
+		}
 	}
 }
 
-extension TVShowListViewViewModel {
-	// ! Public
+// ! Public
 
+extension TVShowListViewViewModel {
 	/// Function to fetch the current top rated tv shows
 	func fetchTopRatedTVShows() {
 		fetchTVShows(withURL: URL(string: Service.Constants.topRatedTVShowsURL))

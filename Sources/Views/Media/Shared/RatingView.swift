@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 protocol RatingViewDelegate: AnyObject {
 	func didAddRating(in ratingView: RatingView)
 }
@@ -11,46 +12,21 @@ final class RatingView: UIView {
 	private lazy var posterImageView = createImageView()
 	private lazy var backgroundImageView = createImageView()
 
-	private let compositionalLayout: UICollectionViewCompositionalLayout = {
-		let layout = UICollectionViewCompositionalLayout { _, layoutEnvironment in
-			let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(28), heightDimension: .fractionalHeight(1))
-			let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
-			let containerWidth = layoutEnvironment.container.effectiveContentSize.width
-			let itemWidth: CGFloat = 28
-			let spacing: CGFloat = 10
-
-			let numberOfItems = 5
-
-			let totalItemsWidth = CGFloat(numberOfItems) * itemWidth
-			let totalSpacingWidth = CGFloat(max(0, numberOfItems - 1)) * spacing
-			let totalContentWidth = totalItemsWidth + totalSpacingWidth
-
-			let horizontalInset = max(0, (containerWidth - totalContentWidth) / 2)
-
-			let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(totalContentWidth), heightDimension: .fractionalHeight(1))
-			let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-			group.interItemSpacing = .fixed(spacing)
-
-			let section = NSCollectionLayoutSection(group: group)
-			section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: horizontalInset, bottom: 0, trailing: horizontalInset)
-			return section
-		}
-		let config = UICollectionViewCompositionalLayoutConfiguration()
-		config.scrollDirection = .horizontal
-
-		layout.configuration = config
-		return layout
-	}()
-
 	private lazy var ratingCollectionView: UICollectionView = {
-		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: compositionalLayout)
+		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeCompositionalLayout())
 		collectionView.delegate = viewModel
 		collectionView.backgroundColor = .clear
 		collectionView.isScrollEnabled = false
 		collectionView.translatesAutoresizingMaskIntoConstraints = false
 		addSubview(collectionView)
 		return collectionView
+	}()
+
+	@UsesAutoLayout
+	private var mainScrollView: UIScrollView = {
+		let scrollView = UIScrollView()
+		scrollView.showsVerticalScrollIndicator = false
+		return scrollView
 	}()
 
 	@UsesAutoLayout
@@ -117,8 +93,12 @@ final class RatingView: UIView {
 		self.viewModel = viewModel
 		super.init(frame: .zero)
 		setupUI()
+		viewModel.bind(to: ratingCollectionView)
+	}
 
-		viewModel.setupDiffableDataSource(for: ratingCollectionView)
+	override func layoutSubviews() {
+		super.layoutSubviews()
+		ratingCollectionView.collectionViewLayout.invalidateLayout()
 	}
 
 	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -131,7 +111,8 @@ final class RatingView: UIView {
 	private func setupUI() {
 		insertSubview(backgroundImageView, at: 0)
 		backgroundImageView.addSubview(visualEffectView)
-		addSubviews(posterImageView, rateLabel, ratingStackView, ratingButton)
+		addSubview(mainScrollView)
+		mainScrollView.addSubviews(posterImageView, rateLabel, ratingStackView, ratingButton)
 		ratingStackView.addArrangedSubviews(ratingSlider, sliderValueLabel)
 
 		let media = viewModel.object.type == .movie ? "movie" : "show"
@@ -160,26 +141,31 @@ final class RatingView: UIView {
 
 	private func layoutUI() {
 		pinViewToAllEdges(backgroundImageView)
+		pinViewToSafeAreas(mainScrollView)
 		backgroundImageView.pinViewToAllEdges(visualEffectView)
 
+		let contentGuide = mainScrollView.contentLayoutGuide
+		let frameGuide = mainScrollView.frameLayoutGuide
+
 		NSLayoutConstraint.activate([
-			posterImageView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 30),
-			posterImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+			posterImageView.topAnchor.constraint(equalTo: contentGuide.topAnchor, constant: 30),
+			posterImageView.centerXAnchor.constraint(equalTo: frameGuide.centerXAnchor),
 
 			rateLabel.topAnchor.constraint(equalTo: posterImageView.bottomAnchor, constant: 35),
-			rateLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-			rateLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+			rateLabel.leadingAnchor.constraint(equalTo: frameGuide.leadingAnchor),
+			rateLabel.trailingAnchor.constraint(equalTo: frameGuide.trailingAnchor),
 
 			ratingCollectionView.topAnchor.constraint(equalTo: rateLabel.bottomAnchor, constant: 35),
-			ratingCollectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
-			ratingCollectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
+			ratingCollectionView.leadingAnchor.constraint(equalTo: frameGuide.leadingAnchor),
+			ratingCollectionView.trailingAnchor.constraint(equalTo: frameGuide.trailingAnchor),
 			ratingCollectionView.heightAnchor.constraint(equalToConstant: 28),
 
 			ratingStackView.topAnchor.constraint(equalTo: rateLabel.bottomAnchor, constant: 35),
-			ratingStackView.centerXAnchor.constraint(equalTo: rateLabel.centerXAnchor),
+			ratingStackView.centerXAnchor.constraint(equalTo: frameGuide.centerXAnchor),
 
 			ratingButton.topAnchor.constraint(equalTo: ratingCollectionView.bottomAnchor, constant: 35),
-			ratingButton.centerXAnchor.constraint(equalTo: centerXAnchor)
+			ratingButton.bottomAnchor.constraint(equalTo: contentGuide.bottomAnchor, constant: -20),
+			ratingButton.centerXAnchor.constraint(equalTo: frameGuide.centerXAnchor)
 		])
 
 		setupSizeConstraints(forView: posterImageView, width: 230, height: 350)
@@ -188,8 +174,8 @@ final class RatingView: UIView {
 	}
 
 	private func fetchImage() {
-		viewModel.fetchImages { [weak self] images in
-			guard let self else { return }
+		Task {
+			let images = await viewModel.fetchImages()
 
 			await MainActor.run {
 				self.backgroundImageView.image = images.first!
@@ -209,6 +195,32 @@ final class RatingView: UIView {
 		imageView.clipsToBounds = true
 		imageView.translatesAutoresizingMaskIntoConstraints = false
 		return imageView
+	}
+
+	private func makeCompositionalLayout() -> UICollectionViewCompositionalLayout {
+		return UICollectionViewCompositionalLayout { _, layoutEnvironment in
+			let itemWidth: CGFloat = 28
+			let spacing: CGFloat = 10
+			let numberOfItems = 5
+
+			let totalItemsWidth = CGFloat(numberOfItems) * itemWidth
+			let totalSpacingWidth = CGFloat(numberOfItems - 1) * spacing
+			let totalContentWidth = totalItemsWidth + totalSpacingWidth
+
+			let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(itemWidth), heightDimension: .fractionalHeight(1))
+			let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+			let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(totalContentWidth), heightDimension: .fractionalHeight(1))
+			let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: numberOfItems)
+			group.interItemSpacing = .fixed(spacing)
+
+			let containerWidth = layoutEnvironment.container.effectiveContentSize.width
+			let horizontalInset = max(0, (containerWidth - totalContentWidth) / 2)
+
+			let section = NSCollectionLayoutSection(group: group)
+			section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: horizontalInset, bottom: 0, trailing: horizontalInset)
+			return section
+		}
 	}
 }
 

@@ -1,48 +1,42 @@
 import Combine
 import UIKit
 
+@MainActor
 protocol FinishedListViewViewModelDelegate: AnyObject {
 	func didSelect(trackedTVShow: TrackedTVShow)
 }
 
 /// View model class for `FinishedListView`
-final class FinishedListViewViewModel: NSObject {
+@MainActor
+final class FinishedListViewViewModel: BaseViewModel<TrackedTVShowListCell> {
 	private var sortedShows = [TrackedTVShow]()
 	private var subscriptions: Set<AnyCancellable> = []
 	weak var delegate: FinishedListViewViewModelDelegate?
 
-	enum RefreshState {
-		case idle, refreshing
-	}
+	override init(collectionView: UICollectionView) {
+		super.init(collectionView: collectionView)
 
-	var refreshState: RefreshState = .idle
-
-	// ! UICollectionViewDiffableDataSource
-
-	private typealias CellRegistration = UICollectionView.CellRegistration<TrackedTVShowListCell, TrackedTVShowCellViewModel>
-	private typealias DataSource = UICollectionViewDiffableDataSource<Section, TrackedTVShowCellViewModel>
-	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, TrackedTVShowCellViewModel>
-
-	private var dataSource: DataSource!
-
-	private enum Section {
-		case main
-	}
-
-	override init() {
-		super.init()
+		onCellRegistration = { cell, viewModel in
+			cell.configure(with: viewModel)
+		}
 
 		TrackedTVShowManager.sharedInstance.$filteredTrackedTVShows
 			.sink { [unowned self] filteredTrackedTVShows in
 				sortedShows = filteredTrackedTVShows.sorted { $0.rating ?? 0 > $1.rating ?? 0 }
-				applyDiffableDataSourceSnapshot(withModels: sortedShows)
+				applySnapshot(from: sortedShows) {
+					var viewModel = TrackedTVShowCellViewModel($0)
+					viewModel.listType = .finished
+					return viewModel
+				}
 			}
 			.store(in: &subscriptions)
 
-		fetchRatedShows()
+		Task {
+			await fetchRatedShows()
+		}
 	}
 
-	func fetchRatedShows(ignoringCache: Bool = false) {
+	func fetchRatedShows(ignoringCache: Bool = false) async {
 		guard let url = URL(string: Service.Constants.ratedShowsURL) else { return }
 
 		var urlRequest = URLRequest(url: url)
@@ -52,7 +46,7 @@ final class FinishedListViewViewModel: NSObject {
 		]
 
 		if !ignoringCache {
-			Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
+			await Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
 				.receive(on: DispatchQueue.main)
 				.sink(receiveCompletion: { _ in }) { ratedShows, _ in
 					TrackedTVShowManager.sharedInstance.updateRatings(with: ratedShows.results)
@@ -60,7 +54,7 @@ final class FinishedListViewViewModel: NSObject {
 				.store(in: &subscriptions)
 		}
 		else {
-			Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
+			await Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
 				.receive(on: DispatchQueue.main)
 				.sink(receiveCompletion: { _ in }) { ratedShows in
 					TrackedTVShowManager.sharedInstance.updateRatings(with: ratedShows.results)
@@ -73,34 +67,6 @@ final class FinishedListViewViewModel: NSObject {
 // ! UICollectionView
 
 extension FinishedListViewViewModel: UICollectionViewDelegate {
-	private func setupCollectionViewDiffableDataSource(for collectionView: UICollectionView) {
-		let cellRegistration = CellRegistration { cell, _, viewModel in
-			cell.viewModel = viewModel
-			cell.viewModel?.listType = .finished
-		}
-
-		dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, identifier in
-			let cell = collectionView.dequeueConfiguredReusableCell(
-				using: cellRegistration,
-				for: indexPath,
-				item: identifier
-			)
-			return cell
-		}
-		applyDiffableDataSourceSnapshot(withModels: sortedShows)
-	}
-
-	private func applyDiffableDataSourceSnapshot(withModels models: [TrackedTVShow]) {
-		guard let dataSource else { return }
-
-		let mappedModels = models.map(TrackedTVShowCellViewModel.init(_:))
-
-		var snapshot = Snapshot()
-		snapshot.appendSections([.main])
-		snapshot.appendItems(mappedModels)
-		dataSource.apply(snapshot)
-	}
-
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
 		delegate?.didSelect(trackedTVShow: sortedShows[indexPath.item])
@@ -109,7 +75,7 @@ extension FinishedListViewViewModel: UICollectionViewDelegate {
 	func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
 		guard let collectionView = scrollView as? UICollectionView else { return }
 
-		if refreshState == .idle && collectionView.refreshControl!.isRefreshing {
+		if collectionView.refreshControl!.isRefreshing {
 			collectionView.refreshControl?.endRefreshing()
 		}
 	}
@@ -118,17 +84,9 @@ extension FinishedListViewViewModel: UICollectionViewDelegate {
 // ! Public
 
 extension FinishedListViewViewModel {
-	/// Function to delete an item from the collection view at the given index path
-	/// - Parameters:
-	///		- at: The index path for the item
+	/// Function to delete an item from the collection view
+	/// - Parameter indexPath: The `IndexPath` for the item
 	func deleteItem(at indexPath: IndexPath) {
 		TrackedTVShowManager.sharedInstance.deleteTrackedTVShow(at: indexPath.item, isFilteredArray: true)
-	}
-
-	/// Function to setup the diffable data source for the collection view
-	///	- Parameters:
-	///		- for: The collection view
-	func setupDiffableDataSource(for collectionView: UICollectionView) {
-		setupCollectionViewDiffableDataSource(for: collectionView)
 	}
 }

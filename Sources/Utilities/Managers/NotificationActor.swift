@@ -1,8 +1,9 @@
 import UserNotifications
 
 /// Singleton to manage local notifications
-final class NotificationManager {
-	static let sharedInstance = NotificationManager()
+final actor NotificationActor {
+	static let sharedInstance = NotificationActor()
+
 	private init() {}
 
 	private static let dateFormatter: DateFormatter = {
@@ -14,17 +15,17 @@ final class NotificationManager {
 
 // ! Public
 
-extension NotificationManager {
+extension NotificationActor {
 	/// Function to request authorization to send notifications
 	func requestAuthorization() {
 		Task {
-			try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
+			try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
 		}
 	}
 
 	/// Async function to post a notification when there's a new episode available for the tracked show
 	///
-	/// - Parameter for: the `TVShow` object for the episode
+	/// - Parameter show: the `TVShow` object for the episode
 	func postNewEpisodeNotification(for show: TVShow) async {
 		guard show.nextEpisodeToAir != nil else { return }
 
@@ -33,7 +34,7 @@ extension NotificationManager {
 		content.body = "New episode of \(show.name) is now available on streaming services!"
 		content.sound = .default
 
-		guard var notificationDate = NotificationManager.dateFormatter.date(from: show.nextEpisodeToAir?.airDate ?? "") else {
+		guard var notificationDate = NotificationActor.dateFormatter.date(from: show.nextEpisodeToAir?.airDate ?? "") else {
 			return
 		}
 
@@ -49,17 +50,22 @@ extension NotificationManager {
 		let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDateComponents, repeats: false)
 		let request = UNNotificationRequest(identifier: "nextEpisodeNotification - \(show.name)", content: content, trigger: trigger)
 
-		do {
-			try await UNUserNotificationCenter.current().add(request)
-		}
-		catch {
-			NSLog("AREESHA: ❌ something went wrong when trying to schedule the notification: \(error)")
+		Task {
+			do {
+				try await UNUserNotificationCenter.current().add(request)
+
+				let r = await UNUserNotificationCenter.current().pendingNotificationRequests()
+				NSLog("AREESHA: \(r)")
+			}
+			catch {
+				NSLog("AREESHA: ❌ something went wrong when trying to schedule the notification: \(error)")
+			}
 		}
 	}
 
 	/// Function to remove any pending notification requests for a given show
 	///
-	/// - Parameter for: the `TVShow` object
+	/// - Parameter show: the `TVShow` object
 	func removePendingNotificationRequests(for show: TVShow) {
 		UNUserNotificationCenter.current().removePendingNotificationRequests(
 			withIdentifiers: ["nextEpisodeNotification - \(show.name)"]

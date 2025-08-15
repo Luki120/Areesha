@@ -1,5 +1,6 @@
 ARCHS = arm64
-TARGET = iphone:clang:16.5:14.0
+TARGET = iphone:clang:latest:14.0
+export SYSROOT = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk
 
 INSTALL_TARGET_PROCESSES = Areesha
 APPLICATION_NAME = Areesha
@@ -9,6 +10,7 @@ rwildcard = $(foreach d, $(wildcard $(1:=/*)), $(call rwildcard, $d, $2) $(filte
 Areesha_FILES = $(call rwildcard, Sources, *.swift)
 Areesha_LDFLAGS = -rpath /Applications/Areesha.app/Frameworks/
 Areesha_FRAMEWORKS = UIKit CoreGraphics
+Areesha_SWIFTFLAGS = -swift-version 6
 
 include $(THEOS)/makefiles/common.mk
 include $(THEOS_MAKE_PATH)/application.mk

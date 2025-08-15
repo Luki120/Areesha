@@ -1,7 +1,7 @@
 import UIKit
 
 /// Class to represent the tracked tv show list cell
-final class TrackedTVShowListCell: UICollectionViewListCell {
+final class TrackedTVShowListCell: UICollectionViewListCell, Configurable {
 	var viewModel: TrackedTVShowCellViewModel?
 
 	override func updateConfiguration(using state: UICellConfigurationState) {
@@ -17,6 +17,10 @@ final class TrackedTVShowListCell: UICollectionViewListCell {
 	override func prepareForReuse() {
 		super.prepareForReuse()
 		viewModel = nil
+	}
+
+	func configure(with viewModel: TrackedTVShowCellViewModel) {
+		self.viewModel = viewModel
 	}
 }
 
