@@ -2,14 +2,14 @@ import Foundation
 
 /// Tracked tv show model struct
 struct TrackedTVShow: Codable, Hashable {
-	let tvShow: TVShow
 	let name: String
-	let imageURL: URL?
+	let tvShow: TVShow
 	let season: Season
 	let episode: Episode
 	let lastSeen: String
 
 	var rating: Double?
+	var imageURL: URL?
 	var isFinished = false
 	var isReturningSeries = false
 
