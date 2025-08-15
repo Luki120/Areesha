@@ -1,7 +1,7 @@
 import Foundation
 
 /// Movie model struct
-struct Movie: Codable {
+struct Movie: Codable, Hashable {
 	let id: Int
 	let title: String
 	let genres: [Genre]?

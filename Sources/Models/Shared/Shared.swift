@@ -11,7 +11,7 @@ struct SearchResponse: Codable {
 }
 
 /// Genre model struct
-struct Genre: Codable {
+struct Genre: Codable, Hashable {
 	let name: String
 }
 
@@ -22,6 +22,7 @@ struct ObjectType: Codable {
 	let title: String?
 	let mediaType: String
 	let coverImage: String?
+	let backgroundCoverImage: String?
 
 	enum CodingKeys: String, CodingKey {
 		case id
@@ -29,6 +30,7 @@ struct ObjectType: Codable {
 		case title
 		case mediaType = "media_type"
 		case coverImage = "poster_path"
+		case backgroundCoverImage = "backdrop_path"
 	}
 
 	var type: MediaType {
@@ -45,6 +47,7 @@ extension ObjectType {
 		self.title = nil
 		self.mediaType = "tv"
 		self.coverImage = tvShow.coverImage
+		self.backgroundCoverImage = tvShow.backgroundCoverImage
 	}
 
 	/// Initializer to create an `ObjectType` from a `Movie` object
@@ -55,6 +58,7 @@ extension ObjectType {
 		self.title = movie.title
 		self.mediaType = "movie"
 		self.coverImage = movie.coverImage
+		self.backgroundCoverImage = movie.backgroundCoverImage
 	}
 }
 
