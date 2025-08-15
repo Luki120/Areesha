@@ -1,6 +1,7 @@
 import UIKit
 
 /// View model class for `TrackedTVShowDetailsView`
+@MainActor
 final class TrackedTVShowDetailsViewViewModel {
 	var title: String { return trackedTVShow.episode.name ?? "" }
 	var tvShow: TVShow { return trackedTVShow.tvShow }
@@ -47,7 +48,12 @@ final class TrackedTVShowDetailsViewViewModel {
 	}
 
 	private func setupHeaderViewModel() -> TrackedTVShowDetailsHeaderViewViewModel {
-		guard let url = Service.imageURL(.episodeStill(trackedTVShow.episode), size: "w1280") else { fatalError() }
+		guard let url = Service.imageURL(.episodeStill(trackedTVShow.episode), size: "w1280") else {
+			return .init(
+				imageURL: Bundle.main.url(forResource: "Placeholder", withExtension: "jpg"),
+				episodeName: trackedTVShow.episode.name ?? ""
+			)
+		}
 
 		return .init(imageURL: url, episodeName: trackedTVShow.episode.name ?? "")
 	}
