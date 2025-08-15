@@ -1,6 +1,6 @@
 import UIKit
 
-
+@MainActor
 protocol TrackedTVShowDetailsViewDelegate: AnyObject {
 	func didTapSeasonsButton(in trackedTVShowDetailsView: TrackedTVShowDetailsView, tvShow: TVShow)
 }

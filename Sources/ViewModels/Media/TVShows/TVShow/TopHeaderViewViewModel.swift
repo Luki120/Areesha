@@ -1,11 +1,12 @@
 import UIKit
 
-
+@MainActor
 protocol TopHeaderViewViewModelDelegate: AnyObject {
 	func didSelectItem(at indexPath: IndexPath)
 }
 
 /// View model class for `TopHeaderView`
+@MainActor
 final class TopHeaderViewViewModel: BaseViewModel<TopHeaderCell> {
 	weak var delegate: TopHeaderViewViewModelDelegate?
 

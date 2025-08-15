@@ -1,6 +1,6 @@
 import UIKit
 
-
+@MainActor
 protocol SettingsViewDelegate: AnyObject {
 	func settingsView(_ settingsView: SettingsView, didTap app: App)
 	func didTapSourceCodeCell(in settingsView: SettingsView)

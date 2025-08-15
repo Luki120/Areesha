@@ -1,6 +1,7 @@
 import UIKit
 
-/// TV show details coordinator, which will take care of any navigation events related to `TVShowDetailsVC`
+/// Coordinator class for managing navigation events related to `TVShowDetailsVC`
+@MainActor
 final class TVShowDetailsCoordinator: Coordinator {
 	enum Event {
 		case backButtonTapped

@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 protocol SeasonsViewDelegate: AnyObject {
 	func seasonsView(_ seasonsView: SeasonsView, didSelect season: Season, from tvShow: TVShow)
 }

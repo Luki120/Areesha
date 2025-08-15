@@ -1,6 +1,6 @@
 import UIKit
 
-
+@MainActor
 protocol TVShowDetailsViewDelegate: AnyObject {
 	func didTapSeasonsButton(in tvShowDetailsView: TVShowDetailsView)
 }

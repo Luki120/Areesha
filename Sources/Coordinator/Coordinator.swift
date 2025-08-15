@@ -1,13 +1,13 @@
 import UIKit
 
-/// Basic Coordinator protocol to which coordinator classes will conform
+/// Coordinator protocol to handle navigation events
+@MainActor
 protocol Coordinator: AnyObject {
-	/// Enum to represent the possible navigation events each coordinator will handle
+	/// Enum to represent a navigation event
 	associatedtype Event
-	/// Navigation controller instance used for either presenting, push or pop a view controller
+	/// Navigation controller instance
 	var navigationController: SwipeableNavigationController { get set }
-	/// Function that'll handle the specific event
-	/// - Parameters:
-	///		- with: The type of Event on which to act on
+	/// Function to handle events
+	/// - Parameter event: The type of `Event`
 	func eventOccurred(with event: Event)
 }

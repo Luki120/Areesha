@@ -65,6 +65,7 @@ final class PublishedStorage<Value: Codable>: ObservableObject {
 // ! UIKit
 
 @propertyWrapper
+@MainActor
 struct UsesAutoLayout<T: UIView> {
 	var wrappedValue: T {
 		didSet {

@@ -1,6 +1,6 @@
 import UIKit
 
-
+@MainActor
 protocol TopRatedTVShowsCellDelegate: AnyObject {
 	func topRatedTVShowsCell(_ topRatedTVShowsCell: TopRatedTVShowsCell, didSelect tvShow: TVShow)
 }

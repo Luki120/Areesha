@@ -1,6 +1,7 @@
 import UIKit
 
 // https://stackoverflow.com/questions/37102504/proper-naming-convention-for-a-delegate-method-with-no-arguments-except-the-dele
+@MainActor
 protocol SearchListViewDelegate: AnyObject {
 	func didTapCloseButton(in searchTextFieldView: SearchTextFieldView)
 	func didTapClearButton(in searchTextFieldView: SearchTextFieldView)

@@ -1,6 +1,6 @@
 import UIKit
 
-
+@MainActor
 protocol TopHeaderViewDelegate: AnyObject {
 	func topHeaderView(_ topHeaderView: TopHeaderView, didSelectItemAt indexPath: IndexPath)
 }

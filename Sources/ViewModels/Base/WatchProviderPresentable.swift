@@ -7,6 +7,7 @@ enum WatchProvidersState {
 }
 
 /// Protocol for the setting the state for a watch provider
+@MainActor
 protocol WatchProviderPresentable {
 	/// Function to make the watch provider's state
 	/// - Parameters:

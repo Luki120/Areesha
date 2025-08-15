@@ -1,12 +1,13 @@
 import UIKit
 
-
+@MainActor
 protocol SettingsViewViewModelDelegate: AnyObject {
 	func didTapApp(_ app: App)
 	func didTapSourceCodeCell()
 }
 
 /// View model class for `SettingsView`
+@MainActor
 final class SettingsViewViewModel: NSObject {
 	weak var delegate: SettingsViewViewModelDelegate?
 
@@ -61,7 +62,7 @@ final class SettingsViewViewModel: NSObject {
 			}
 			else {
 				return "© 2023-\(Calendar.current.component(.year, from: Date())) Luki120"
-			}			
+			}
 		}
 
 		return .init(
@@ -86,7 +87,8 @@ private extension UITableViewCell {
 }
 
 extension SettingsViewViewModel: UITableViewDelegate {
-	final private class WorkingDataSource: DataSource {
+	private
+	final class WorkingDataSource: DataSource {
 		override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
 			let section = self.snapshot().sectionIdentifiers[section]
 			return section.name
@@ -170,3 +172,5 @@ extension SettingsViewViewModel: UITableViewDelegate {
 		}
 	}
 }
+
+extension AnyHashable: @retroactive @unchecked Sendable {}
