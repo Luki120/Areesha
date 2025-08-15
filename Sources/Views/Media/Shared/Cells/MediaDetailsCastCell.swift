@@ -1,9 +1,9 @@
 import UIKit
 
 /// Class to represent the tv show details cast cell
-class TVShowDetailsCastCell: TVShowDetailsBaseCell {
+class MediaDetailsCastCell: MediaDetailsBaseCell {
 	class var identifier: String {
-		String(describing: self)
+		return String(describing: self)
 	}
 
 	final let castLabel: UILabel = {
@@ -37,10 +37,10 @@ class TVShowDetailsCastCell: TVShowDetailsBaseCell {
 
 // ! Public
 
-extension TVShowDetailsCastCell {
+extension MediaDetailsCastCell {
 	/// Function to configure the cell with its respective view model
 	/// - Parameter viewModel: The cell's view model
-	final func configure(with viewModel: TVShowDetailsCastCellViewModel) {
+	final func configure(with viewModel: MediaDetailsCastCellViewModel) {
 		guard let cast = viewModel.cast else { return }
 		castLabel.text = cast.isEmpty ? "Cast unknown" : viewModel.cast
 	}

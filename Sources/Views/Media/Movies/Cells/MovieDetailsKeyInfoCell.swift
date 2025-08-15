@@ -1,7 +1,7 @@
 import UIKit
 
 /// `UITableViewCell` subclass that'll show information like the movie's director, revenue, etc
-final class MovieDetailsKeyInfoCell: TVShowDetailsBaseCell {
+final class MovieDetailsKeyInfoCell: MediaDetailsBaseCell {
 	static let identifier = "MovieDetailsKeyInfoCell"
 
 	private var airDateLabel, directorLabel, durationLabel: UILabel!

@@ -1,7 +1,7 @@
 import UIKit
 
 /// Class to represent the tv show details providers cell
-class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
+class MediaDetailsProvidersCell: MediaDetailsBaseCell {
 	class var identifier: String {
 		return String(describing: self)
 	}
@@ -114,13 +114,12 @@ class TVShowDetailsProvidersCell: TVShowDetailsBaseCell {
 
 // ! Public
 
-extension TVShowDetailsProvidersCell {
+extension MediaDetailsProvidersCell {
 	/// Function to configure the cell with its respective watch provider state
 	/// - Parameter with: The cell's state
 	final func configure(with state: WatchProvidersState) {		
 		switch state {
 			case .empty: createEmptyResultsLabel()
-
 			case .available(let viewModels):
 				watchProvidersStackView.subviews.forEach { $0.removeFromSuperview() }
 
@@ -130,7 +129,7 @@ extension TVShowDetailsProvidersCell {
 					setupSizeConstraints(forView: watchProviderImageView, width: 40, height: 40)
 					watchProvidersStackView.addArrangedSubview(watchProviderImageView)
 
-					Task(priority: .background) {
+					Task {
 						let image = try await viewModel.fetchImage()
 
 						await MainActor.run {

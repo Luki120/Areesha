@@ -16,9 +16,9 @@ final class TVShowDetailsView: UIView {
 		tableView.allowsSelection = false
 		tableView.backgroundColor = .systemBackground
 		tableView.register(TVShowDetailsGenreCell.self, forCellReuseIdentifier: TVShowDetailsGenreCell.identifier)
-		tableView.register(TVShowDetailsDescriptionCell.self, forCellReuseIdentifier: TVShowDetailsDescriptionCell.identifier)
-		tableView.register(TVShowDetailsCastCell.self, forCellReuseIdentifier: TVShowDetailsCastCell.identifier)
-		tableView.register(TVShowDetailsProvidersCell.self, forCellReuseIdentifier: TVShowDetailsProvidersCell.identifier)
+		tableView.register(MediaDetailsDescriptionCell.self, forCellReuseIdentifier: MediaDetailsDescriptionCell.identifier)
+		tableView.register(MediaDetailsCastCell.self, forCellReuseIdentifier: MediaDetailsCastCell.identifier)
+		tableView.register(MediaDetailsProvidersCell.self, forCellReuseIdentifier: MediaDetailsProvidersCell.identifier)
 		return tableView
 	}()
 

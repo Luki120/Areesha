@@ -1,7 +1,7 @@
 import UIKit
 
 /// `UITableViewCell` subclass that'll show the movie's genres + revenue
-final class MovieDetailsGenreCell: TVShowDetailsBaseCell {
+final class MovieDetailsGenreCell: MediaDetailsBaseCell {
 	static let identifier = "MovieDetailsGenreCell"
 
 	private var genreLabel, revenueLabel: UILabel!
@@ -48,13 +48,8 @@ private extension Formatter {
 extension MovieDetailsGenreCell {
 	/// Function to configure the cell with its respective view model
 	/// - Parameter with: The cell's view model
-	func configure(with viewModel: TVShowDetailsGenreCellViewModel) {
-		guard let genre = viewModel.genre else {
-			genreLabel.text = "Unknown genre"
-			return
-		}
-
-		genreLabel.text = genre
+	func configure(with viewModel: MediaDetailsGenreCellViewModel) {
+		genreLabel.text = viewModel.genre == "" ? "Unknown genre" : viewModel.genre
 
 		guard viewModel.revenue != 0,
 			let revenue = Formatter.currencyFormatter.string(for: viewModel.revenue) else { return }

@@ -1,7 +1,7 @@
 import UIKit
 
 /// Class to represent the tv show details overview cell
-class TVShowDetailsDescriptionCell: TVShowDetailsBaseCell {
+class MediaDetailsDescriptionCell: MediaDetailsBaseCell {
 	class var identifier: String {
 		return String(describing: self)
 	}
@@ -40,10 +40,10 @@ class TVShowDetailsDescriptionCell: TVShowDetailsBaseCell {
 
 // ! Public
 
-extension TVShowDetailsDescriptionCell {
+extension MediaDetailsDescriptionCell {
 	/// Function to configure the cell with its respective view model
 	/// - Parameter with: The cell's view model
-	final func configure(with viewModel: TVShowDetailsDescriptionCellViewModel) {
+	final func configure(with viewModel: MediaDetailsDescriptionCellViewModel) {
 		descriptionLabel.text = viewModel.description.isEmpty ? "No description available" : viewModel.description
 	}
 }

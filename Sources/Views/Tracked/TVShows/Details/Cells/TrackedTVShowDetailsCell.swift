@@ -1,7 +1,7 @@
 import UIKit
 
 /// Class to represent the tracked tv show details episode details cell
-final class TrackedTVShowDetailsCell: TVShowDetailsBaseCell {
+final class TrackedTVShowDetailsCell: MediaDetailsBaseCell {
 	static let identifier = "TrackedTVShowDetailsCell"
 
 	private var episodeNumberLabel, episodeAirDateLabel: UILabel!

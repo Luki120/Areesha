@@ -8,9 +8,9 @@ final class TVShowDetailsViewViewModel: WatchProviderPresentable {
 
 	private var lastSeason: Season!
 
-	private var genreCellViewModel = TVShowDetailsGenreCellViewModel()
-	private var descriptionCellViewModel: TVShowDetailsDescriptionCellViewModel!
-	private var castCellViewModel = TVShowDetailsCastCellViewModel()
+	private var genreCellViewModel = MediaDetailsGenreCellViewModel()
+	private var descriptionCellViewModel: MediaDetailsDescriptionCellViewModel!
+	private var castCellViewModel = MediaDetailsCastCellViewModel()
 	private var providersState: WatchProvidersState = .available([])
 
 	private var watchProvider: WatchProvider? {
@@ -164,17 +164,17 @@ extension TVShowDetailsViewViewModel {
 					return cell
 
 				case .description:
-					let cell: TVShowDetailsDescriptionCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: MediaDetailsDescriptionCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: descriptionCellViewModel)
 					return cell
 
 				case .cast:
-					let cell: TVShowDetailsCastCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: MediaDetailsCastCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: castCellViewModel)
 					return cell
 
 				case .providers:
-					let cell: TVShowDetailsProvidersCell = tableView.dequeueReusableCell(for: indexPath)
+					let cell: MediaDetailsProvidersCell = tableView.dequeueReusableCell(for: indexPath)
 					cell.configure(with: providersState)
 					return cell
 			}

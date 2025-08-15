@@ -3,7 +3,7 @@ import Foundation
 /// Enum that represents the watch providers' state
 enum WatchProvidersState {
 	case empty
-	case available([TVShowDetailsProvidersCellViewModel])
+	case available([MediaDetailsProvidersCellViewModel])
 }
 
 /// Protocol for the setting the state for a watch provider
@@ -23,9 +23,9 @@ extension WatchProviderPresentable {
 
 		let providers = Set((region.additionals ?? []) + (region.flatrate ?? []))
 
-		let viewModels: [TVShowDetailsProvidersCellViewModel] = providers.compactMap { option in
+		let viewModels: [MediaDetailsProvidersCellViewModel] = providers.compactMap { option in
 			guard let url = Service.imageURL(.watchProviderLogo(option), size: "w200") else { return nil }
-			return TVShowDetailsProvidersCellViewModel(imageURL: url)
+			return MediaDetailsProvidersCellViewModel(imageURL: url)
 		}
 
 		return viewModels.isEmpty ? .empty : .available(viewModels)

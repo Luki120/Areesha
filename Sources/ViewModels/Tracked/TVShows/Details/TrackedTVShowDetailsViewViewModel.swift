@@ -12,7 +12,7 @@ final class TrackedTVShowDetailsViewViewModel {
 			episodeAirDate: trackedTVShow.episode.airDate ?? ""
 		)
 	}
-	private var descriptionCellViewModel: TVShowDetailsDescriptionCellViewModel {
+	private var descriptionCellViewModel: MediaDetailsDescriptionCellViewModel {
 		return .init(description: trackedTVShow.episode.description ?? "")
 	}
 
@@ -20,7 +20,7 @@ final class TrackedTVShowDetailsViewViewModel {
 
 	private enum CellType: Hashable {
 		case episodeDetails(viewModel: TrackedTVShowDetailsCellViewModel)
-		case description(viewModel: TVShowDetailsDescriptionCellViewModel)
+		case description(viewModel: MediaDetailsDescriptionCellViewModel)
 	}
 
 	private var cells: [CellType] {

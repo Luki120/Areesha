@@ -1,12 +1,12 @@
 import Foundation
 
-/// View model struct for `TVShowDetailsCastCell`
-struct TVShowDetailsCastCellViewModel: Hashable {
+/// View model struct for `MediaDetailsCastCell`
+struct MediaDetailsCastCellViewModel: Hashable {
 	let cast: String?
 
 	/// Designated initializer
 	/// - Parameter cast: A nullable `String` to represent the cast
 	init(cast: String? = nil) {
 		self.cast = cast
-	}
+	}	
 }

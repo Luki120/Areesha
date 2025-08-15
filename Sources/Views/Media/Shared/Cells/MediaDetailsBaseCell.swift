@@ -1,7 +1,7 @@
 import UIKit
 
-/// Base TV show details table view cell class to clean up initialization code with reusable components
-class TVShowDetailsBaseCell: UITableViewCell {
+/// Base media details table view cell class to clean up initialization code with reusable components
+class MediaDetailsBaseCell: UITableViewCell {
 	final let separatorView: UIView = {
 		let view = UIView()
 		view.backgroundColor = .systemGray
@@ -9,8 +9,8 @@ class TVShowDetailsBaseCell: UITableViewCell {
 		return view
 	}()
 
-	final lazy var dateFormatter = createDateFormatter(dateFormat: "yyyy-MM-dd")
-	final lazy var shortDateFormatter = createDateFormatter(dateFormat: "MMM d, yyyy")
+	private(set) final lazy var dateFormatter = createDateFormatter(dateFormat: "yyyy-MM-dd")
+	private(set) final lazy var shortDateFormatter = createDateFormatter(dateFormat: "MMM d, yyyy")
 
 	// ! Lifecycle
 
@@ -40,6 +40,8 @@ class TVShowDetailsBaseCell: UITableViewCell {
 		return dateFormatter
 	}
 
+	/// Function to create a reusable label
+	/// - Parameter lines: An `Int` that represents the number of lines
 	final func createLabel(numberOfLines lines: Int = 0) -> UILabel {
 		let label = UILabel()
 		label.font = .preferredFont(forTextStyle: .callout, weight: .medium, size: 15)
