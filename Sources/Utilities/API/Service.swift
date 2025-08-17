@@ -157,7 +157,7 @@ extension Service {
 	/// - Parameters:
 	///		- season: The `Season` object
 	///		- tvShow: The `TVShow` object for the season
-	/// - Returns : `AnyPublisher<Season, Error>`
+	/// - Returns: `AnyPublisher<Season, Error>`
 	func fetchSeasonDetails(for season: Season, tvShow: TVShow) -> AnyPublisher<Season, Error> {
 		let urlString = "\(Constants.baseURL)tv/\(tvShow.id)/season/\(season.number ?? 0)?\(Constants.apiKey)"
 		guard let url = URL(string: urlString) else {
@@ -166,6 +166,19 @@ extension Service {
 
 		return fetchTVShows(withURL: url, expecting: Season.self)
 			.eraseToAnyPublisher()
+	}
+
+	/// Function to create a reusable `URLRequest`
+	/// - Parameter url: The `URL`
+	/// - Returns: `URLRequest`
+	func makeRequest(for url: URL) -> URLRequest {
+		var request = URLRequest(url: url)
+		request.allHTTPHeaderFields = [
+			"accept": "application/json",
+			"Content-Type": "application/json;charset=utf-8",
+			"Authorization": "Bearer \(_Constants.token)"
+		]
+		return request
 	}
 }
 
