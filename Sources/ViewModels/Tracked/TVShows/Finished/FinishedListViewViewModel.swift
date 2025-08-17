@@ -37,34 +37,47 @@ final class FinishedListViewViewModel: BaseViewModel<TrackedTVShowListCell> {
 	}
 
 	func fetchRatedShows(ignoringCache: Bool = false) async {
-		guard let url = URL(string: Service.Constants.ratedShowsURL) else { return }
+		guard let baseURL = URL(string: Service.Constants.ratedShowsURL) else { return }
 
-		var urlRequest = URLRequest(url: url)
-		urlRequest.allHTTPHeaderFields = [
-			"accept": "application/json",
-			"Authorization": "Bearer \(_Constants.token)"
-		]
+		var allRatedShows = [RatedTVShow]()
+		var currentPage = 1
+		var totalPages = 1
 
-		if !ignoringCache {
-			await Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
-				.receive(on: DispatchQueue.main)
-				.sink(receiveCompletion: { _ in }) { ratedShows, _ in
-					TrackedTVShowManager.sharedInstance.updateRatings(with: ratedShows.results)
-				}
-				.store(in: &subscriptions)
-		}
-		else {
-			await Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
-				.receive(on: DispatchQueue.main)
-				.sink(receiveCompletion: { _ in }) { ratedShows in
-					TrackedTVShowManager.sharedInstance.updateRatings(with: ratedShows.results)
-				}
-				.store(in: &subscriptions)
-		}
+		repeat {
+			var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
+			urlComponents?.queryItems = [URLQueryItem(name: "page", value: "\(currentPage)")]
+
+			guard let url = urlComponents?.url else { break }
+			let urlRequest = await Service.sharedInstance.makeRequest(for: url)
+
+			if !ignoringCache {
+				await Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
+					.receive(on: DispatchQueue.main)
+					.sink(receiveCompletion: { _ in }) { ratedShows, _ in
+						allRatedShows.append(contentsOf: ratedShows.results)
+						totalPages = ratedShows.totalPages
+						TrackedTVShowManager.sharedInstance.updateRatings(with: allRatedShows)
+					}
+					.store(in: &subscriptions)
+			}
+			else {
+				await Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
+					.receive(on: DispatchQueue.main)
+					.sink(receiveCompletion: { _ in }) { ratedShows in
+						allRatedShows.append(contentsOf: ratedShows.results)
+						totalPages = ratedShows.totalPages
+						TrackedTVShowManager.sharedInstance.updateRatings(with: allRatedShows)
+					}
+					.store(in: &subscriptions)
+			}
+
+			currentPage += 1
+
+		} while currentPage <= totalPages
 	}
 }
 
-// ! UICollectionView
+// ! UICollectionViewDelegate
 
 extension FinishedListViewViewModel: UICollectionViewDelegate {
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

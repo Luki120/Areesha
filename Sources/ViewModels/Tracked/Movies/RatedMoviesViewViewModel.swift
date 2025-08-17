@@ -25,47 +25,8 @@ final class RatedMoviesViewViewModel: BaseViewModel<RatedMovieCell> {
 	}
 
 	func fetchRatedMovies() async {
-		guard let url = URL(string: Service.Constants.ratedMoviesURL) else { return }
-
-		var urlRequest = URLRequest(url: url)
-		urlRequest.allHTTPHeaderFields = [
-			"accept": "application/json",
-			"Authorization": "Bearer \(_Constants.token)"
-		]
-
-		let result: (RatedMovieResult, Bool)? = try? await Service.sharedInstance.fetchTVShows(
-			request: urlRequest, 
-			expecting: RatedMovieResult.self
-		).async()
-
-		let initialRatedMovies = result?.0.results ?? []
-
-		let updatedRatedMovies = await withTaskGroup(
-			of: RatedMovie?.self,
-			returning: [RatedMovie].self
-		) { group in
-			for ratedMovie in initialRatedMovies {
-				group.addTask {
-					let result = try? await Service.sharedInstance.fetchDetails(
-						for: ratedMovie.id, 
-						isMovie: true, 
-						expecting: Movie.self
-					).async()
-
-					var updatedRatedMovie = ratedMovie
-					updatedRatedMovie.movie = result?.0
-					return updatedRatedMovie
-				}
-			}
-
-			var results: [RatedMovie] = []
-			for await ratedMovie in group {
-				if let ratedMovie {
-					results.append(ratedMovie)
-				}
-			}
-			return results
-		}
+		let ratedMovies = await fetchAllRatedMovies()
+		let updatedRatedMovies = await fetchMovieDetails(for: ratedMovies)
 
 		viewModels = updatedRatedMovies.map {
 			let viewModel = RatedMovieCellViewModel($0)
@@ -75,10 +36,66 @@ final class RatedMoviesViewViewModel: BaseViewModel<RatedMovieCell> {
 		}
 		.sorted { ($0.leadActorName, -$0.rating) < ($1.leadActorName, -$1.rating) }
 
-		await MainActor.run {
-			applySnapshot()
-		}
+		applySnapshot()
 	}
+
+	nonisolated
+	private func fetchAllRatedMovies() async -> [RatedMovie] {
+		guard let baseURL = URL(string: Service.Constants.ratedMoviesURL) else { return [] }
+
+		var allRatedMovies = [RatedMovie]()
+		var currentPage = 1
+		var totalPages = 1
+
+		repeat {
+			var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
+			urlComponents?.queryItems = [URLQueryItem(name: "page", value: "\(currentPage)")]
+
+			guard let url = urlComponents?.url else { break }
+			let urlRequest = await Service.sharedInstance.makeRequest(for: url)
+
+			let result: (RatedMovieResult, Bool)? = try? await Service.sharedInstance.fetchTVShows(
+				request: urlRequest,
+				expecting: RatedMovieResult.self
+			).async()
+
+			guard let movieResult = result?.0 else { break }
+
+			allRatedMovies.append(contentsOf: movieResult.results)
+			totalPages = movieResult.totalPages
+			currentPage += 1
+
+		} while currentPage <= totalPages
+
+		return allRatedMovies
+	}
+
+	nonisolated
+	private func fetchMovieDetails(for ratedMovies: [RatedMovie]) async -> [RatedMovie] {
+		await withTaskGroup(of: RatedMovie?.self, returning: [RatedMovie].self) { group in
+			ratedMovies.forEach { ratedMovie in
+				group.addTask {
+					let result = try? await Service.sharedInstance.fetchDetails(
+						for: ratedMovie.id,
+						isMovie: true,
+						expecting: Movie.self
+					).async()
+
+					var updatedRatedMovie = ratedMovie
+					updatedRatedMovie.movie = result?.0
+					return updatedRatedMovie
+				}
+			}
+
+			var results = [RatedMovie]()
+			for await ratedMovie in group {
+				if let ratedMovie {
+					results.append(ratedMovie)
+				}
+			}
+			return results
+		}
+	} 
 }
 
 private extension Publisher {
