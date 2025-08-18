@@ -9,12 +9,6 @@ struct TrackedTVShowCellViewModel: Hashable, ImageFetching {
 	var listType: ListType = .currentlyWatching
 	private(set) var rating: Double = 0
 
-	var ratingLabel: String {
-		let isWholeNumber = rating.truncatingRemainder(dividingBy: 1) == 0
-		let ratingValue = isWholeNumber ? String(format: "%.0f/10", rating) : String(describing: rating) + "/10"
-		return rating == 0 ? "Not rated yet" : "You rated: " + ratingValue
-	}
-
 	enum ListType {
 		case currentlyWatching, finished
 	}

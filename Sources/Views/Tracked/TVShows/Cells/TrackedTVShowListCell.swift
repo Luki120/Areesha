@@ -55,7 +55,7 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 	private var activeViewModel: TrackedTVShowCellViewModel!
 
 	@UsesAutoLayout
-	private var seasonImageView: UIImageView = {
+	private var tvShowImageView: UIImageView = {
 		let imageView = UIImageView()
 		imageView.alpha = 0
 		imageView.contentMode = .scaleAspectFill
@@ -66,18 +66,15 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 	}()
 
 	@UsesAutoLayout
-	private var ratingStarImageView: UIImageView = {
-		let configuration: UIImage.SymbolConfiguration = .init(pointSize: 12)
-
-		let imageView = UIImageView()
-		imageView.image = .init(systemName: "star.fill", withConfiguration: configuration)
-		imageView.tintColor = .systemYellow
-		imageView.contentMode = .scaleAspectFill
-		imageView.clipsToBounds = true
-		return imageView
+	private var starImagesStackView: UIStackView = {
+		let stackView = UIStackView()
+		stackView.spacing = 0.5
+		stackView.alignment = .leading
+		stackView.distribution = .fillEqually
+		return stackView
 	}()
 
-	private var tvShowNameLabel, detailsLabel: UILabel!
+	private var tvShowNameLabel, lastSeenLabel: UILabel!
 
 	// ! Lifecyle
 
@@ -96,27 +93,27 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 
 	private func setupUI() {
 		tvShowNameLabel = createLabel(fontWeight: .bold)
-		detailsLabel = createLabel(textColor: .secondaryLabel)
+		lastSeenLabel = createLabel(textColor: .secondaryLabel)
 
-		addSubviews(seasonImageView, tvShowNameLabel, detailsLabel)
+		addSubviews(tvShowImageView, tvShowNameLabel, lastSeenLabel)
 		layoutUI()
 	}
 
 	private func layoutUI() {
 		NSLayoutConstraint.activate([
-			seasonImageView.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-			seasonImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
-			seasonImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-			seasonImageView.widthAnchor.constraint(equalToConstant: 130),
-			seasonImageView.heightAnchor.constraint(equalToConstant: 75),
+			tvShowImageView.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+			tvShowImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
+			tvShowImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
 
-			tvShowNameLabel.topAnchor.constraint(equalTo: seasonImageView.topAnchor, constant: 20),
-			tvShowNameLabel.leadingAnchor.constraint(equalTo: seasonImageView.trailingAnchor, constant: 20),
+			tvShowNameLabel.topAnchor.constraint(equalTo: tvShowImageView.topAnchor, constant: 20),
+			tvShowNameLabel.leadingAnchor.constraint(equalTo: tvShowImageView.trailingAnchor, constant: 20),
 			tvShowNameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
 
-			detailsLabel.topAnchor.constraint(equalTo: tvShowNameLabel.bottomAnchor, constant: 2.5),
-			detailsLabel.leadingAnchor.constraint(equalTo: tvShowNameLabel.leadingAnchor)
+			lastSeenLabel.topAnchor.constraint(equalTo: tvShowNameLabel.bottomAnchor, constant: 2.5),
+			lastSeenLabel.leadingAnchor.constraint(equalTo: tvShowNameLabel.leadingAnchor)
 		])
+
+		setupSizeConstraints(forView: tvShowImageView, width: 130, height: 75)
 	}
 
 	private func apply(configuration: TrackedTVShowContentConfiguration) {
@@ -128,26 +125,26 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 		configureRating(with: viewModel)
 
 		tvShowNameLabel.text = viewModel.name
-		detailsLabel.text = viewModel.listType == .finished ? viewModel.ratingLabel : viewModel.lastSeen
+		lastSeenLabel.text = viewModel.lastSeen
 	}
 
 	private func configure(with viewModel: TrackedTVShowCellViewModel) {
 		activeViewModel = viewModel
 
-		Task(priority: .background) {
+		Task {
 			guard let (image, isFromNetwork) = try? await viewModel.fetchImage() else { return }
+			guard self.activeViewModel == viewModel else { return }
+
 			await MainActor.run {
-				guard self.activeViewModel == viewModel else { return }
+				self.tvShowImageView.image = image
 
 				if isFromNetwork {
-					UIView.transition(with: self.seasonImageView, duration: 0.5, options: .transitionCrossDissolve) {
-						self.seasonImageView.alpha = 1
-						self.seasonImageView.image = image
+					UIView.transition(with: self.tvShowImageView, duration: 0.5, options: .transitionCrossDissolve) {
+						self.tvShowImageView.alpha = 1
 					}
 				}
 				else {
-					self.seasonImageView.alpha = 1
-					self.seasonImageView.image = image
+					self.tvShowImageView.alpha = 1
 				}
 			}
 		}
@@ -155,13 +152,47 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 
 	private func configureRating(with viewModel: TrackedTVShowCellViewModel) {
 		guard viewModel.listType == .finished && viewModel.rating != 0 else {
-			ratingStarImageView.removeFromSuperview()
+			starImagesStackView.removeFromSuperview()
 			return
 		}
 
-		addSubview(ratingStarImageView)
-		ratingStarImageView.centerYAnchor.constraint(equalTo: detailsLabel.centerYAnchor).isActive = true
-		ratingStarImageView.leadingAnchor.constraint(equalTo: detailsLabel.trailingAnchor, constant: 5).isActive = true
+		updateStars(for: viewModel.rating)
+		lastSeenLabel.removeFromSuperview()
+
+		addSubview(starImagesStackView)
+		starImagesStackView.topAnchor.constraint(equalTo: tvShowNameLabel.bottomAnchor, constant: 8).isActive = true
+		starImagesStackView.leadingAnchor.constraint(equalTo: tvShowNameLabel.leadingAnchor).isActive = true
+	}
+
+	private func updateStars(for rating: Double) {
+		starImagesStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
+		let rating = rating / 2
+		let fullStars = Int(floor(rating))
+		let isHalfStar = (rating - Double(fullStars)) >= 0.5
+
+		for index in 0..<5 {
+			let starImageView = UIImageView()
+			starImageView.tintColor = .systemYellow
+			starImageView.contentMode = .scaleAspectFit
+			starImageView.clipsToBounds = true
+			starImageView.translatesAutoresizingMaskIntoConstraints = false
+
+			UIView.transition(with: starImageView, duration: 0.5, options: .transitionCrossDissolve) {
+				if index < fullStars {
+					starImageView.image = UIImage(systemName: "star.fill")
+				}
+				else if index == fullStars && isHalfStar {
+					starImageView.image = UIImage(systemName: "star.leadinghalf.fill")
+				}
+				else {
+					starImageView.image = nil
+				}
+			}
+
+			starImagesStackView.addArrangedSubview(starImageView)
+			starImagesStackView.setupSizeConstraints(forView: starImageView, width: 12, height: 12)
+		}
 	}
 
 	// ! Reusable
