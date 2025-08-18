@@ -70,8 +70,8 @@ final class RatedMovieCell: UICollectionViewCell {
 		starImagesStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
 		let rating = rating / 2
-		let fullStars = Int(rating)
-		let isHalfStar = (rating - Double(fullStars)) >= 0.25
+		let fullStars = Int(floor(rating))
+		let isHalfStar = (rating - Double(fullStars)) >= 0.5
 
 		for index in 0..<5 {
 			let starImageView = UIImageView()
@@ -112,10 +112,9 @@ extension RatedMovieCell: Configurable {
 
 		Task {
 			guard let (image, isFromNetwork) = try? await viewModel.fetchImage() else { return }
+			guard self.activeViewModel == viewModel else { return }
 
 			await MainActor.run {
-				guard self.activeViewModel == viewModel else { return }
-
 				if isFromNetwork {
 					UIView.transition(with: self.posterImageView, duration: 0.5, options: .transitionCrossDissolve) {
 						self.posterImageView.image = image
