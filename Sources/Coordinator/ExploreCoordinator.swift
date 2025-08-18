@@ -9,7 +9,6 @@ final class ExploreCoordinator: NSObject, Coordinator {
 		case tvShowCellTapped(tvShow: TVShow)
 		case backButtonTapped
 		case starButtonTapped(object: ObjectType)
-		case markAsWatchedButtonTapped(viewModel: TVShowDetailsViewViewModel)
 		case searchButtonTapped
 		case closeButtonTapped
 		case pushedVC
@@ -92,8 +91,6 @@ final class ExploreCoordinator: NSObject, Coordinator {
 				let ratingVC = RatingVC(viewModel: viewModel, coordinatorType: .explore)
 				ratingVC.coordinator = self
 				navigationController.pushViewController(ratingVC, animated: true)
-
-			case .markAsWatchedButtonTapped(let viewModel): viewModel.markShowAsWatched()
 
 			case .searchButtonTapped:
 				let searchVC = SearchVC()

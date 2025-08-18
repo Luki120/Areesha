@@ -68,8 +68,4 @@ extension CurrentlyWatchingVC: CurrentlyWatchingListViewDelegate {
 	) {
 		coordinator?.eventOccurred(with: .trackedTVShowCellTapped(trackedTVShow: trackedTVShow))
 	}
-
-	func didShowToastView(in currentlyWatchingListView: CurrentlyWatchingListView) {
-		currentlyWatchingListView.fadeInOutToastView()
-	}
 }

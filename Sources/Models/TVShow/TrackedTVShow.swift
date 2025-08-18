@@ -6,11 +6,9 @@ struct TrackedTVShow: Codable, Hashable {
 	let tvShow: TVShow
 	let season: Season
 	let episode: Episode
+	let imageURL: URL?
 	let lastSeen: String
 
-	var rating: Double?
-	var imageURL: URL?
-	var isFinished = false
 	var isReturningSeries = false
 
 	func hash(into hasher: inout Hasher) {

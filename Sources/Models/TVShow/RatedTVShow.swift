@@ -13,5 +13,16 @@ struct RatedTVShowResult: Codable {
 
 struct RatedTVShow: Codable {
 	let id: Int
-	let rating: Double
+	let name: String
+	let backgroundCoverImage: String
+
+	var rating: Double
+	var tvShow: TVShow?
+
+	enum CodingKeys: String, CodingKey {
+		case id
+		case name
+		case rating
+		case backgroundCoverImage = "backdrop_path"
+	}	
 }

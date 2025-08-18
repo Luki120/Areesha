@@ -45,13 +45,17 @@ extension RatingViewViewModel {
 
 		Task {
 			await Service.sharedInstance.addRating(for: object, rating: rating)
+				.catch { _ in Just(Data()) }
 				.receive(on: DispatchQueue.main)
-				.sink(receiveCompletion: { _ in }) { [weak self] _ in
+				.sink { [weak self] _ in
 					completion()
 
-					guard self?.object.type == .movie else { return }
 					Task {
-						await Service.sharedInstance.resetCache()
+						let key = self?.object.type == .movie
+							? Service.Constants.ratedMoviesURL
+							: Service.Constants.ratedShowsURL
+
+						await Service.sharedInstance.resetCache(for: key)
 					}
 				}
 				.store(in: &subscriptions)

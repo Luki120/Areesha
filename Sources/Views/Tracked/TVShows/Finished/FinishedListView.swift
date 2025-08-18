@@ -2,7 +2,7 @@ import UIKit
 
 @MainActor
 protocol FinishedListViewDelegate: AnyObject {
-	func finishedListView(_ finishedListView: FinishedListView, didSelect trackedTVShow: TrackedTVShow)
+	func finishedListView(_ finishedListView: FinishedListView, didSelect ratedTVShow: RatedTVShow)
 }
 
 /// Class to represent the finished tracked tv shows list view
@@ -13,13 +13,6 @@ final class FinishedListView: UIView {
 	private lazy var finishedListCollectionView: UICollectionView = {
 		var layoutConfig = UICollectionLayoutListConfiguration(appearance: .plain)
 		layoutConfig.showsSeparators = false
-		layoutConfig.trailingSwipeActionsConfigurationProvider = { indexPath in
-			let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { _, _, completion in
-				self.viewModel.deleteItem(at: indexPath)
-				completion(true)
-			}
-			return UISwipeActionsConfiguration(actions: [deleteAction])
-		}
 
 		let listLayout = UICollectionViewCompositionalLayout.list(using: layoutConfig)
 		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: listLayout)
@@ -52,7 +45,7 @@ final class FinishedListView: UIView {
 	@objc
 	private func didPullToRefresh() {
 		Task {
-			await viewModel.fetchRatedShows(ignoringCache: true)
+			await viewModel.fetchRatedShows()
 		}
 	}
 }
@@ -60,7 +53,7 @@ final class FinishedListView: UIView {
 // ! FinishedListViewViewModelDelegate
 
 extension FinishedListView: FinishedListViewViewModelDelegate {
-	func didSelect(trackedTVShow: TrackedTVShow) {
-		delegate?.finishedListView(self, didSelect: trackedTVShow)
+	func didSelect(ratedTVShow: RatedTVShow) {
+		delegate?.finishedListView(self, didSelect: ratedTVShow)
 	}
 }

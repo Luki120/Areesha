@@ -52,13 +52,8 @@ final class TVShowDetailsVC: BaseVC {
 			target: self,
 			action: #selector(didTapRateButton)
 		)
-		let markAsWatchedButtonItem = tvShowDetailsView.createBarButtonItem(
-			systemImage: "checkmark",
-			target: self,
-			action: #selector(didTapMarkAsWatchedButton)
-		)
 
-		navigationItem.rightBarButtonItems = [markAsWatchedButtonItem, rateButtonItem]
+		navigationItem.rightBarButtonItem = rateButtonItem
 		navigationItem.rightBarButtonItem?.tintColor = .label
 	}
 
@@ -83,17 +78,6 @@ final class TVShowDetailsVC: BaseVC {
 
 			case .tracked(let trackedCoordinator):
 				trackedCoordinator.eventOccurred(with: .starButtonTapped(object: object))
-		}
-	}
-
-	@objc
-	private func didTapMarkAsWatchedButton() {
-		switch coordinatorType {
-			case .explore:
-				coordinator?.eventOccurred(with: .markAsWatchedButtonTapped(viewModel: tvShowDetailsViewViewModel))
-
-			case .tracked(let trackedCoordinator):
-				trackedCoordinator.eventOccurred(with: .markAsWatchedButtonTapped(viewModel: tvShowDetailsViewViewModel))
 		}
 	}
 }

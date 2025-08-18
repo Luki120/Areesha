@@ -26,7 +26,7 @@ final class FinishedVC: BaseVC {
 // ! FinishedListViewDelegate
 
 extension FinishedVC: FinishedListViewDelegate {
-	func finishedListView(_ finishedListView: FinishedListView, didSelect trackedTVShow: TrackedTVShow) {
-		coordinator?.eventOccurred(with: .trackedTVShowCellTapped(trackedTVShow: trackedTVShow))
+	func finishedListView(_ finishedListView: FinishedListView, didSelect ratedTVShow: RatedTVShow) {
+		coordinator?.eventOccurred(with: .ratedTVShowCellTapped(ratedTVShow: ratedTVShow))
 	}
 }

@@ -18,13 +18,11 @@ final class RatedMoviesViewViewModel: BaseViewModel<RatedMovieCell> {
 		onCellRegistration = { cell, viewModel in
 			cell.configure(with: viewModel)
 		}
-
-		Task {
-			await fetchRatedMovies()
-		}
 	}
 
-	func fetchRatedMovies() async {
+	/// Async function to fetch rated movies
+	/// - Parameter completion: `@escaping` closure that takes no arguments & returns nothing
+	func fetchRatedMovies(completion: @escaping () -> Void = {}) async {
 		let ratedMovies = await fetchAllRatedMovies()
 		let updatedRatedMovies = await fetchMovieDetails(for: ratedMovies)
 
@@ -37,6 +35,7 @@ final class RatedMoviesViewViewModel: BaseViewModel<RatedMovieCell> {
 		.sorted { ($0.leadActorName, -$0.rating) < ($1.leadActorName, -$1.rating) }
 
 		applySnapshot()
+		completion()
 	}
 
 	nonisolated
@@ -59,10 +58,10 @@ final class RatedMoviesViewViewModel: BaseViewModel<RatedMovieCell> {
 				expecting: RatedMovieResult.self
 			).async()
 
-			guard let movieResult = result?.0 else { break }
+			guard let response = result?.0 else { break }
 
-			allRatedMovies.append(contentsOf: movieResult.results)
-			totalPages = movieResult.totalPages
+			allRatedMovies.append(contentsOf: response.results)
+			totalPages = response.totalPages
 			currentPage += 1
 
 		} while currentPage <= totalPages
@@ -72,7 +71,7 @@ final class RatedMoviesViewViewModel: BaseViewModel<RatedMovieCell> {
 
 	nonisolated
 	private func fetchMovieDetails(for ratedMovies: [RatedMovie]) async -> [RatedMovie] {
-		await withTaskGroup(of: RatedMovie?.self, returning: [RatedMovie].self) { group in
+		await withTaskGroup(of: RatedMovie.self, returning: [RatedMovie].self) { group in
 			ratedMovies.forEach { ratedMovie in
 				group.addTask {
 					let result = try? await Service.sharedInstance.fetchDetails(
@@ -89,16 +88,14 @@ final class RatedMoviesViewViewModel: BaseViewModel<RatedMovieCell> {
 
 			var results = [RatedMovie]()
 			for await ratedMovie in group {
-				if let ratedMovie {
-					results.append(ratedMovie)
-				}
+				results.append(ratedMovie)
 			}
 			return results
 		}
 	} 
 }
 
-private extension Publisher {
+extension Publisher {
 	func async() async throws -> Output where Output: Sendable {
 		try await withCheckedThrowingContinuation { continuation in
 			var cancellable: AnyCancellable?

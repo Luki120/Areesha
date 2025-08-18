@@ -198,33 +198,5 @@ extension TVShowDetailsViewViewModel {
 	}
 }
 
-// ! Public
-
-extension TVShowDetailsViewViewModel {
-	/// Function to mark a tv show as watched
-	func markShowAsWatched() {
-		guard let lastSeason else { return }
-
-		Task {
-			await Service.sharedInstance.fetchSeasonDetails(for: lastSeason, tvShow: tvShow)
-				.receive(on: DispatchQueue.main)
-				.sink(receiveCompletion: { _ in }) { [weak self] season in
-					guard let self else { return }
-					guard let lastEpisode = season.episodes?.last else { return }
-
-					TrackedTVShowManager.sharedInstance.track(
-						tvShow: tvShow,
-						season: season,
-						episode: lastEpisode,
-						isFinished: true
-					)
-
-					applySnapshot()
-				}
-				.store(in: &subscriptions)
-		}
-	}
-}
-
 extension AnyCancellable: @retroactive @unchecked Sendable {}
 extension AnyPublisher: @retroactive @unchecked Sendable {}

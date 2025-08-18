@@ -8,6 +8,7 @@ protocol RatedMoviesViewDelegate: AnyObject {
 /// Class to represent the rated movies list view
 final class RatedMoviesView: UIView {
 	private lazy var viewModel = RatedMoviesViewViewModel(collectionView: ratedMoviesCollectionView)
+	private lazy var spinnerView = createSpinnerView(withStyle: .large, childOf: self)
 	weak var delegate: RatedMoviesViewDelegate?
 
 	private let compositionalLayout: UICollectionViewCompositionalLayout = {
@@ -38,6 +39,7 @@ final class RatedMoviesView: UIView {
 	@UsesAutoLayout
 	private var ratedMoviesCollectionView: UICollectionView = {
 		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
+		collectionView.alpha = 0
 		collectionView.backgroundColor = .systemGroupedBackground
 		collectionView.showsVerticalScrollIndicator = false
 		return collectionView
@@ -54,6 +56,16 @@ final class RatedMoviesView: UIView {
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		setupUI()
+
+		Task {
+			await viewModel.fetchRatedMovies { [weak self] in
+				self?.spinnerView.stopAnimating()
+
+				UIView.animate(withDuration: 0.5, delay: 0, options: .transitionCrossDissolve) {
+					self?.ratedMoviesCollectionView.alpha = 1
+				}					
+			}
+		}
 	}
 
 	// ! Private
@@ -61,7 +73,10 @@ final class RatedMoviesView: UIView {
 	private func setupUI() {
 		viewModel.delegate = self
 
-		addSubview(ratedMoviesCollectionView)
+		addSubviews(ratedMoviesCollectionView, spinnerView)
+		spinnerView.startAnimating()
+		centerViewOnBothAxes(spinnerView)
+
 		ratedMoviesCollectionView.delegate = viewModel
 		ratedMoviesCollectionView.refreshControl = refreshControl
 		ratedMoviesCollectionView.setCollectionViewLayout(compositionalLayout, animated: true)

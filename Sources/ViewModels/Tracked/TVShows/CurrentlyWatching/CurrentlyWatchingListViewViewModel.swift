@@ -4,7 +4,6 @@ import UIKit
 @MainActor
 protocol CurrentlyWatchingListViewViewModelDelegate: AnyObject {
 	func didSelect(trackedTVShow: TrackedTVShow)
-	func didShowToastView()
 }
 
 /// View model class for `CurrentlyWatchingListView`
@@ -38,7 +37,7 @@ final class CurrentlyWatchingListViewViewModel: NSObject {
 
 		trackedManager.$trackedTVShows
 			.sink { [unowned self] trackedTVShows in
-				applySnapshot(withModels: trackedTVShows.filter { $0.isFinished == false })
+				applySnapshot(withModels: trackedTVShows)
 			}
 			.store(in: &subscriptions)
 	}
@@ -49,7 +48,7 @@ final class CurrentlyWatchingListViewViewModel: NSObject {
 
 		switch section {
 			case .currentlyWatching:
-				relevantShows = trackedManager.trackedTVShows.filter { !$0.isFinished && !$0.isReturningSeries }
+				relevantShows = trackedManager.trackedTVShows.filter { !$0.isReturningSeries }
 
 			case .returningSeries:
 				relevantShows = trackedManager.trackedTVShows.filter { $0.isReturningSeries }
@@ -80,7 +79,7 @@ extension CurrentlyWatchingListViewViewModel: UICollectionViewDelegate {
 			)
 			return cell
 		}
-		applySnapshot(withModels: trackedManager.trackedTVShows.filter { $0.isFinished == false })
+		applySnapshot(withModels: trackedManager.trackedTVShows)
 		setupSupplementaryRegistration()
 	}
 
@@ -109,7 +108,7 @@ extension CurrentlyWatchingListViewViewModel: UICollectionViewDelegate {
 		guard let dataSource else { return }
 
 		let currentlyWatchingModels = models
-			.filter { !$0.isFinished && !$0.isReturningSeries }
+			.filter { !$0.isReturningSeries }
 			.map(TrackedTVShowCellViewModel.init(_:))
 
 		let returningShowsModels = models
@@ -136,7 +135,7 @@ extension CurrentlyWatchingListViewViewModel: UICollectionViewDelegate {
 
 		switch sectionIdentifiers[indexPath.section] {
 			case .currentlyWatching:
-				let trackedTVShows = trackedManager.trackedTVShows.filter { !$0.isFinished && !$0.isReturningSeries }
+				let trackedTVShows = trackedManager.trackedTVShows.filter { !$0.isReturningSeries }
 				delegate?.didSelect(trackedTVShow: trackedTVShows[indexPath.item])
 
 			case .returningSeries:
@@ -173,16 +172,6 @@ extension CurrentlyWatchingListViewViewModel {
 	func didSortDataSource(withOption option: TrackedTVShowManager.SortOption) {
 		trackedManager.didSortModels(withOption: option)
 		applySnapshot(withModels: trackedManager.trackedTVShows)
-	}
-
-	/// Function to mark a tv show as finished
-	/// - Parameter indexPath: The `IndexPath` for the item
-	func finishedShow(at indexPath: IndexPath) {
-		guard let index = getModelIndex(for: indexPath) else { return }
-
-		trackedManager.finishedShow(at: index) { [weak self] isShowAdded in
-			if isShowAdded { self?.delegate?.didShowToastView() }
-		}
 	}
 
 	/// Function to mark a currently watching show as returning series

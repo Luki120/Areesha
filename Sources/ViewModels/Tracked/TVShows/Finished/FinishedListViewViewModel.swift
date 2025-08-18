@@ -3,13 +3,18 @@ import UIKit
 
 @MainActor
 protocol FinishedListViewViewModelDelegate: AnyObject {
-	func didSelect(trackedTVShow: TrackedTVShow)
+	func didSelect(ratedTVShow: RatedTVShow)
 }
 
 /// View model class for `FinishedListView`
 @MainActor
 final class FinishedListViewViewModel: BaseViewModel<TrackedTVShowListCell> {
-	private var sortedShows = [TrackedTVShow]()
+	private var ratedShows = [RatedTVShow]() {
+		didSet {
+			ratedShows.sort { $0.rating > $1.rating }
+		}
+	}
+
 	private var subscriptions: Set<AnyCancellable> = []
 	weak var delegate: FinishedListViewViewModelDelegate?
 
@@ -20,26 +25,14 @@ final class FinishedListViewViewModel: BaseViewModel<TrackedTVShowListCell> {
 			cell.configure(with: viewModel)
 		}
 
-		TrackedTVShowManager.sharedInstance.$filteredTrackedTVShows
-			.sink { [unowned self] filteredTrackedTVShows in
-				sortedShows = filteredTrackedTVShows.sorted { $0.rating ?? 0 > $1.rating ?? 0 }
-				applySnapshot(from: sortedShows) {
-					var viewModel = TrackedTVShowCellViewModel($0)
-					viewModel.listType = .finished
-					return viewModel
-				}
-			}
-			.store(in: &subscriptions)
-
 		Task {
 			await fetchRatedShows()
 		}
 	}
 
-	func fetchRatedShows(ignoringCache: Bool = false) async {
+	func fetchRatedShows() async {
 		guard let baseURL = URL(string: Service.Constants.ratedShowsURL) else { return }
 
-		var allRatedShows = [RatedTVShow]()
 		var currentPage = 1
 		var totalPages = 1
 
@@ -50,30 +43,51 @@ final class FinishedListViewViewModel: BaseViewModel<TrackedTVShowListCell> {
 			guard let url = urlComponents?.url else { break }
 			let urlRequest = await Service.sharedInstance.makeRequest(for: url)
 
-			if !ignoringCache {
-				await Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
-					.receive(on: DispatchQueue.main)
-					.sink(receiveCompletion: { _ in }) { ratedShows, _ in
-						allRatedShows.append(contentsOf: ratedShows.results)
-						totalPages = ratedShows.totalPages
-						TrackedTVShowManager.sharedInstance.updateRatings(with: allRatedShows)
-					}
-					.store(in: &subscriptions)
-			}
-			else {
-				await Service.sharedInstance.fetchTVShows(request: urlRequest, expecting: RatedTVShowResult.self)
-					.receive(on: DispatchQueue.main)
-					.sink(receiveCompletion: { _ in }) { ratedShows in
-						allRatedShows.append(contentsOf: ratedShows.results)
-						totalPages = ratedShows.totalPages
-						TrackedTVShowManager.sharedInstance.updateRatings(with: allRatedShows)
-					}
-					.store(in: &subscriptions)
+			let result: (RatedTVShowResult, Bool)? = try? await Service.sharedInstance.fetchTVShows(
+				request: urlRequest,
+				expecting: RatedTVShowResult.self
+			).async()
+
+			guard let response = result?.0 else { break }
+			totalPages = response.totalPages
+
+			for updatedShow in response.results {
+				if let index = ratedShows.firstIndex(where: { $0.id == updatedShow.id }) {
+					ratedShows[index].rating = updatedShow.rating
+				}
 			}
 
+			let newItems = response.results.filter { newShow in
+				!ratedShows.contains { $0.id == newShow.id }
+			}
+			ratedShows.append(contentsOf: newItems)
+			ratedShows.forEach { fetchDetails(for: $0) }
+
+			applySnapshot(from: ratedShows)
 			currentPage += 1
 
 		} while currentPage <= totalPages
+	}
+
+	private func fetchDetails(for ratedShow: RatedTVShow) {
+		Task {
+			await Service.sharedInstance.fetchDetails(for: ratedShow.id, expecting: TVShow.self)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveCompletion: { _ in }) { [weak self] tvShow, _ in
+				guard let index = self?.ratedShows.firstIndex(where: { $0.id == tvShow.id }) else { return }
+				self?.ratedShows[index].tvShow = tvShow
+			}
+			.store(in: &subscriptions)		
+		}
+	}
+
+	private func applySnapshot(from models: [RatedTVShow]) {
+		applySnapshot(from: models) {
+			var viewModel = TrackedTVShowCellViewModel($0)
+			viewModel.imageURL = Service.imageURL(.mediaPoster($0.backgroundCoverImage))
+			viewModel.listType = .finished
+			return viewModel
+		}
 	}
 }
 
@@ -82,7 +96,7 @@ final class FinishedListViewViewModel: BaseViewModel<TrackedTVShowListCell> {
 extension FinishedListViewViewModel: UICollectionViewDelegate {
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
-		delegate?.didSelect(trackedTVShow: sortedShows[indexPath.item])
+		delegate?.didSelect(ratedTVShow: ratedShows[indexPath.item])
 	}
 
 	func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -91,15 +105,5 @@ extension FinishedListViewViewModel: UICollectionViewDelegate {
 		if collectionView.refreshControl!.isRefreshing {
 			collectionView.refreshControl?.endRefreshing()
 		}
-	}
-}
-
-// ! Public
-
-extension FinishedListViewViewModel {
-	/// Function to delete an item from the collection view
-	/// - Parameter indexPath: The `IndexPath` for the item
-	func deleteItem(at indexPath: IndexPath) {
-		TrackedTVShowManager.sharedInstance.deleteTrackedTVShow(at: indexPath.item, isFilteredArray: true)
 	}
 }

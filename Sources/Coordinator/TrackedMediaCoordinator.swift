@@ -8,6 +8,7 @@ final class TrackedMediaCoordinator: Coordinator {
 		case backButtonTapped
 		case starButtonTapped(object: ObjectType)
 		case trackedTVShowCellTapped(trackedTVShow: TrackedTVShow)
+		case ratedTVShowCellTapped(ratedTVShow: RatedTVShow)
 		case sortButtonTapped(
 			viewModel: CurrentlyWatchingListViewViewModel,
 			option: TrackedTVShowManager.SortOption
@@ -15,7 +16,6 @@ final class TrackedMediaCoordinator: Coordinator {
 		case ratedMovieCellTapped(movie: Movie)
 		case seasonsButtonTapped(tvShow: TVShow)
 		case seasonCellTapped(tvShow: TVShow, season: Season)
-		case markAsWatchedButtonTapped(viewModel: TVShowDetailsViewViewModel)
 		case popVC
 	}
 
@@ -71,18 +71,18 @@ final class TrackedMediaCoordinator: Coordinator {
 				let ratingVC = RatingVC(viewModel: viewModel, coordinatorType: .tracked(self))
 				navigationController.pushViewController(ratingVC, animated: true)
 
+			case .ratedTVShowCellTapped(let ratedTVShow):
+				guard let tvShow = ratedTVShow.tvShow else { return }
+
+				let viewModel = TVShowDetailsViewViewModel(tvShow: tvShow)
+				let detailsVC = TVShowDetailsVC(viewModel: viewModel, coordinatorType: .tracked(self))
+				navigationController.pushViewController(detailsVC, animated: true)
+
 			case .trackedTVShowCellTapped(let trackedTVShow):
-				if trackedTVShow.isFinished {
-					let viewModel = TVShowDetailsViewViewModel(tvShow: trackedTVShow.tvShow)
-					let detailsVC = TVShowDetailsVC(viewModel: viewModel, coordinatorType: .tracked(self))
-					navigationController.pushViewController(detailsVC, animated: true)
-				}
-				else {
-					let viewModel = TrackedTVShowDetailsViewViewModel(trackedTVShow: trackedTVShow)
-					let trackedTVShowDetailsVC = TrackedTVShowDetailsVC(viewModel: viewModel)
-					trackedTVShowDetailsVC.coordinator = self
-					navigationController.pushViewController(trackedTVShowDetailsVC, animated: true)					
-				}
+				let viewModel = TrackedTVShowDetailsViewViewModel(trackedTVShow: trackedTVShow)
+				let trackedTVShowDetailsVC = TrackedTVShowDetailsVC(viewModel: viewModel)
+				trackedTVShowDetailsVC.coordinator = self
+				navigationController.pushViewController(trackedTVShowDetailsVC, animated: true)
 
 			case .sortButtonTapped(let viewModel, let sortOption):
 				viewModel.didSortDataSource(withOption: sortOption)
@@ -101,8 +101,6 @@ final class TrackedMediaCoordinator: Coordinator {
 				let viewModel = EpisodesViewViewModel(tvShow: tvShow, season: season)
 				let episodesVC = EpisodesVC(viewModel: viewModel, coordinatorType: .tracked(self))
 				navigationController.pushViewController(episodesVC, animated: true)
-
-			case .markAsWatchedButtonTapped(let viewModel): viewModel.markShowAsWatched()				
 		}
 	}
 

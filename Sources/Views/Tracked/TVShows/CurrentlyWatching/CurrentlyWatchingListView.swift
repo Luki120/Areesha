@@ -6,16 +6,12 @@ protocol CurrentlyWatchingListViewDelegate: AnyObject {
 		_ currentlyWatchingListView: CurrentlyWatchingListView,
 		didSelect trackedTVShow: TrackedTVShow
 	)
-	func didShowToastView(in CurrentlyWatchingListView: CurrentlyWatchingListView)
 }
 
 /// Class to represent the currently watching tracked tv shows list view
 final class CurrentlyWatchingListView: UIView {
 	let viewModel = CurrentlyWatchingListViewViewModel()
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: "Currently watching")
-
-	private lazy var toastView = createToastView()
-	private lazy var toastViewLabel = createToastViewLabel(withMessage: "Already watched.")
 
 	private lazy var currentlyWatchingTrackedTVShowListCollectionView: UICollectionView = {
 		let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider = { sectionIndex, layoutEnvironment in
@@ -55,24 +51,7 @@ final class CurrentlyWatchingListView: UIView {
 
 	private func setupUI() {
 		addSubview(currentlyWatchingTrackedTVShowListCollectionView)
-		currentlyWatchingTrackedTVShowListCollectionView.addSubview(toastView)
-		toastView.addSubview(toastViewLabel)
-
-		layoutUI()
-	}
-
-	private func layoutUI() {
 		pinViewToSafeAreas(currentlyWatchingTrackedTVShowListCollectionView)
-
-		NSLayoutConstraint.activate([
-			toastView.centerXAnchor.constraint(equalTo: centerXAnchor),
-			toastView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -25),
-			toastView.widthAnchor.constraint(equalToConstant: 130),
-			toastView.heightAnchor.constraint(equalToConstant: 40)
-		])
-
-		toastView.centerViewOnBothAxes(toastViewLabel)
-		toastView.setupHorizontalConstraints(forView: toastViewLabel, leadingConstant: 10, trailingConstant: -10)
 	}
 
 	private func setupListConfig(sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection {
@@ -81,11 +60,16 @@ final class CurrentlyWatchingListView: UIView {
 		listConfig.showsSeparators = false
 
 		listConfig.leadingSwipeActionsConfigurationProvider = { indexPath in
+			let sectionIdentifier = self.viewModel.sectionIdentifiers[indexPath.section]
+
 			let leadingAction = UIContextualAction(
 				style: .destructive,
-				title: sectionIndex == 0 ? "Returning series" : "Currently watching"
+				title: sectionIdentifier == .currentlyWatching ? "Returning series" : "Currently watching"
 			) { _, _, completion in
-				self.viewModel.markShowAsReturningSeries(at: indexPath, toggle: sectionIndex == 0 ? true : false)
+				self.viewModel.markShowAsReturningSeries(
+					at: indexPath,
+					toggle: sectionIdentifier == .currentlyWatching ? true : false
+				)
 				completion(true)
 			}
 			leadingAction.backgroundColor = .systemOrange
@@ -97,7 +81,7 @@ final class CurrentlyWatchingListView: UIView {
 			trackNextEpisodeAction.backgroundColor = .systemGreen
 
 			return UISwipeActionsConfiguration(
-				actions: sectionIndex == 0 ? [leadingAction, trackNextEpisodeAction] : [leadingAction]
+				actions: sectionIdentifier == .currentlyWatching ? [leadingAction, trackNextEpisodeAction] : [leadingAction]
 			)
 		}
 
@@ -107,7 +91,7 @@ final class CurrentlyWatchingListView: UIView {
 				completion(true)
 			}
 			let finishedShowAction = UIContextualAction(style: .destructive, title: "Finished") { _, _, completion in
-				self.viewModel.finishedShow(at: indexPath)
+				self.viewModel.deleteItem(at: indexPath)
 				completion(true)
 			}
 			finishedShowAction.backgroundColor = .areeshaPinkColor
@@ -118,23 +102,10 @@ final class CurrentlyWatchingListView: UIView {
 	}
 }
 
-// ! Public
-
-extension CurrentlyWatchingListView {
-	/// Function to fade in & out the toast view
-	func fadeInOutToastView() {
-		animateToastView(toastView)
-	}
-}
-
 // ! CurrentlyWatchingListViewViewModelDelegate
 
 extension CurrentlyWatchingListView: CurrentlyWatchingListViewViewModelDelegate {
 	func didSelect(trackedTVShow: TrackedTVShow) {
 		delegate?.currentlyWatchingListView(self, didSelect: trackedTVShow)
-	}
-
-	func didShowToastView() {
-		delegate?.didShowToastView(in: self)
 	}
 }

@@ -101,15 +101,11 @@ final actor Service {
 			return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
 		}
 
-		var request = URLRequest(url: url)
+		var request = makeRequest(for: url)
 		request.httpBody = try? JSONEncoder().encode(["value": rating])
 		request.httpMethod = "POST"
 		request.timeoutInterval = 10
-		request.allHTTPHeaderFields = [
-			"accept": "application/json",
-			"Content-Type": "application/json;charset=utf-8",
-			"Authorization": "Bearer \(_Constants.token)"
-		]
+		request.allHTTPHeaderFields?["Content-Type"] = "application/json;charset=utf-8"
 
 		return URLSession.shared.dataTaskPublisher(for: request)
 			.tryMap { data, _ in
@@ -119,9 +115,10 @@ final actor Service {
 			.eraseToAnyPublisher()
 	}
 
-	/// Function to reset the cache for the rated movies
-	func resetCache() {
-		apiCache.removeValue(forKey: Constants.ratedMoviesURL)
+	/// Function to reset the cache for the rated movies or tv shows
+	/// - Parameter key: A `String` that represents the cache key
+	func resetCache(for key: String) {
+		apiCache = apiCache.filter { !$0.key.hasPrefix(key) }
 	}
 }
 
@@ -143,13 +140,7 @@ extension Service {
 			return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
 		}
 
-		var request = URLRequest(url: url)
-		request.allHTTPHeaderFields = [
-			"accept": "application/json",
-			"Authorization": "Bearer \(_Constants.token)"
-		]
-
-		return fetchTVShows(request: request, expecting: T.self)
+		return fetchTVShows(request: makeRequest(for: url), expecting: T.self)
 			.eraseToAnyPublisher()
 	}
 
@@ -175,7 +166,6 @@ extension Service {
 		var request = URLRequest(url: url)
 		request.allHTTPHeaderFields = [
 			"accept": "application/json",
-			"Content-Type": "application/json;charset=utf-8",
 			"Authorization": "Bearer \(_Constants.token)"
 		]
 		return request
