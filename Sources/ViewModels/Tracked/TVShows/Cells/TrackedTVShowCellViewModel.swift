@@ -4,8 +4,8 @@ import Foundation
 struct TrackedTVShowCellViewModel: Hashable, ImageFetching {
 	let name: String
 	let lastSeen: String
-	let imageURL: URL?
 
+	var imageURL: URL?
 	var listType: ListType = .currentlyWatching
 	private(set) var rating: Double = 0
 
@@ -20,11 +20,19 @@ struct TrackedTVShowCellViewModel: Hashable, ImageFetching {
 	}
 
 	/// Designated initializer
-	/// - Parameter model: The `TrackedTVShow` object
+	///	- Parameter model: The `TrackedTVShow` object
 	init(_ model: TrackedTVShow) {
 		self.name = model.name
 		self.lastSeen = model.lastSeen
 		self.imageURL = model.imageURL
-		self.rating = model.rating ?? 0
+	}
+
+	/// Initializer to create a `TrackedTVShowCellViewModel` from a `RatedTVShow`
+	///	- Parameter model: The `RatedTVShow` object
+	init(_ model: RatedTVShow) {
+		self.name = model.name
+		self.rating = model.rating
+		self.lastSeen = ""
+		self.imageURL = nil
 	}
 }
