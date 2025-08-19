@@ -1,7 +1,5 @@
 import UIKit
 
-protocol MovieDetailsViewDelegate: AnyObject {}
-
 /// Class to represent the movie details view
 final class MovieDetailsView: UIView {
 	private let viewModel: MovieDetailsViewViewModel
@@ -20,8 +18,6 @@ final class MovieDetailsView: UIView {
 	}()
 
 	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: viewModel.title, isHidden: true)
-
-	weak var delegate: MovieDetailsViewDelegate?
 
 	// ! Lifecycle
 
@@ -42,16 +38,11 @@ final class MovieDetailsView: UIView {
 
 	private func setupUI() {
 		addSubview(movieDetailsTableView)
+		pinViewToAllEdges(movieDetailsTableView)
 
 		movieDetailsTableView.delegate = self
 		movieDetailsTableView.tableHeaderView = viewModel.setupHeaderView(forView: self)
 		viewModel.setupTableView(movieDetailsTableView)
-
-		layoutUI()
-	}
-
-	private func layoutUI() {
-		pinViewToAllEdges(movieDetailsTableView)
 	}
 }
 
