@@ -17,6 +17,7 @@ final actor Service {
 		static let ratedMoviesURL = "\(baseURL)/account/\(_Constants.accountID)/rated/movies"
 		static let topRatedTVShowsURL = "\(baseURL)tv/top_rated?\(apiKey)"
 		static let trendingTVShowsURL = "\(baseURL)trending/tv/day?\(apiKey)"
+		static let trendingMoviesURL = "\(baseURL)trending/movie/day?\(apiKey)"
 		static let searchQueryBaseURL = "\(baseURL)search/multi?\(apiKey)"
 	}
 
@@ -179,6 +180,7 @@ extension Service {
 	enum ImageFetch {
 		case showPoster(TVShow)
 		case mediaPoster(String)
+		case moviePoster(Movie)
 		case showBackdrop(TVShow)
 		case movieBackdrop(Movie)
 		case seasonPoster(Season)
@@ -190,6 +192,7 @@ extension Service {
 			switch self {
 				case .showPoster(let show): return show.coverImage
 				case .mediaPoster(let path): return path 
+				case .moviePoster(let movie): return movie.coverImage
 				case .showBackdrop(let show): return show.backgroundCoverImage
 				case .movieBackdrop(let movie): return movie.backgroundCoverImage
 				case .seasonPoster(let season): return season.coverImage

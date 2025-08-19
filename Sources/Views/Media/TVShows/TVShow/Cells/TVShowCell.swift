@@ -1,7 +1,11 @@
 import UIKit
 
 /// Class to represent the tv show cell
-final class TVShowCell: UICollectionViewCell {
+class TVShowCell: UICollectionViewCell {
+	class var identifier: String {
+		return String(describing: self)
+	}
+
 	@UsesAutoLayout
 	private var tvShowImageView: UIImageView = {
 		let imageView = UIImageView()
@@ -15,8 +19,7 @@ final class TVShowCell: UICollectionViewCell {
 	}()
 
 	private lazy var spinnerView = createSpinnerView(withStyle: .medium, childOf: contentView) 
-
-	private var activeViewModel: TVShowCellViewModel?
+	private var imageTask: Task<Void, Error>?
 
 	// ! Lifecyle
 
@@ -32,7 +35,6 @@ final class TVShowCell: UICollectionViewCell {
 	override func prepareForReuse() {
 		super.prepareForReuse()
 		spinnerView.startAnimating()
-		activeViewModel = nil
 		tvShowImageView.image = nil
 	}
 
@@ -45,9 +47,9 @@ final class TVShowCell: UICollectionViewCell {
 
 	private func setupUI() {
 		contentView.layer.shadowColor = UIColor.label.cgColor
-		contentView.layer.shadowOffset = CGSize(width: 0, height: 1)
+		contentView.layer.shadowOffset = CGSize(width: 0, height: 0)
 		contentView.layer.shadowOpacity = 0.2
-		contentView.layer.shadowRadius = 4
+		contentView.layer.shadowRadius = 2
 		contentView.addSubview(tvShowImageView)
 
 		spinnerView.startAnimating()
@@ -61,20 +63,22 @@ final class TVShowCell: UICollectionViewCell {
 	}
 }
 
-// ! Configurable
+// ! Public
 
-extension TVShowCell: Configurable {
-	func configure(with viewModel: TVShowCellViewModel) {
-		activeViewModel = viewModel
+extension TVShowCell {
+	/// Function to configure the cell with its respective view model
+	/// - Parameter viewModel: The cell's view model
+	final func configure<V: ImageFetching>(with viewModel: V) {
+		imageTask?.cancel()
+		imageTask = Task {
+			let image = try await viewModel.fetchImage()
+			guard !Task.isCancelled else { return }
 
-		Task(priority: .background) {
-			let image = try? await viewModel.fetchImage()
+			self.tvShowImageView.image = image
+
 			await MainActor.run {
-				guard self.activeViewModel == viewModel else { return }
-
 				UIView.transition(with: self.tvShowImageView, duration: 0.5, options: .transitionCrossDissolve) {
 					self.tvShowImageView.alpha = 1
-					self.tvShowImageView.image = image
 					self.tvShowImageView.transform = .init(scaleX: 1, y: 1)
 				}
 				self.spinnerView.stopAnimating()

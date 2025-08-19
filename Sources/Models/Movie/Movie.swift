@@ -1,5 +1,10 @@
 import Foundation
 
+/// Movie response model struct
+struct MovieResponse: Codable {
+	let results: [Movie]
+}
+
 /// Movie model struct
 struct Movie: Codable, Hashable {
 	let id: Int

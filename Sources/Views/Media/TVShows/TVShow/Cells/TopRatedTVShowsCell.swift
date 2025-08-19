@@ -3,6 +3,7 @@ import UIKit
 @MainActor
 protocol TopRatedTVShowsCellDelegate: AnyObject {
 	func topRatedTVShowsCell(_ topRatedTVShowsCell: TopRatedTVShowsCell, didSelect tvShow: TVShow)
+	func topRatedTVShowsCell(_ topRatedTVShowsCell: TopRatedTVShowsCell, didSelect movie: Movie)
 }
 
 /// Class to represent the top rated tv shows collection view cell
@@ -31,10 +32,10 @@ class TopRatedTVShowsCell: UICollectionViewCell {
 		return collectionView
 	}()
 
-	var collectionView: UICollectionView { return tvShowsCollectionView }
+	final var collectionView: UICollectionView { return tvShowsCollectionView }
 
 	private lazy var spinnerView = createSpinnerView(withStyle: .large, childOf: contentView)
-	private lazy var viewModel = TVShowListViewViewModel(collectionView: tvShowsCollectionView)
+	private let viewModel = TVShowListViewViewModel()
 
 	weak var delegate: TopRatedTVShowsCellDelegate?
 
@@ -48,6 +49,8 @@ class TopRatedTVShowsCell: UICollectionViewCell {
 		super.init(frame: frame)
 		tvShowsCollectionView.delegate = viewModel
 		viewModel.delegate = self
+		viewModel.setupDiffableDataSource(for: tvShowsCollectionView)
+
 		setupUI()
 		setupViewModel(viewModel)
 	}
@@ -89,5 +92,9 @@ extension TopRatedTVShowsCell: TVShowListViewViewModelDelegate {
 
 	func didSelect(tvShow: TVShow) {
 		delegate?.topRatedTVShowsCell(self, didSelect: tvShow)
+	}
+
+	func didSelect(movie: Movie) {
+		delegate?.topRatedTVShowsCell(self, didSelect: movie)
 	}
 }

@@ -7,6 +7,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 	enum Event {
 		case objectCellTapped(object: ObjectType)
 		case tvShowCellTapped(tvShow: TVShow)
+		case movieCellTapped(movie: Movie)
 		case backButtonTapped
 		case starButtonTapped(object: ObjectType)
 		case searchButtonTapped
@@ -18,7 +19,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 
 	var navigationController = SwipeableNavigationController()
 	private var subscriptions = Set<AnyCancellable>()
-	private var childCoordinators: [any Coordinator] = []
+	private var childCoordinators = [any Coordinator]()
 
 	override init() {
 		super.init()
@@ -63,13 +64,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 							)
 							.receive(on: DispatchQueue.main)
 							.sink(receiveCompletion: { _ in }) { [weak self] movie, _ in
-								let viewModel = MovieDetailsViewViewModel(movie: movie)
-								let detailVC = MovieDetailsVC(
-									viewModel: viewModel,
-									coordinatorType: .explore
-								)
-								detailVC.coordinator = self
-								self?.navigationController.pushViewController(detailVC, animated: true)
+								self?.pushDetailsVC(for: movie)
 							}
 							.store(in: &subscriptions)
 						}
@@ -78,6 +73,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 				}
 
 			case .tvShowCellTapped(let tvShow): pushDetailsVC(for: tvShow)
+			case .movieCellTapped(let movie): pushDetailsVC(for: movie)			
 
 			case .backButtonTapped, .closeButtonTapped:
 				navigationController.popViewController(animated: true)
@@ -118,9 +114,16 @@ final class ExploreCoordinator: NSObject, Coordinator {
 
 	private func pushDetailsVC(for tvShow: TVShow) {
 		let viewModel = TVShowDetailsViewViewModel(tvShow: tvShow)
-		let detailVC = TVShowDetailsVC(viewModel: viewModel, coordinatorType: .explore)
-		detailVC.coordinator = self
-		navigationController.pushViewController(detailVC, animated: true)
+		let detailsVC = TVShowDetailsVC(viewModel: viewModel, coordinatorType: .explore)
+		detailsVC.coordinator = self
+		navigationController.pushViewController(detailsVC, animated: true)
+	}
+
+	private func pushDetailsVC(for movie: Movie) {
+		let viewModel = MovieDetailsViewViewModel(movie: movie)
+		let detailsVC = MovieDetailsVC(viewModel: viewModel, coordinatorType: .explore)
+		detailsVC.coordinator = self
+		navigationController.pushViewController(detailsVC, animated: true)
 	}
 }
 

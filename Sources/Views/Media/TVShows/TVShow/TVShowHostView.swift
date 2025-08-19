@@ -3,6 +3,7 @@ import UIKit
 @MainActor
 protocol TVShowHostViewDelegate: AnyObject {
 	func tvShowHostView(_ tvShowHostView: TVShowHostView, didSelect tvShow: TVShow)
+	func tvShowHostView(_ tvShowHostView: TVShowHostView, didSelect movie: Movie)
 }
 
 /// Class to represent the tv shows host view
@@ -96,16 +97,20 @@ extension TVShowHostView: TVShowHostViewViewModelDelegate {
 	func didSelect(tvShow: TVShow) {
 		delegate?.tvShowHostView(self, didSelect: tvShow)
 	}
+
+	func didSelect(movie: Movie) {
+		delegate?.tvShowHostView(self, didSelect: movie)
+	}
 }
 
 // ! UICollectionViewDelegate
 
 extension TVShowHostView: UICollectionViewDelegate {
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
-		let desiredValue = scrollView.contentOffset.x / 2
-		let maxValue = topHeaderView.frame.width / 2
+		let progress = scrollView.contentOffset.x / (scrollView.frame.width * 2)
+		let maxDistance = topHeaderView.frame.width * (2 / 3)
 
-		topHeaderView.transparentViewLeadingAnchorConstraint.constant = min(max(desiredValue, 0), maxValue)
+		topHeaderView.transparentViewLeadingAnchorConstraint.constant = min(max(progress * maxDistance, 0), maxDistance)
 	}
 
 	func scrollViewWillEndDragging(
@@ -113,7 +118,8 @@ extension TVShowHostView: UICollectionViewDelegate {
 		withVelocity velocity: CGPoint,
 		targetContentOffset: UnsafeMutablePointer<CGPoint>
 	) {
-		let index = targetContentOffset.pointee.x / topHeaderView.frame.width
+		let itemWidth = scrollView.frame.width
+		let index = targetContentOffset.pointee.x / itemWidth
 		let indexPath = IndexPath(item: Int(index), section: 0)
 		topHeaderView.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
 	}

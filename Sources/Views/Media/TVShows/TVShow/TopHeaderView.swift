@@ -8,7 +8,7 @@ protocol TopHeaderViewDelegate: AnyObject {
 /// Class to display a collection view to switch between top rated & trending TV shows
 final class TopHeaderView: UIView {
 	private let compositionalLayout: UICollectionViewCompositionalLayout = {
-		let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1 / 2), heightDimension: .fractionalHeight(1))
+		let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1 / 3), heightDimension: .fractionalHeight(1))
 		let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
 		let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
@@ -46,7 +46,6 @@ final class TopHeaderView: UIView {
 	var transparentViewLeadingAnchorConstraint: NSLayoutConstraint!
 
 	weak var delegate: TopHeaderViewDelegate?
-
 	private lazy var viewModel = TopHeaderViewViewModel(collectionView: topHeaderCollectionView)
 
 	// ! Lifecycle
@@ -75,13 +74,13 @@ final class TopHeaderView: UIView {
 	}
 
 	private func layoutUI() {
-		pinViewToAllEdges(topHeaderCollectionView)
+		pinViewToSafeAreas(topHeaderCollectionView)
 
 		transparentViewLeadingAnchorConstraint = transparentView.leadingAnchor.constraint(equalTo: leadingAnchor)
 		transparentViewLeadingAnchorConstraint.isActive = true
 
 		transparentView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-		transparentView.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 1 / 2).isActive = true
+		transparentView.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 1 / 3).isActive = true
 		transparentView.heightAnchor.constraint(equalToConstant: 4).isActive = true
 
 		transparentView.pinViewToAllEdges(

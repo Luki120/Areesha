@@ -13,7 +13,8 @@ final class TopHeaderViewViewModel: BaseViewModel<TopHeaderCell> {
 	override func awake() {
 		viewModels = [
 			.init(sectionName: "Top rated"),
-			.init(sectionName: "Trending")
+			.init(sectionName: "Trending"),
+			.init(sectionName: "Trending films")
 		]
 		onCellRegistration = { cell, viewModel in
 			cell.configure(with: viewModel)

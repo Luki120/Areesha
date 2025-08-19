@@ -43,6 +43,10 @@ extension ExploreVC: TVShowHostViewDelegate {
 	func tvShowHostView(_ tvShowHostView: TVShowHostView, didSelect tvShow: TVShow) {
 		coordinator?.eventOccurred(with: .tvShowCellTapped(tvShow: tvShow))
 	}
+
+	func tvShowHostView(_ tvShowHostView: TVShowHostView, didSelect movie: Movie) {
+		coordinator?.eventOccurred(with: .movieCellTapped(movie: movie))
+	}
 }
 
 // ! UITabBarControllerDelegate

@@ -3,6 +3,7 @@ import UIKit
 @MainActor
 protocol TVShowHostViewViewModelDelegate: AnyObject {
 	func didSelect(tvShow: TVShow)
+	func didSelect(movie: Movie)
 }
 
 /// View model class for `TVShowHostView`
@@ -17,11 +18,13 @@ final class TVShowHostViewViewModel: NSObject {
 	}
 
 	private enum Item: Hashable {
-		case topRated, trending
+		case topRated, trending, trendingMovies
 	}
 
 	private typealias TopRatedCellRegistration = UICollectionView.CellRegistration<TopRatedTVShowsCell, Item>
 	private typealias TrendingCellRegistration = UICollectionView.CellRegistration<TrendingTVShowsCell, Item>
+	private typealias TrendingMoviesCellRegistration = UICollectionView.CellRegistration<TrendingMoviesCell, Item>
+
 	private typealias DataSource = UICollectionViewDiffableDataSource<Section, Item>
 	private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
 
@@ -40,6 +43,9 @@ extension TVShowHostViewViewModel {
 		let trendingCellRegistration = TrendingCellRegistration { cell, _, _ in
 			cell.delegate = self
 		}
+		let trendingMoviesCellRegistration = TrendingMoviesCellRegistration { cell, _, _ in
+			cell.delegate = self
+		}
 
 		dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, item in
 			switch item {
@@ -56,6 +62,13 @@ extension TVShowHostViewViewModel {
 						for: indexPath,
 						item: item
 					)
+
+				case .trendingMovies:
+					return collectionView.dequeueConfiguredReusableCell(
+						using: trendingMoviesCellRegistration,
+						for: indexPath,
+						item: item
+					)
 			}
 		}
 		applySnapshot()
@@ -64,7 +77,7 @@ extension TVShowHostViewViewModel {
 	private func applySnapshot() {
 		var snapshot = Snapshot()
 		snapshot.appendSections([.main])
-		snapshot.appendItems([.topRated, .trending], toSection: .main)
+		snapshot.appendItems([.topRated, .trending, .trendingMovies], toSection: .main)
 		dataSource.apply(snapshot)
 	}
 }
@@ -74,5 +87,9 @@ extension TVShowHostViewViewModel {
 extension TVShowHostViewViewModel: TopRatedTVShowsCellDelegate {
 	func topRatedTVShowsCell(_ topRatedTVShowsCell: TopRatedTVShowsCell, didSelect tvShow: TVShow) {
 		delegate?.didSelect(tvShow: tvShow)
+	}
+
+	func topRatedTVShowsCell(_ topRatedTVShowsCell: TopRatedTVShowsCell, didSelect movie: Movie) {
+		delegate?.didSelect(movie: movie)
 	}
 }
