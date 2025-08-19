@@ -1,4 +1,3 @@
-import Combine
 import UIKit
 
 /// Class to represent the rated movie cell
@@ -22,7 +21,6 @@ final class RatedMovieCell: UICollectionViewCell {
 		return stackView
 	}()
 
-	private var subscriptions = Set<AnyCancellable>()
 	private var activeViewModel: RatedMovieCellViewModel!
 
 	// ! Lifecycle
@@ -103,15 +101,10 @@ final class RatedMovieCell: UICollectionViewCell {
 extension RatedMovieCell: Configurable {
 	func configure(with viewModel: RatedMovieCellViewModel) {
 		activeViewModel = viewModel
-
-		viewModel.$rating
-			.sink { [weak self] rating in
-				self?.updateStars(for: rating)
-			}
-			.store(in: &subscriptions)
+		updateStars(for: viewModel.rating)
 
 		Task {
-			guard let (image, isFromNetwork) = try? await viewModel.fetchImage() else { return }
+			let (image, isFromNetwork) = try await viewModel.fetchImage()
 			guard self.activeViewModel == viewModel else { return }
 
 			await MainActor.run {

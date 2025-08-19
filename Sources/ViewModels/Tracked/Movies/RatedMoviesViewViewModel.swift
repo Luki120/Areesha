@@ -27,8 +27,7 @@ final class RatedMoviesViewViewModel: BaseViewModel<RatedMovieCell> {
 		let updatedRatedMovies = await fetchMovieDetails(for: ratedMovies)
 
 		viewModels = updatedRatedMovies.map {
-			let viewModel = RatedMovieCellViewModel($0)
-			viewModel.credits = $0.movie?.credits
+			var viewModel = RatedMovieCellViewModel($0)
 			viewModel.imageURL = Service.imageURL(.ratedMoviePoster($0))
 			return viewModel
 		}
