@@ -1,6 +1,7 @@
 import Foundation
 
 /// View model struct for the vanilla collection view list cells in SearchListView's collection view
+@MainActor
 struct SearchListCellViewModel: Hashable {
 	private let id: Int
 	let name: String

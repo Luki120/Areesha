@@ -1,6 +1,7 @@
 import Foundation
 
 /// View model struct for `MediaDetailsCastCell`
+@MainActor
 struct MediaDetailsCastCellViewModel: Hashable {
 	let cast: String?
 

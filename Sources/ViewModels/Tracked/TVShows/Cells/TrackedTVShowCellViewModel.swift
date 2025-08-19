@@ -1,6 +1,7 @@
 import Foundation
 
 /// View model struct for `TrackedTVShowListCell`
+@MainActor
 struct TrackedTVShowCellViewModel: Hashable, ImageFetching {
 	let name: String
 	let lastSeen: String

@@ -2,6 +2,7 @@ import Combine
 import UIKit
 
 /// View model class for `MovieDetailsView`
+@MainActor
 final class MovieDetailsViewViewModel: WatchProviderPresentable {
 	var title: String { movie.title }
 

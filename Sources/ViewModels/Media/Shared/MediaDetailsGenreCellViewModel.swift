@@ -1,6 +1,7 @@
 import Foundation
 
 /// View model struct for `TVShowDetailsGenreCell`
+@MainActor
 struct MediaDetailsGenreCellViewModel: Hashable {
 	let genre: String?
 	let episodeAverageDuration: String?
