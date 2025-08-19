@@ -45,6 +45,7 @@ final class RatedMoviesView: UIView {
 		return collectionView
 	}()
 
+	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: "Rated movies")
 	private var refreshControl = UIRefreshControl()
 
 	// ! Lifecycle

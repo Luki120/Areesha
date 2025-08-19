@@ -78,6 +78,8 @@ final class RatingView: UIView {
 		}
 	}
 
+	private(set) lazy var titleLabel: UILabel = .createTitleLabel(withTitle: viewModel.title)
+
 	private var rightBarButtonIsTapped = false
 	weak var delegate: RatingViewDelegate?
 

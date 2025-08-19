@@ -3,8 +3,9 @@ import UIKit
 /// Controller that'll show the rated movies view
 final class RatedMoviesVC: BaseVC {
 	private let ratedMoviesView = RatedMoviesView()
-
 	var coordinator: TrackedMediaCoordinator?
+
+	override var titleView: UIView { ratedMoviesView.titleLabel }
 
 	// ! Lifecycle
 
@@ -12,7 +13,6 @@ final class RatedMoviesVC: BaseVC {
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
-
 		ratedMoviesView.delegate = self
 		ratedMoviesView.backgroundColor = .systemBackground
 	}

@@ -8,6 +8,8 @@ final class RatingVC: BaseVC {
 
 	var coordinator: ExploreCoordinator?
 
+	override var titleView: UIView { ratingView.titleLabel }
+
 	enum CoordinatorType {
 		case explore
 		case tracked(TrackedMediaCoordinator)

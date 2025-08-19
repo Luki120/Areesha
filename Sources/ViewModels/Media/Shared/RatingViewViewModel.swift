@@ -5,6 +5,8 @@ import UIKit.UIImage
 /// View model class for `RatingView`
 @MainActor
 final class RatingViewViewModel: BaseViewModel<RatingCell> {
+	var title: String { (object.type == .movie ? object.title : object.name) ?? "" }
+
 	private var subscriptions = Set<AnyCancellable>()
 	private var currentRating: Double = 0
 
