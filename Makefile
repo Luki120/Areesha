@@ -1,6 +1,14 @@
 ARCHS = arm64
-TARGET = iphone:clang:latest:14.0
-export SYSROOT = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk
+UNAME := $(shell uname)
+
+ifeq ($(UNAME), Linux)	
+	export TARGET := iphone:clang:15.6:14.0
+endif
+
+ifeq ($(UNAME), Darwin)
+	export SYSROOT = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk
+	export TARGET := iphone:clang:latest:14.0
+endif
 
 INSTALL_TARGET_PROCESSES = Areesha
 APPLICATION_NAME = Areesha
