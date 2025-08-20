@@ -52,8 +52,6 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 		}
 	}
 
-	private var activeViewModel: TrackedTVShowCellViewModel!
-
 	@UsesAutoLayout
 	private var tvShowImageView: UIImageView = {
 		let imageView = UIImageView()
@@ -74,6 +72,7 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 		return stackView
 	}()
 
+	private var imageTask: Task<Void, Error>?
 	private var tvShowNameLabel, lastSeenLabel: UILabel!
 
 	// ! Lifecyle
@@ -119,6 +118,7 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 	private func apply(configuration: TrackedTVShowContentConfiguration) {
 		guard currentConfiguration != configuration else { return }
 		currentConfiguration = configuration
+		tvShowImageView.image = nil
 
 		guard let viewModel = configuration.viewModel else { return }
 		configure(with: viewModel)
@@ -129,11 +129,10 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 	}
 
 	private func configure(with viewModel: TrackedTVShowCellViewModel) {
-		activeViewModel = viewModel
-
-		Task {
-			guard let (image, isFromNetwork) = try? await viewModel.fetchImage() else { return }
-			guard self.activeViewModel == viewModel else { return }
+		imageTask?.cancel()
+		imageTask = Task {
+			let (image, isFromNetwork) = try await viewModel.fetchImage()
+			guard !Task.isCancelled else { return }
 
 			await MainActor.run {
 				self.tvShowImageView.image = image
