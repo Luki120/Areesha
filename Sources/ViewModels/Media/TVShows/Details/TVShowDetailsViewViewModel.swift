@@ -68,7 +68,7 @@ final class TVShowDetailsViewViewModel: WatchProviderPresentable {
 			return .init(
 				imageURL: Bundle.main.url(forResource: "Placeholder", withExtension: "jpg"),
 				tvShowName: tvShow.name,
-				rating: rating
+				rating: average == 0 ? "" : rating
 			)
 		}
 
