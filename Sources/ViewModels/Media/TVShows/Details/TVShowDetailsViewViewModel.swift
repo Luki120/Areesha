@@ -3,7 +3,7 @@ import UIKit
 
 /// View model class for `TVShowDetailsView`
 @MainActor
-final class TVShowDetailsViewViewModel: WatchProviderPresentable {
+final class TVShowDetailsViewViewModel: HeaderPresentable, WatchProviderPresentable {
 	var title: String { return tvShow.name }
 
 	private var lastSeason: Season!
@@ -57,22 +57,8 @@ final class TVShowDetailsViewViewModel: WatchProviderPresentable {
 	// ! Private
 
 	private func setupHeaderViewModel() -> MediaDetailsHeaderViewViewModel {
-		let average = tvShow.voteAverage?.round(to: 1) ?? 0
-		let isWholeNumber = average.truncatingRemainder(dividingBy: 1) == 0
-
-		let rating = isWholeNumber
-			? String(format: "%.0f/10", average)
-			: String(describing: average) + "/10"
-
-		guard let url = Service.imageURL(.showBackdrop(tvShow), size: "w1280") else {
-			return .init(
-				imageURL: Bundle.main.url(forResource: "Placeholder", withExtension: "jpg"),
-				tvShowName: tvShow.name,
-				rating: average == 0 ? "" : rating
-			)
-		}
-
-		return .init(imageURL: url, tvShowName: tvShow.name, rating: rating)
+		let url = Service.imageURL(.showBackdrop(tvShow), size: "w1280")
+		return setupViewModel(name: tvShow.name, average: tvShow.voteAverage ?? 0, url: url)
 	}
 
 	private func fetchTVShowCast() async {

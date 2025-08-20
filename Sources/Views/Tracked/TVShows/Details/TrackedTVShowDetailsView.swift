@@ -10,7 +10,6 @@ final class TrackedTVShowDetailsView: UIView {
 	// ! Lifecycle
 
 	private let viewModel: TrackedTVShowDetailsViewViewModel
-	private var headerView: TrackedTVShowDetailsHeaderView!
 
 	@UsesAutoLayout
 	private var trackedTVShowDetailsTableView: UITableView = {
@@ -21,6 +20,10 @@ final class TrackedTVShowDetailsView: UIView {
 		tableView.register(TrackedTVShowDetailsDescriptionCell.self, forCellReuseIdentifier: TrackedTVShowDetailsDescriptionCell.identifier)
 		return tableView
 	}()
+
+	private var headerView: MediaDetailsHeaderView {
+		viewModel.setupEpisodeHeaderView(forView: self)
+	}
 
 	private lazy var seasonsButton = createRoundedButton { [weak self] in
 		guard let self else { return }
@@ -51,13 +54,11 @@ final class TrackedTVShowDetailsView: UIView {
 	// ! Private
 
 	private func setupUI() {
-		headerView = viewModel.setupEpisodeHeaderView(forView: self)
-
 		addSubviews(trackedTVShowDetailsTableView, seasonsButton)
 		trackedTVShowDetailsTableView.delegate = self
-		trackedTVShowDetailsTableView.tableHeaderView = headerView
+		trackedTVShowDetailsTableView.tableHeaderView = viewModel.setupEpisodeHeaderView(forView: self)
 
-		viewModel.setupTrackedTVShowDetailsTableView(trackedTVShowDetailsTableView)
+		viewModel.setupTableView(trackedTVShowDetailsTableView)
 		layoutUI()
 	}
 
@@ -86,7 +87,7 @@ extension TrackedTVShowDetailsView {
 
 extension TrackedTVShowDetailsView: UITableViewDelegate {
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
-		guard let headerView = trackedTVShowDetailsTableView.tableHeaderView as? TrackedTVShowDetailsHeaderView else {
+		guard let headerView = trackedTVShowDetailsTableView.tableHeaderView as? MediaDetailsHeaderView else {
 			return
 		}
 

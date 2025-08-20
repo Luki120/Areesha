@@ -3,7 +3,7 @@ import UIKit
 
 /// View model class for `MovieDetailsView`
 @MainActor
-final class MovieDetailsViewViewModel: WatchProviderPresentable {
+final class MovieDetailsViewViewModel: HeaderPresentable, WatchProviderPresentable {
 	var title: String { movie.title }
 
 	private var keyInfoCellViewModel: MovieDetailsKeyInfoCellViewModel {
@@ -85,23 +85,8 @@ final class MovieDetailsViewViewModel: WatchProviderPresentable {
 	// ! Private
 
 	private func setupHeaderViewModel() -> MediaDetailsHeaderViewViewModel {
-		let average = movie.voteAverage?.round(to: 1) ?? 0
-		let isWholeNumber = average.truncatingRemainder(dividingBy: 1) == 0
-
-		let rating =
-			isWholeNumber
-			? String(format: "%.0f/10", average)
-			: String(describing: average) + "/10"
-
-		guard let url = Service.imageURL(.movieBackdrop(movie), size: "w1280") else {
-			return .init(
-				imageURL: Bundle.main.url(forResource: "Placeholder", withExtension: "jpg"),
-				tvShowName: movie.title,
-				rating: average == 0 ? "" : rating
-			)
-		}
-
-		return .init(imageURL: url, tvShowName: movie.title, rating: rating)
+		let url = Service.imageURL(.movieBackdrop(movie), size: "w1280")
+		return setupViewModel(name: movie.title, average: movie.voteAverage ?? 0, url: url)
 	}
 }
 

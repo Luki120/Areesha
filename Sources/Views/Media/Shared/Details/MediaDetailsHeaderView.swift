@@ -16,8 +16,9 @@ final class MediaDetailsHeaderView: BaseHeaderView {
 
 	override func layoutUI() {
 		super.layoutUI()
-		nameLabel.trailingAnchor.constraint(equalTo: ratingsLabel.leadingAnchor, constant: -10).isActive = true
+		guard addRatingsLabel else { return }
 
+		nameLabel.trailingAnchor.constraint(equalTo: ratingsLabel.leadingAnchor, constant: -10).isActive = true
 		nameLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
 
 		ratingsLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -10).isActive = true
@@ -34,7 +35,7 @@ extension MediaDetailsHeaderView {
 	/// Function to configure the view with its respective view model
 	/// - Parameter with: The view's view model
 	func configure(with viewModel: MediaDetailsHeaderViewViewModel) {
-		nameLabel.text = viewModel.tvShowName
+		nameLabel.text = viewModel.name == nil ? viewModel.episodeName : viewModel.name
 		ratingsLabel.text = viewModel.rating
 
 		Task {

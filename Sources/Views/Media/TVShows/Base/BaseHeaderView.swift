@@ -2,15 +2,15 @@ import UIKit
 
 /// Base class to implement a header view
 class BaseHeaderView: UIView {
-	private let addRatingsLabel: Bool
+	let addRatingsLabel: Bool
 
-	let containerView: UIView = {
+	final let containerView: UIView = {
 		let view = UIView()
 		view.translatesAutoresizingMaskIntoConstraints = false
 		return view
 	}()
 
-	let headerImageView: UIImageView = {
+	final let headerImageView: UIImageView = {
 		let imageView = UIImageView()
 		imageView.contentMode = .scaleAspectFill
 		imageView.clipsToBounds = true
@@ -47,8 +47,6 @@ class BaseHeaderView: UIView {
 
 		addSubview(containerView)
 		containerView.addSubviews(headerImageView, nameLabel)
-
-		if !addRatingsLabel { layoutUI() }
 	}
 
 	/// Function to layout the UI
@@ -86,9 +84,9 @@ class BaseHeaderView: UIView {
 	}
 }
 
-extension BaseHeaderView {
-	// ! Public
+// ! Public
 
+extension BaseHeaderView {
 	/// Function to create a `UIBarButtonItem`
 	///
 	/// - Parameters:
