@@ -8,7 +8,7 @@ protocol TVShowDetailsViewDelegate: AnyObject {
 /// Class to represent the TV show details view
 final class TVShowDetailsView: UIView {
 	private let viewModel: TVShowDetailsViewViewModel
-	private var headerView: TVShowDetailsHeaderView!
+	private var headerView: MediaDetailsHeaderView!
 
 	@UsesAutoLayout
 	private var tvShowDetailsTableView: UITableView = {
@@ -88,7 +88,7 @@ extension TVShowDetailsView {
 
 extension TVShowDetailsView: UITableViewDelegate {
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
-		guard let headerView = tvShowDetailsTableView.tableHeaderView as? TVShowDetailsHeaderView else {
+		guard let headerView = tvShowDetailsTableView.tableHeaderView as? MediaDetailsHeaderView else {
 			return
 		}
 

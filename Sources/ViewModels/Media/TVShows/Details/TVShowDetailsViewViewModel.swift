@@ -56,7 +56,7 @@ final class TVShowDetailsViewViewModel: WatchProviderPresentable {
 
 	// ! Private
 
-	private func setupHeaderViewModel() -> TVShowDetailsHeaderViewViewModel {
+	private func setupHeaderViewModel() -> MediaDetailsHeaderViewViewModel {
 		let average = tvShow.voteAverage?.round(to: 1) ?? 0
 		let isWholeNumber = average.truncatingRemainder(dividingBy: 1) == 0
 
@@ -144,8 +144,8 @@ final class TVShowDetailsViewViewModel: WatchProviderPresentable {
 extension TVShowDetailsViewViewModel {
 	/// Function to setup the table view's header
 	/// - Parameter view: The view that owns the table view, therefore the header
-	func setupHeaderView(forView view: UIView) -> TVShowDetailsHeaderView {
-		let headerView = TVShowDetailsHeaderView()
+	func setupHeaderView(forView view: UIView) -> MediaDetailsHeaderView {
+		let headerView = MediaDetailsHeaderView()
 		headerView.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 160)
 		headerView.configure(with: setupHeaderViewModel())
 		return headerView

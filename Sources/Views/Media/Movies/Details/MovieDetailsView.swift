@@ -50,7 +50,7 @@ final class MovieDetailsView: UIView {
 
 extension MovieDetailsView: UITableViewDelegate {
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
-		guard let headerView = movieDetailsTableView.tableHeaderView as? TVShowDetailsHeaderView else {
+		guard let headerView = movieDetailsTableView.tableHeaderView as? MediaDetailsHeaderView else {
 			return
 		}
 

@@ -1,7 +1,7 @@
 import UIKit
 
 /// Class to represent the header image for the tv show details view
-final class TVShowDetailsHeaderView: BaseHeaderView {
+final class MediaDetailsHeaderView: BaseHeaderView {
 	private var ratingsLabel: UILabel!
 
 	// ! Lifecycle
@@ -28,18 +28,17 @@ final class TVShowDetailsHeaderView: BaseHeaderView {
 	}
 }
 
-extension TVShowDetailsHeaderView {
-	// ! Public
+// ! Public
 
+extension MediaDetailsHeaderView {
 	/// Function to configure the view with its respective view model
-	/// - Parameters:
-	/// 	- with: The view's view model
-	func configure(with viewModel: TVShowDetailsHeaderViewViewModel) {
+	/// - Parameter with: The view's view model
+	func configure(with viewModel: MediaDetailsHeaderViewViewModel) {
 		nameLabel.text = viewModel.tvShowName
 		ratingsLabel.text = viewModel.rating
 
-		Task(priority: .background) {
-			let image = try? await viewModel.fetchImage()
+		Task {
+			let image = try await viewModel.fetchImage()
 			await MainActor.run {
 				UIView.transition(with: self.headerImageView, duration: 0.5, options: .transitionCrossDissolve) {
 					self.headerImageView.image = image
