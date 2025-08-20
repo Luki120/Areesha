@@ -1,5 +1,5 @@
+import Combine
 import UIKit
-
 
 extension Array {
 	func insertionIndex(of element: Element, isOrderedBefore: (Element, Element) -> Bool) -> Int {
@@ -58,6 +58,25 @@ extension NSMutableAttributedString {
 		attributedString.addAttribute(.font, value: UIFont.preferredFont(forTextStyle: .caption2, size: 10), range: rangeOfSubString)
 
 		self.init(attributedString: attributedString)
+	}
+}
+
+extension Publisher {
+	func async() async throws -> Output where Output: Sendable {
+		try await withCheckedThrowingContinuation { continuation in
+			var cancellable: AnyCancellable?
+			cancellable = first()
+				.sink(receiveCompletion: { completion in
+					switch completion {
+						case .finished: break
+						case .failure(let error): continuation.resume(throwing: error)
+					}
+					cancellable?.cancel()
+				}) { value in
+					continuation.resume(returning: value)
+					cancellable?.cancel()
+				}
+		}
 	}
 }
 
