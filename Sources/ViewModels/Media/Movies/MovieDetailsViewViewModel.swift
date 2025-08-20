@@ -71,7 +71,7 @@ final class MovieDetailsViewViewModel: WatchProviderPresentable {
 		let urlString = "\(Service.Constants.baseURL)movie/\(movie.id)/watch/providers?\(Service.Constants.apiKey)"
 		guard let url = URL(string: urlString) else { return }
 
-		await Service.sharedInstance.fetchTVShows(withURL: url, expecting: WatchProvider.self)
+		await Service.sharedInstance.fetch(withURL: url, expecting: WatchProvider.self)
 			.receive(on: DispatchQueue.main)
 			.sink(receiveCompletion: { _ in }) { [weak self] watchProvider, isFromCache in
 				guard let self else { return }

@@ -40,7 +40,7 @@ final class SearchListViewViewModel: BaseViewModel<SearchListCell>, ObservableOb
 			let url = URL(string: urlString) else { return }
 
 			Task {
-				await Service.sharedInstance.fetchTVShows(withURL: url, expecting: SearchResponse.self)
+				await Service.sharedInstance.fetch(withURL: url, expecting: SearchResponse.self)
 					.catch { _ in Just(SearchResponse(results: [])) }
 					.receive(on: DispatchQueue.main)
 					.sink { [weak self] response in

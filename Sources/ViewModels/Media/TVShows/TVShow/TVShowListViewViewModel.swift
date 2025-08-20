@@ -53,11 +53,11 @@ final class TVShowListViewViewModel: NSObject {
 
 	private var dataSource: DataSource!
 
-	private func fetchTVShows(withURL url: URL?) {
+	private func fetch(withURL url: URL?) {
 		guard let url else { return }
 
 		Task {
-			await Service.sharedInstance.fetchTVShows(withURL: url, expecting: APIResponse.self)
+			await Service.sharedInstance.fetch(withURL: url, expecting: APIResponse.self)
 				.catch { _ in Just(APIResponse(results: [])) }
 				.receive(on: DispatchQueue.main)
 				.sink { [weak self] tvShows in
@@ -74,12 +74,12 @@ final class TVShowListViewViewModel: NSObject {
 extension TVShowListViewViewModel {
 	/// Function to fetch the current top rated tv shows
 	func fetchTopRatedTVShows() {
-		fetchTVShows(withURL: URL(string: Service.Constants.topRatedTVShowsURL))
+		fetch(withURL: URL(string: Service.Constants.topRatedTVShowsURL))
 	}
 
 	/// Function to fetch the current trending tv shows of the day
 	func fetchTrendingTVShows() {
-		fetchTVShows(withURL: URL(string: Service.Constants.trendingTVShowsURL))
+		fetch(withURL: URL(string: Service.Constants.trendingTVShowsURL))
 	}
 
 	/// Function to fetch the current trending movies of the day
@@ -87,7 +87,7 @@ extension TVShowListViewViewModel {
 		guard let url = URL(string: Service.Constants.trendingMoviesURL) else { return }
 
 		Task {
-			await Service.sharedInstance.fetchTVShows(withURL: url, expecting: MovieResponse.self)
+			await Service.sharedInstance.fetch(withURL: url, expecting: MovieResponse.self)
 				.catch { _ in Just(MovieResponse(results: [])) }
 				.receive(on: DispatchQueue.main)
 				.sink { [weak self] movies in

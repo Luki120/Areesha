@@ -52,7 +52,7 @@ final class RatedMoviesViewViewModel: BaseViewModel<RatedMovieCell> {
 			guard let url = urlComponents?.url else { break }
 			let urlRequest = await Service.sharedInstance.makeRequest(for: url)
 
-			let result: (RatedMovieResult, Bool)? = try? await Service.sharedInstance.fetchTVShows(
+			let result: (RatedMovieResult, Bool)? = try? await Service.sharedInstance.fetch(
 				request: urlRequest,
 				expecting: RatedMovieResult.self
 			).async()

@@ -24,9 +24,9 @@ final actor Service {
 	/// Function to make API calls
 	/// - Parameters:
 	///		- request: The `URLRequest`
-	///		- expecting: The given type that conforms to `Codable` from which to decode the JSON data
+	///		- type: The `Codable` type
 	/// - Returns: `AnyPublisher<(T, Bool), Error>`
-	func fetchTVShows<T: Codable>(request: URLRequest, expecting type: T.Type) -> AnyPublisher<(T, Bool), Error> {
+	func fetch<T: Codable>(request: URLRequest, expecting type: T.Type) -> AnyPublisher<(T, Bool), Error> {
 		let urlString = request.url?.absoluteString ?? UUID().uuidString
 		let dataPublisher: AnyPublisher<Data, Error>
 		let isFromCache: Bool
@@ -54,12 +54,12 @@ final actor Service {
 			.eraseToAnyPublisher()
 	}
 
-	/// Function to make API calls, without caching
+	/// Function to make API calls without caching
 	/// - Parameters:
 	///		- request: The `URLRequest`
-	///		- expecting: The given type that conforms to `Codable` from which to decode the JSON data
+	///		- type: The `Codable` type
 	/// - Returns: `AnyPublisher<T, Error>`
-	func fetchTVShows<T: Codable>(request: URLRequest, expecting type: T.Type) -> AnyPublisher<T, Error> {
+	func fetch<T: Codable>(request: URLRequest, expecting type: T.Type) -> AnyPublisher<T, Error> {
 		return URLSession.shared.dataTaskPublisher(for: request)
 			.tryMap { data, _ in
 				return data
@@ -72,20 +72,20 @@ final actor Service {
 
 	/// Function to make API calls
 	/// - Parameters:
-	///		- withURL: The API call url
-	///		- expecting: The given type that conforms to `Codable` from which to decode the JSON data
+	///		- url: The API call `URL`
+	///		- type: The `Codable` type
 	/// - Returns: `AnyPublisher<(T, Bool), Error>`
-	func fetchTVShows<T: Codable>(withURL url: URL, expecting type: T.Type) -> AnyPublisher<(T, Bool), Error> {
-		return fetchTVShows(request: .init(url: url), expecting: type)
+	func fetch<T: Codable>(withURL url: URL, expecting type: T.Type) -> AnyPublisher<(T, Bool), Error> {
+		return fetch(request: .init(url: url), expecting: type)
 	}
 
-	/// Function to make API calls, ignoring if it comes from the cache or the network
+	/// Function to make API calls without caching
 	/// - Parameters:
-	///		- withURL: The API call url
-	///		- expecting: The given type that conforms to `Codable` from which to decode the JSON data
+	///		- url: The API call `URL`
+	///		- type: The `Codable` type
 	/// - Returns: `AnyPublisher<T, Error>`
-	func fetchTVShows<T: Codable>(withURL url: URL, expecting type: T.Type) -> AnyPublisher<T, Error> {
-		fetchTVShows(request: .init(url: url), expecting: T.self)
+	func fetch<T: Codable>(withURL url: URL, expecting type: T.Type) -> AnyPublisher<T, Error> {
+		fetch(request: .init(url: url), expecting: type)
 			.map(\.0)
 			.eraseToAnyPublisher()
 	}
@@ -130,7 +130,7 @@ extension Service {
 	/// - Parameters:
 	///		- id: An `Int` that represents the tv show or movie
 	///		- isMovie: `Bool` that checks wether we should fetch the details for a movie, defaults to false
-	///		- type: The given type that conforms to `Codable` from which to decode the JSON data
+	///		- type: The `Codable` type
 	/// - Returns: `AnyPublisher<(T, Bool), Error>`
 	func fetchDetails<T: Codable>(for id: Int, isMovie: Bool = false, expecting type: T.Type) -> AnyPublisher<(T, Bool), Error> {
 		let mediaType = isMovie ? "movie" : "tv"
@@ -141,7 +141,7 @@ extension Service {
 			return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
 		}
 
-		return fetchTVShows(request: makeRequest(for: url), expecting: T.self)
+		return fetch(request: makeRequest(for: url), expecting: type)
 			.eraseToAnyPublisher()
 	}
 
@@ -156,7 +156,7 @@ extension Service {
 			return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
 		}
 
-		return fetchTVShows(withURL: url, expecting: Season.self)
+		return fetch(withURL: url, expecting: Season.self)
 			.eraseToAnyPublisher()
 	}
 

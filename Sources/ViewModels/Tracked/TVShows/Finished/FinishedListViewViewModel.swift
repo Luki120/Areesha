@@ -43,7 +43,7 @@ final class FinishedListViewViewModel: BaseViewModel<TrackedTVShowListCell> {
 			guard let url = urlComponents?.url else { break }
 			let urlRequest = await Service.sharedInstance.makeRequest(for: url)
 
-			let result: (RatedTVShowResult, Bool)? = try? await Service.sharedInstance.fetchTVShows(
+			let result: (RatedTVShowResult, Bool)? = try? await Service.sharedInstance.fetch(
 				request: urlRequest,
 				expecting: RatedTVShowResult.self
 			).async()
