@@ -19,6 +19,7 @@ Areesha_FILES = $(call rwildcard, Sources, *.swift)
 Areesha_LDFLAGS = -rpath /Applications/Areesha.app/Frameworks/
 Areesha_FRAMEWORKS = UIKit CoreGraphics
 Areesha_SWIFTFLAGS = -swift-version 6
+Areesha_CODESIGN_FLAGS = -Sentitlements.plist
 
 include $(THEOS)/makefiles/common.mk
 include $(THEOS_MAKE_PATH)/application.mk
