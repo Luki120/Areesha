@@ -1,7 +1,9 @@
 import UIKit
+import CoreImage.CIFilterBuiltins
 
 /// Class to represent the header image for the tv show details view
 final class MediaDetailsHeaderView: BaseHeaderView {
+	private let context = CIContext()
 	private var ratingsLabel: UILabel!
 
 	// ! Lifecycle
@@ -33,13 +35,14 @@ final class MediaDetailsHeaderView: BaseHeaderView {
 
 extension MediaDetailsHeaderView {
 	/// Function to configure the view with its respective view model
-	/// - Parameter with: The view's view model
+	/// - Parameter viewModel: The view's view model
 	func configure(with viewModel: MediaDetailsHeaderViewViewModel) {
-		nameLabel.text = viewModel.name == nil ? viewModel.episodeName : viewModel.name
+		nameLabel.text = viewModel.name ?? viewModel.episodeName
 		ratingsLabel.text = viewModel.rating
 
 		Task {
-			let image = try await viewModel.fetchImage()
+			let image = try await viewModel.fetchImage().blur(context: context)
+
 			await MainActor.run {
 				UIView.transition(with: self.headerImageView, duration: 0.5, options: .transitionCrossDissolve) {
 					self.headerImageView.image = image
@@ -49,5 +52,64 @@ extension MediaDetailsHeaderView {
 				}
 			}
 		}
+	}
+}
+
+@MainActor
+private extension UIImage {
+	enum ProgressiveBlurPosition {
+		case top, bottom
+
+		var colors: [CIColor] {
+			switch self {
+				case .top: return [.clear, .white]
+				case .bottom: return [.white, .clear]
+			}
+		}
+	}
+
+	/// Function that creates a `UIImage` with progressive blur
+	/// - Parameters:
+	///		- context: The `CIContext`
+	///		- radius: A `Float` that represents the blur radius
+	func blur(context: CIContext, radius: Float = 40) -> UIImage {
+		guard let ciImage = CIImage(image: self) else { return .init() }
+
+		let imageMask = createImageMask(for: ciImage, maskHeight: ciImage.extent.height, position: .bottom)
+		let blurredImage = applyProgressiveBlur(to: ciImage, mask: imageMask, blurRadius: radius)
+
+		guard let cgImage = context.createCGImage(blurredImage, from: blurredImage.extent) else { return .init() }
+		return UIImage(cgImage: cgImage, scale: scale, orientation: imageOrientation)		
+	}
+
+	private func applyProgressiveBlur(to ciImage: CIImage, mask: CIImage, blurRadius: Float) -> CIImage {
+		let clampedImage = ciImage.clampedToExtent()
+		let filter = CIFilter.maskedVariableBlur()
+		filter.mask = mask
+		filter.radius = blurRadius
+		filter.inputImage = clampedImage
+
+		return filter.outputImage?.cropped(to: ciImage.extent) ?? .init()
+	}
+
+	private func createImageMask(
+		for ciImage: CIImage,
+		maskHeight: Double,
+		position: ProgressiveBlurPosition
+	) -> CIImage {
+		let gradient = CIFilter.smoothLinearGradient()
+		gradient.color0 = position.colors[0]
+		gradient.color1 = position.colors[1]
+		gradient.point0 = CGPoint(x: 0, y: 0)
+		gradient.point1 = CGPoint(x: 0, y: maskHeight * 0.25)
+
+		guard let gradientImage = gradient.outputImage else { return .init() }
+
+		let featheredMaskImage = gradientImage.clampedToExtent()
+		let gaussiarBlur = CIFilter.gaussianBlur()
+		gaussiarBlur.radius = 85
+		gaussiarBlur.inputImage = featheredMaskImage
+
+		return gaussiarBlur.outputImage?.cropped(to: ciImage.extent) ?? .init()
 	}
 }
