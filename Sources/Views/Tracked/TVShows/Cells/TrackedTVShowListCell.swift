@@ -64,13 +64,7 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 	}()
 
 	@UsesAutoLayout
-	private var starImagesStackView: UIStackView = {
-		let stackView = UIStackView()
-		stackView.spacing = 0.5
-		stackView.alignment = .leading
-		stackView.distribution = .fillEqually
-		return stackView
-	}()
+	private var ratingStarsView = RatingStarsView()
 
 	private var imageTask: Task<Void, Error>?
 	private var tvShowNameLabel, lastSeenLabel: UILabel!
@@ -151,47 +145,16 @@ final class TrackedTVShowContentView: UIView, UIContentView {
 
 	private func configureRating(with viewModel: TrackedTVShowCellViewModel) {
 		guard viewModel.listType == .finished && viewModel.rating != 0 else {
-			starImagesStackView.removeFromSuperview()
+			ratingStarsView.removeFromSuperview()
 			return
 		}
 
-		updateStars(for: viewModel.rating)
+		ratingStarsView.updateStars(for: viewModel.rating, size: 12)
 		lastSeenLabel.removeFromSuperview()
 
-		addSubview(starImagesStackView)
-		starImagesStackView.topAnchor.constraint(equalTo: tvShowNameLabel.bottomAnchor, constant: 8).isActive = true
-		starImagesStackView.leadingAnchor.constraint(equalTo: tvShowNameLabel.leadingAnchor).isActive = true
-	}
-
-	private func updateStars(for rating: Double) {
-		starImagesStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-
-		let rating = rating / 2
-		let fullStars = Int(floor(rating))
-		let isHalfStar = (rating - Double(fullStars)) >= 0.5
-
-		for index in 0..<5 {
-			let starImageView = UIImageView()
-			starImageView.tintColor = .systemYellow
-			starImageView.contentMode = .scaleAspectFit
-			starImageView.clipsToBounds = true
-			starImageView.translatesAutoresizingMaskIntoConstraints = false
-
-			UIView.transition(with: starImageView, duration: 0.5, options: .transitionCrossDissolve) {
-				if index < fullStars {
-					starImageView.image = UIImage(systemName: "star.fill")
-				}
-				else if index == fullStars && isHalfStar {
-					starImageView.image = UIImage(systemName: "star.leadinghalf.fill")
-				}
-				else {
-					starImageView.image = nil
-				}
-			}
-
-			starImagesStackView.addArrangedSubview(starImageView)
-			starImagesStackView.setupSizeConstraints(forView: starImageView, width: 12, height: 12)
-		}
+		addSubview(ratingStarsView)
+		ratingStarsView.topAnchor.constraint(equalTo: tvShowNameLabel.bottomAnchor, constant: 8).isActive = true
+		ratingStarsView.leadingAnchor.constraint(equalTo: tvShowNameLabel.leadingAnchor).isActive = true
 	}
 
 	// ! Reusable

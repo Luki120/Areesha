@@ -13,13 +13,7 @@ final class RatedMovieCell: UICollectionViewCell {
 	}()
 
 	@UsesAutoLayout
-	private var starImagesStackView: UIStackView = {
-		let stackView = UIStackView()
-		stackView.spacing = 0.5
-		stackView.alignment = .leading
-		stackView.distribution = .fillEqually
-		return stackView
-	}()
+	private var ratingStarsView = RatingStarsView()
 
 	private var activeViewModel: RatedMovieCellViewModel!
 
@@ -38,7 +32,7 @@ final class RatedMovieCell: UICollectionViewCell {
 		super.prepareForReuse()
 		posterImageView.image = nil
 
-		starImagesStackView.subviews.forEach {
+		ratingStarsView.starImagesStackView.arrangedSubviews.forEach {
 			let imageView = $0 as? UIImageView
 			imageView?.image = nil
 		}
@@ -47,7 +41,7 @@ final class RatedMovieCell: UICollectionViewCell {
 	// ! Lifecycle
 
 	private func setupUI() {
-		contentView.addSubviews(posterImageView, starImagesStackView)
+		contentView.addSubviews(posterImageView, ratingStarsView)
 		layoutUI()
 	}
 
@@ -57,42 +51,11 @@ final class RatedMovieCell: UICollectionViewCell {
 			posterImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
 			posterImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
 
-			starImagesStackView.topAnchor.constraint(equalTo: posterImageView.bottomAnchor, constant: 5),
-			starImagesStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
-			starImagesStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-			starImagesStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+			ratingStarsView.topAnchor.constraint(equalTo: posterImageView.bottomAnchor, constant: 5),
+			ratingStarsView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
+			ratingStarsView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+			ratingStarsView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10)
 		])
-	}
-
-	private func updateStars(for rating: Double) {
-		starImagesStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-
-		let rating = rating / 2
-		let fullStars = Int(floor(rating))
-		let isHalfStar = (rating - Double(fullStars)) >= 0.5
-
-		for index in 0..<5 {
-			let starImageView = UIImageView()
-			starImageView.tintColor = .systemYellow
-			starImageView.contentMode = .scaleAspectFit
-			starImageView.clipsToBounds = true
-			starImageView.translatesAutoresizingMaskIntoConstraints = false
-
-			UIView.transition(with: starImageView, duration: 0.5, options: .transitionCrossDissolve) {
-				if index < fullStars {
-					starImageView.image = UIImage(systemName: "star.fill")
-				}
-				else if index == fullStars && isHalfStar {
-					starImageView.image = UIImage(systemName: "star.leadinghalf.fill")
-				}
-				else {
-					starImageView.image = nil
-				}
-			}
-
-			starImagesStackView.addArrangedSubview(starImageView)
-			starImagesStackView.setupSizeConstraints(forView: starImageView, width: 10, height: 10)
-		}
 	}
 }
 
@@ -101,7 +64,7 @@ final class RatedMovieCell: UICollectionViewCell {
 extension RatedMovieCell: Configurable {
 	func configure(with viewModel: RatedMovieCellViewModel) {
 		activeViewModel = viewModel
-		updateStars(for: viewModel.rating)
+		ratingStarsView.updateStars(for: viewModel.rating)
 
 		Task {
 			let (image, isFromNetwork) = try await viewModel.fetchImage()
