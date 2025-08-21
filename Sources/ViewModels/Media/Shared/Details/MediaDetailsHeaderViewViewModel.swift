@@ -15,16 +15,16 @@ protocol HeaderPresentable {
 extension HeaderPresentable {
 	func setupViewModel(name: String, average: Double, url: URL?) -> MediaDetailsHeaderViewViewModel {
 		let average = average.round(to: 1)
-		let isWholeNumber = average.truncatingRemainder(dividingBy: 1) == 0
-
-		let rating = isWholeNumber
+		let formattedRating = average.truncatingRemainder(dividingBy: 1) == 0
 			? String(format: "%.0f/10", average)
 			: String(describing: average) + "/10"
+
+		let rating = average == 0 ? "" : formattedRating
 
 		guard let url else {
 			return .init(
 				name: name,
-				rating: average == 0 ? "" : rating,
+				rating: rating,
 				imageURL: Bundle.main.url(forResource: "Placeholder", withExtension: "jpg")
 			)
 		}
