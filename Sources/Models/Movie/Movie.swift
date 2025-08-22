@@ -9,6 +9,7 @@ struct MovieResponse: Codable {
 struct Movie: Codable, Hashable {
 	let id: Int
 	let title: String
+	let budget: Int?
 	let genres: [Genre]?
 	let credits: Credits?
 	let revenue: Int?
@@ -20,12 +21,7 @@ struct Movie: Codable, Hashable {
 	let backgroundCoverImage: String?
 
 	enum CodingKeys: String, CodingKey {
-		case id
-		case title
-		case genres
-		case credits
-		case revenue
-		case runtime
+		case id, title, budget, genres, credits, revenue, runtime
 		case coverImage = "poster_path"
 		case releaseDate = "release_date"
 		case description = "overview"

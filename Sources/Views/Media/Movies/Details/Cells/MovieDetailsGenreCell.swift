@@ -4,33 +4,88 @@ import UIKit
 final class MovieDetailsGenreCell: MediaDetailsBaseCell {
 	static let identifier = "MovieDetailsGenreCell"
 
-	private var genreLabel, revenueLabel: UILabel!
+	private var viewModel: MediaDetailsGenreCellViewModel!
+	private var genreLabel, budgetRevenueLabel: UILabel!
 
 	// ! Lifecycle
 
 	override func prepareForReuse() {
 		super.prepareForReuse()
-		[genreLabel, revenueLabel].forEach { $0?.text = nil }
+		[genreLabel, budgetRevenueLabel].forEach { $0?.text = nil }
 	}
 
 	override func setupUI() {
 		genreLabel = createLabel()
-		revenueLabel = createLabel(numberOfLines: 1)
-		revenueLabel.textAlignment = .right
-		contentView.addSubviews(genreLabel, revenueLabel)
+		budgetRevenueLabel = createLabel(numberOfLines: 1)
+		budgetRevenueLabel.textAlignment = .right
+		budgetRevenueLabel.isUserInteractionEnabled = true
+		budgetRevenueLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapBudgetRevenueLabel)))
+		contentView.addSubviews(genreLabel, budgetRevenueLabel)
 
 		super.setupUI()
 	}
 
 	override func layoutUI() {
-		genreLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15).isActive = true
-		genreLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15).isActive = true
-		genreLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
-		genreLabel.trailingAnchor.constraint(equalTo: revenueLabel.leadingAnchor, constant: -20).isActive = true
+		NSLayoutConstraint.activate([
+			genreLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15),
+			genreLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15),
+			genreLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+			genreLabel.trailingAnchor.constraint(equalTo: budgetRevenueLabel.leadingAnchor, constant: -20),
 
-		revenueLabel.topAnchor.constraint(equalTo: genreLabel.topAnchor).isActive = true
-		revenueLabel.bottomAnchor.constraint(equalTo: genreLabel.bottomAnchor).isActive = true
-		revenueLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
+			budgetRevenueLabel.topAnchor.constraint(equalTo: genreLabel.topAnchor),
+			budgetRevenueLabel.bottomAnchor.constraint(equalTo: genreLabel.bottomAnchor),
+			budgetRevenueLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20)
+		])
+
+		budgetRevenueLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+	}
+
+	// ! Private
+
+	private func fadeTransition() {
+		budgetRevenueLabel.text = ""
+
+		let transition = CATransition()
+		transition.type = .fade
+		transition.duration = 0.5
+		transition.timingFunction = .init(name: .easeInEaseOut)
+		budgetRevenueLabel.layer.add(transition, forKey: nil)
+	}
+
+	private func configureBudgetRevenueLabel() -> String {
+		let budget = viewModel.budget ?? 0
+		let revenue = viewModel.revenue ?? 0
+
+		var value = 0
+		var prefixText = ""
+
+		if viewModel.budgetRevenueType == .budget {
+			value = budget
+			prefixText = "Budget: "
+		}
+		else if viewModel.revenue != 0 {
+			value = revenue
+			prefixText = "Revenue: "
+		}
+		else {
+			value = budget
+			prefixText = "Budget: "
+			viewModel.budgetRevenueType = .budget
+			budgetRevenueLabel.isUserInteractionEnabled = false
+		}
+
+		guard let formattedValue = Formatter.currencyFormatter.string(for: value) else {
+			budgetRevenueLabel.text = nil
+			return ""
+		}
+
+		return prefixText + formattedValue
+	}
+
+	@objc
+	private func didTapBudgetRevenueLabel() {
+		viewModel.budgetRevenueType = viewModel.budgetRevenueType == .revenue ? .budget : .revenue	
+		configure(with: viewModel)
 	}
 }
 
@@ -49,11 +104,16 @@ extension MovieDetailsGenreCell {
 	/// Function to configure the cell with its respective view model
 	/// - Parameter with: The cell's view model
 	func configure(with viewModel: MediaDetailsGenreCellViewModel) {
+		self.viewModel = viewModel
 		genreLabel.text = viewModel.genre == "" ? "Unknown genre" : viewModel.genre
 
-		guard viewModel.revenue != 0,
-			let revenue = Formatter.currencyFormatter.string(for: viewModel.revenue) else { return }
+		guard viewModel.budget != 0 || viewModel.revenue != 0 else {
+			budgetRevenueLabel.text = nil
+			budgetRevenueLabel.isUserInteractionEnabled = false
+			return
+		}
 
-		revenueLabel.text = "Revenue: " + revenue
+		fadeTransition()
+		budgetRevenueLabel.text = configureBudgetRevenueLabel()
 	}
 }

@@ -16,7 +16,11 @@ final class MovieDetailsViewViewModel: HeaderPresentable, WatchProviderPresentab
 
 	private var genreCellViewModel: MediaDetailsGenreCellViewModel {
 		let genres = movie.genres?.map(\.name) ?? []
-		return .init(genre: genres.joined(separator: ", "), revenue: movie.revenue ?? 0)
+		return .init(
+			genre: genres.joined(separator: ", "),
+			budget: movie.budget ?? 0,
+			revenue: movie.revenue ?? 0
+		)
 	}
 
 	private var descriptionCellViewModel: MediaDetailsDescriptionCellViewModel {
