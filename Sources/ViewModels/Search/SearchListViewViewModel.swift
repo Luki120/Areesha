@@ -45,7 +45,9 @@ final class SearchListViewViewModel: BaseViewModel<SearchListCell>, ObservableOb
 					.receive(on: DispatchQueue.main)
 					.sink { [weak self] response in
 						guard let self else { return }
-						let filteredResults = response.results.filter { $0.type == .movie || $0.type == .tv }
+						let filteredResults = response.results
+							.filter { ($0.type == .movie || $0.type == .tv) && !$0.isEmpty }
+
 						searchedResults = filteredResults
 						applySnapshot(isOrderedSet: true)
 
