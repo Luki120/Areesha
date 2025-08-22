@@ -53,6 +53,31 @@ extension MediaDetailsHeaderView {
 			}
 		}
 	}
+
+	/// Function to animate the vc's title label
+	/// - Parameters:
+	///		- titleLabel: The `UILabel`
+	///		- scrollView: The `UIScrollView`
+	///		- scrollableHeight: A `CGFloat` that represents the minimum height needed for scrolling
+	func animate(titleLabel: UILabel, in scrollView: UIScrollView, scrollableHeight: CGFloat) {
+		let kScrollableHeight = scrollableHeight
+		let scrolledEnough = scrollView.contentOffset.y > kScrollableHeight
+
+		UIView.animate(withDuration: 0.35, delay: 0, options: scrolledEnough ? .curveEaseIn : .curveEaseOut) {
+			titleLabel.alpha = scrolledEnough ? 1 : 0
+			if scrolledEnough { titleLabel.isHidden = false }
+
+			self.roundedBlurredButtons.forEach {
+				$0.setupStyles(for: .header(status: scrolledEnough))
+			}
+		} completion: { isFinished in
+			guard UIDevice.current.hasDynamicIsland else { return }
+
+			if isFinished && !scrolledEnough {
+				titleLabel.isHidden = true
+			}
+		}
+	}
 }
 
 @MainActor
@@ -71,7 +96,8 @@ private extension UIImage {
 	/// Function that creates a `UIImage` with progressive blur
 	/// - Parameters:
 	///		- context: The `CIContext`
-	///		- radius: A `Float` that represents the blur radius
+	///		- radius: A `Float` that represents the blur radius, defaults to 40
+	/// - Returns: `UIImage`
 	func blur(context: CIContext, radius: Float = 40) -> UIImage {
 		guard let ciImage = CIImage(image: self) else { return .init() }
 

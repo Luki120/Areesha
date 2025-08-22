@@ -9,6 +9,7 @@ final class MovieDetailsView: UIView {
 		let tableView = UITableView()
 		tableView.allowsSelection = false
 		tableView.backgroundColor = .systemBackground
+		tableView.showsVerticalScrollIndicator = false
 		tableView.register(MovieDetailsKeyInfoCell.self, forCellReuseIdentifier: MovieDetailsKeyInfoCell.identifier)
 		tableView.register(MovieDetailsGenreCell.self, forCellReuseIdentifier: MovieDetailsGenreCell.identifier)
 		tableView.register(MovieDetailsDescriptionCell.self, forCellReuseIdentifier: MovieDetailsDescriptionCell.identifier)
@@ -54,24 +55,9 @@ extension MovieDetailsView: UITableViewDelegate {
 			return
 		}
 
+		let scrollableHeight = headerView.frame.height - safeAreaInsets.top
+
 		headerView.scrollViewDidScroll(scrollView: scrollView)
-
-		let kScrollableHeight = headerView.frame.size.height - safeAreaInsets.top
-		let scrolledEnough = scrollView.contentOffset.y > kScrollableHeight
-
-		UIView.animate(withDuration: 0.35, delay: 0, options: scrolledEnough ? .curveEaseIn : .curveEaseOut) {
-			self.titleLabel.alpha = scrolledEnough ? 1 : 0
-			if scrolledEnough { self.titleLabel.isHidden = false }
-
-			headerView.roundedBlurredButtons.forEach {
-				$0.setupStyles(for: .header(status: scrolledEnough))
-			}
-		} completion: { isFinished in
-			guard UIDevice.current.hasDynamicIsland else { return }
-
-			if isFinished && !scrolledEnough {
-				self.titleLabel.isHidden = true
-			}
-		}
+		headerView.animate(titleLabel: titleLabel, in: scrollView, scrollableHeight: scrollableHeight)
 	}
 }
