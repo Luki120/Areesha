@@ -19,10 +19,12 @@ struct Region: Codable {
 }
 
 /// Watch option model struct
-struct WatchOption: Codable, Hashable {
+struct WatchOption: Codable, Hashable, ImageRepresentable {
 	let logoImage: String?
 
 	enum CodingKeys: String, CodingKey {
 		case logoImage = "logo_path"
 	}
+
+	var logoPath: String? { logoImage }
 }

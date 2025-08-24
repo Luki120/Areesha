@@ -12,7 +12,7 @@ struct RatedMovieResult: Codable {
 }
 
 /// Rated movie model struct
-struct RatedMovie: Codable, Hashable {
+struct RatedMovie: Codable, Hashable, ImageRepresentable {
 	let id: Int
 	let rating: Double
 	let coverImage: String
@@ -20,8 +20,11 @@ struct RatedMovie: Codable, Hashable {
 	var movie: Movie?
 
 	enum CodingKeys: String, CodingKey {
-		case id
-		case rating
+		case id, rating
 		case coverImage = "poster_path"
 	}
+
+	// ! ImageRepresentable
+
+	var posterPath: String? { coverImage }
 }

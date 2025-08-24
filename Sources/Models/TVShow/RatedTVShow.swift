@@ -1,6 +1,6 @@
 import Foundation
 
-/// Rated tv show model struct
+/// Rated tv show result model struct
 struct RatedTVShowResult: Codable {
 	let results: [RatedTVShow]
 	let totalPages: Int
@@ -11,7 +11,8 @@ struct RatedTVShowResult: Codable {
 	}
 }
 
-struct RatedTVShow: Codable {
+/// Rated tv show model struct
+struct RatedTVShow: Codable, ImageRepresentable {
 	let id: Int
 	let name: String
 	let backgroundCoverImage: String
@@ -20,9 +21,11 @@ struct RatedTVShow: Codable {
 	var tvShow: TVShow?
 
 	enum CodingKeys: String, CodingKey {
-		case id
-		case name
-		case rating
+		case id, name, rating
 		case backgroundCoverImage = "backdrop_path"
-	}	
+	}
+
+	// ! ImageRepresentable
+
+	var backdropPath: String? { backgroundCoverImage }
 }

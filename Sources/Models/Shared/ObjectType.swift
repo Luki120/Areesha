@@ -1,7 +1,7 @@
 import Foundation
 
 /// Object type model struct
-struct ObjectType: Codable {
+struct ObjectType: Codable, ImageRepresentable {
 	let id: Int
 	let name: String?
 	let title: String?
@@ -27,6 +27,11 @@ struct ObjectType: Codable {
 	var type: MediaType {
 		return .init(rawValue: mediaType) ?? .unknown
 	}
+
+	// ! ImageRepresentable
+
+	var posterPath: String? { coverImage }
+	var backdropPath: String? { backgroundCoverImage }
 }
 
 extension ObjectType {

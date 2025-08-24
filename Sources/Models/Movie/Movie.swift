@@ -6,7 +6,7 @@ struct MovieResponse: Codable {
 }
 
 /// Movie model struct
-struct Movie: Codable, Hashable {
+struct Movie: Codable, Hashable, ImageRepresentable {
 	let id: Int
 	let title: String
 	let budget: Int?
@@ -28,4 +28,9 @@ struct Movie: Codable, Hashable {
 		case voteAverage = "vote_average"
 		case backgroundCoverImage = "backdrop_path"
 	}
+
+	// ! ImageRepresentable
+
+	var posterPath: String? { coverImage }
+	var backdropPath: String? { backgroundCoverImage }
 }
