@@ -24,7 +24,7 @@ extension WatchProviderPresentable {
 		let providers = Set((region.additionals ?? []) + (region.flatrate ?? []))
 
 		let viewModels: [MediaDetailsProvidersCellViewModel] = providers.compactMap { option in
-			guard let url = Service.imageURL(.watchProviderLogo(option), size: "w200") else { return nil }
+			let url = Service.imageURL(for: option, type: .logo, size: "w200")
 			return MediaDetailsProvidersCellViewModel(imageURL: url)
 		}
 

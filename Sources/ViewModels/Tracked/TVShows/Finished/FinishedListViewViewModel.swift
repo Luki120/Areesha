@@ -84,7 +84,7 @@ final class FinishedListViewViewModel: BaseViewModel<TrackedTVShowListCell> {
 	private func applySnapshot(from models: [RatedTVShow]) {
 		applySnapshot(from: models) {
 			var viewModel = TrackedTVShowCellViewModel($0)
-			viewModel.imageURL = Service.imageURL(.mediaPoster($0.backgroundCoverImage))
+			viewModel.imageURL = Service.imageURL(for: $0, type: .backdrop)
 			viewModel.listType = .finished
 			return viewModel
 		}

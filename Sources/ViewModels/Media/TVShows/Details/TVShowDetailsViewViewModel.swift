@@ -57,7 +57,7 @@ final class TVShowDetailsViewViewModel: HeaderPresentable, WatchProviderPresenta
 	// ! Private
 
 	private func setupHeaderViewModel() -> MediaDetailsHeaderViewViewModel {
-		let url = Service.imageURL(.showBackdrop(tvShow), size: "w1280")
+		let url = Service.imageURL(for: tvShow, type: .backdrop, size: "w1280")
 		return setupViewModel(name: tvShow.name, average: tvShow.voteAverage ?? 0, url: url)
 	}
 

@@ -79,11 +79,7 @@ final class ExploreCoordinator: NSObject, Coordinator {
 				navigationController.popViewController(animated: true)
 
 			case .starButtonTapped(let object):
-				let viewModel = RatingViewViewModel(
-					object: object,
-					posterPath: object.coverImage ?? "",
-					backdropPath: object.backgroundCoverImage ?? ""
-				)
+				let viewModel = RatingViewViewModel(object: object)
 				let ratingVC = RatingVC(viewModel: viewModel, coordinatorType: .explore)
 				ratingVC.coordinator = self
 				navigationController.pushViewController(ratingVC, animated: true)

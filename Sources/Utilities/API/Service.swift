@@ -173,42 +173,30 @@ extension Service {
 	}
 }
 
-// ! ImageFetch
+// ! ImageType
 
 extension Service {
 	/// Enum to represent the different types of images
-	enum ImageFetch {
-		case showPoster(TVShow)
-		case mediaPoster(String)
-		case moviePoster(Movie)
-		case showBackdrop(TVShow)
-		case movieBackdrop(Movie)
-		case seasonPoster(Season)
-		case episodeStill(Episode)
-		case ratedMoviePoster(RatedMovie)
-		case watchProviderLogo(WatchOption)
-
-		var path: String? {
-			switch self {
-				case .showPoster(let show): return show.coverImage
-				case .mediaPoster(let path): return path 
-				case .moviePoster(let movie): return movie.coverImage
-				case .showBackdrop(let show): return show.backgroundCoverImage
-				case .movieBackdrop(let movie): return movie.backgroundCoverImage
-				case .seasonPoster(let season): return season.coverImage
-				case .episodeStill(let episode): return episode.coverImage
-				case .ratedMoviePoster(let ratedMovie): return ratedMovie.coverImage
-				case .watchProviderLogo(let watchOption): return watchOption.logoImage
-			}
-		}
+	enum ImageType {
+		case poster, backdrop, logo, episodeStill
 	}
 
 	/// Function to get the requested image url
 	/// - Parameters:
-	///		- image: The `ImageFetch` object
+	///		- item: The `ImageRepresentable`
+	///		- type: The `ImageType`
 	///		- size: A `String` representing the size of the image
-	static func imageURL(_ image: ImageFetch, size: String = "w500") -> URL? {
-		guard let path = image.path else { return nil }
+	/// - Returns: `URL?`
+	static func imageURL(for item: ImageRepresentable, type: ImageType, size: String = "w500") -> URL? {
+		let path: String?
+
+		switch type {
+			case .poster, .episodeStill: path = item.posterPath
+			case .backdrop: path = item.backdropPath
+			case .logo: path = item.logoPath
+		}
+
+		guard let path else { return nil }
 		return URL(string: Constants.imageBaseURL + size + "/" + path)
 	}
 }

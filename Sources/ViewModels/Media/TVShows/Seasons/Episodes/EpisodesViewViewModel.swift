@@ -62,7 +62,7 @@ final class EpisodesViewViewModel: BaseViewModel<EpisodeCell> {
 
 	private func updateViewModels(with episodes: [Episode]) {
 		viewModels += episodes.compactMap { episode in
-			guard let url = Service.imageURL(.episodeStill(episode)) else { return nil }
+			let url = Service.imageURL(for: episode, type: .episodeStill)
 
 			return EpisodeCellViewModel(
 				imageURL: url,
@@ -80,9 +80,9 @@ extension EpisodesViewViewModel {
 	/// Function to fetch the tv show's poster image
 	/// - Returns: `UIImage`
 	nonisolated func fetchTVShowImage() async -> UIImage {
-		guard let imageURL = Service.imageURL(.showPoster(tvShow), size: "w1280"),
-			let image = try? await ImageActor.sharedInstance.fetchImage(imageURL) else { return .init() }
+		let imageURL = Service.imageURL(for: tvShow, type: .poster, size: "w1280")
 
+		guard let image = try? await ImageActor.sharedInstance.fetchImage(imageURL) else { return .init() }
 		return image
 	}
 }

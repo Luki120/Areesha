@@ -58,7 +58,7 @@ extension TrackedTVShowManager {
 			tvShow: tvShow,
 			season: season,
 			episode: episode,
-			imageURL: Service.imageURL(.episodeStill(episode)),
+			imageURL: Service.imageURL(for: episode, type: .episodeStill),
 			lastSeen: "Last seen: S\(cleanSeasonNumber)E\(cleanEpisodeNumber)"
 		)
 

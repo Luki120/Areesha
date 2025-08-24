@@ -28,7 +28,7 @@ final class RatedMoviesViewViewModel: BaseViewModel<RatedMovieCell> {
 
 		viewModels = updatedRatedMovies.map {
 			var viewModel = RatedMovieCellViewModel($0)
-			viewModel.imageURL = Service.imageURL(.ratedMoviePoster($0))
+			viewModel.imageURL = Service.imageURL(for: $0, type: .poster)
 			return viewModel
 		}
 		.sorted { ($0.leadActorName, -$0.rating) < ($1.leadActorName, -$1.rating) }

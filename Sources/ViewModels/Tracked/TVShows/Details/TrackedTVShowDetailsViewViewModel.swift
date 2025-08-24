@@ -43,7 +43,7 @@ final class TrackedTVShowDetailsViewViewModel {
 	}
 
 	private func setupHeaderViewModel() -> MediaDetailsHeaderViewViewModel {
-		guard let url = Service.imageURL(.episodeStill(trackedTVShow.episode), size: "w1280") else {
+		guard let url = Service.imageURL(for: trackedTVShow.episode, type: .episodeStill, size: "w1280") else {
 			return .init(
 				name: nil,
 				rating: nil,

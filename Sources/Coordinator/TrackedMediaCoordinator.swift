@@ -63,11 +63,7 @@ final class TrackedMediaCoordinator: Coordinator {
 			case .backButtonTapped, .popVC: navigationController.popViewController(animated: true)
 
 			case .starButtonTapped(let object):
-				let viewModel = RatingViewViewModel(
-					object: object,
-					posterPath: object.coverImage ?? "",
-					backdropPath: object.backgroundCoverImage ?? ""
-				)
+				let viewModel = RatingViewViewModel(object: object)
 				let ratingVC = RatingVC(viewModel: viewModel, coordinatorType: .tracked(self))
 				navigationController.pushViewController(ratingVC, animated: true)
 

@@ -89,7 +89,7 @@ final class MovieDetailsViewViewModel: HeaderPresentable, WatchProviderPresentab
 	// ! Private
 
 	private func setupHeaderViewModel() -> MediaDetailsHeaderViewViewModel {
-		let url = Service.imageURL(.movieBackdrop(movie), size: "w1280")
+		let url = Service.imageURL(for: movie, type: .backdrop, size: "w1280")
 		return setupViewModel(name: movie.title, average: movie.voteAverage ?? 0, url: url)
 	}
 }

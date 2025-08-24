@@ -11,18 +11,11 @@ final class RatingViewViewModel: BaseViewModel<RatingCell> {
 	private var currentRating: Double = 0
 
 	let object: ObjectType
-	private let posterPath: String
-	private let backdropPath: String
 
 	/// Designated initializer
-	/// - Parameters:
-	///		- object: The `ObjectType` model
-	///		- posterPath: A `String` that represents the object's poster path
-	///		- backdropPath: A `String` that represents the object's backdrop path
-	init(object: ObjectType, posterPath: String, backdropPath: String) {
+	/// - Parameter object: The `ObjectType` model
+	init(object: ObjectType) {
 		self.object = object
-		self.posterPath = posterPath
-		self.backdropPath = backdropPath
 		super.init()
 
 		onCellRegistration = { cell, viewModel in
@@ -67,11 +60,15 @@ extension RatingViewViewModel {
 	/// Function to fetch the object's images in different sizes
 	/// - Returns: `[UIImage]`
 	nonisolated func fetchImages() async -> [UIImage] {
-		guard let imageURL = Service.imageURL(.mediaPoster(backdropPath), size: "w1280"),
-			let backgroundImage = try? await ImageActor.sharedInstance.fetchImage(imageURL) else { return [] }
+		let backgroundImageURL = Service.imageURL(for: object, type: .backdrop, size: "w1280")
+		guard let backgroundImage = try? await ImageActor.sharedInstance.fetchImage(backgroundImageURL) else {
+			return []
+		}
 
-		guard let imageURL = Service.imageURL(.mediaPoster(posterPath)),
-			let posterImage = try? await ImageActor.sharedInstance.fetchImage(imageURL) else { return [] }
+		let coverImageURL = Service.imageURL(for: object, type: .poster)
+		guard let posterImage = try? await ImageActor.sharedInstance.fetchImage(coverImageURL) else {
+			return []
+		}
 
 		return [backgroundImage, posterImage]
 	}

@@ -17,8 +17,7 @@ final class TVShowListViewViewModel: NSObject {
 	private var movies = [Movie]() {
 		didSet {
 			movieCellModels = movies.compactMap { movie in
-				guard let url = Service.imageURL(.moviePoster(movie)) else { return nil }
-				return MovieCellViewModel(imageURL: url)
+				return MovieCellViewModel(imageURL: Service.imageURL(for: movie, type: .poster))
 			}
 		}
 	}
@@ -26,8 +25,7 @@ final class TVShowListViewViewModel: NSObject {
 	private var tvShows = [TVShow]() {
 		didSet {
 			tvShowCellModels = tvShows.compactMap { tvShow in
-				guard let url = Service.imageURL(.showPoster(tvShow)) else { return nil }
-				return TVShowCellViewModel(imageURL: url)
+				return TVShowCellViewModel(imageURL: Service.imageURL(for: tvShow, type: .poster))
 			}
 		}
 	}
