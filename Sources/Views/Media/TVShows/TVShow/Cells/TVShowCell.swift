@@ -74,11 +74,10 @@ extension TVShowCell {
 			let image = try await viewModel.fetchImage()
 			guard !Task.isCancelled else { return }
 
-			self.tvShowImageView.image = image
-
 			await MainActor.run {
 				UIView.transition(with: self.tvShowImageView, duration: 0.5, options: .transitionCrossDissolve) {
 					self.tvShowImageView.alpha = 1
+					self.tvShowImageView.image = image
 					self.tvShowImageView.transform = .init(scaleX: 1, y: 1)
 				}
 				self.spinnerView.stopAnimating()
