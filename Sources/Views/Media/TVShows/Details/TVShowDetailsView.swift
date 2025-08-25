@@ -15,6 +15,7 @@ final class TVShowDetailsView: UIView {
 		let tableView = UITableView()
 		tableView.allowsSelection = false
 		tableView.backgroundColor = .systemBackground
+		tableView.showsVerticalScrollIndicator = false
 		tableView.register(TVShowDetailsGenreCell.self, forCellReuseIdentifier: TVShowDetailsGenreCell.identifier)
 		tableView.register(MediaDetailsDescriptionCell.self, forCellReuseIdentifier: MediaDetailsDescriptionCell.identifier)
 		tableView.register(MediaDetailsCastCell.self, forCellReuseIdentifier: MediaDetailsCastCell.identifier)
