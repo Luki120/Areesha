@@ -13,11 +13,14 @@ final class SettingsViewViewModel: NSObject {
 
 	// ! UITableViewDiffableDataSource
 
-	private struct Item: Hashable {
+	@MainActor
+	fileprivate struct Item {
+		let id = UUID()
 		let viewModel: AnyHashable
 	}
 
-	private struct Section: Hashable {
+	@MainActor
+	fileprivate struct Section {
 		let name: String
 		let viewModels: [Item]
 
@@ -173,4 +176,14 @@ extension SettingsViewViewModel: UITableViewDelegate {
 	}
 }
 
-extension AnyHashable: @retroactive @unchecked Sendable {}
+nonisolated extension SettingsViewViewModel.Item: Hashable {
+	func hash(into hasher: inout Hasher) {
+		hasher.combine(id)
+	}
+
+	static func == (lhs: SettingsViewViewModel.Item, rhs: SettingsViewViewModel.Item) -> Bool {
+		return lhs.id == rhs.id
+	}
+}
+
+nonisolated extension SettingsViewViewModel.Section: Hashable {}

@@ -40,10 +40,12 @@ final actor Service {
 		else {
 			isFromCache = false
 			dataPublisher = URLSession.shared.dataTaskPublisher(for: request)
-				.tryMap { data, _ in
-					self.apiCache[urlString] = data
-					return data
-				}
+				.tryMap { data, _ in data }
+				.handleEvents(receiveOutput: { data in
+					Task {
+						await Service.sharedInstance.storeInCache(key: urlString, data: data)
+					}
+				})
 				.eraseToAnyPublisher()
 		}
 
@@ -120,6 +122,10 @@ final actor Service {
 	/// - Parameter key: A `String` that represents the cache key
 	func resetCache(for key: String) {
 		apiCache = apiCache.filter { !$0.key.hasPrefix(key) }
+	}
+
+	private func storeInCache(key: String, data: Data) {
+		apiCache[key] = data
 	}
 }
 
