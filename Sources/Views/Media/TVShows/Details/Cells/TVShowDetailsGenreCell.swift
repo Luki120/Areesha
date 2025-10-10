@@ -19,8 +19,8 @@ final class TVShowDetailsGenreCell: MediaDetailsBaseCell {
 		genreLabel = createLabel()
 		episodeAverageDurationLabel = createLabel(numberOfLines: 1)
 
-		lastAirDateLabel = createLabel(fontWeight: .light)
-		statusLabel = createLabel(fontWeight: .light)
+		lastAirDateLabel = createLabel()
+		statusLabel = createLabel()
 
 		contentView.addSubviews(genreLabel, separatorView, episodeAverageDurationLabel, lastAirDateLabel, statusLabel)
 		super.setupUI()
@@ -49,22 +49,11 @@ final class TVShowDetailsGenreCell: MediaDetailsBaseCell {
 		statusLabel.topAnchor.constraint(equalTo: lastAirDateLabel.topAnchor).isActive = true
 		statusLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
 	}
-
-	// ! Reusable
-
-	private func createLabel(fontWeight: UIFont.Weight = .semibold, numberOfLines lines: Int = 0) -> UILabel {
-		let label = UILabel()
-		label.font = .preferredFont(forTextStyle: .callout, weight: fontWeight, size: 15)
-		label.textColor = .label
-		label.numberOfLines = lines
-		label.translatesAutoresizingMaskIntoConstraints = false
-		return label
-	}
 }
 
-extension TVShowDetailsGenreCell {
-	// ! Public
+// ! Public
 
+extension TVShowDetailsGenreCell {
 	/// Function to configure the cell with its respective view model
 	/// - Parameter with: The cell's view model
 	func configure(with viewModel: MediaDetailsGenreCellViewModel) {
@@ -83,7 +72,12 @@ extension TVShowDetailsGenreCell {
 
 		genreLabel.text = genre
 		episodeAverageDurationLabel.text = episodeAverageDuration
-		lastAirDateLabel.text = "Last aired: \(shortDateFormatter.string(from: date))"
+		lastAirDateLabel.attributedText = .init(
+			fullString: "Last aired: \(shortDateFormatter.string(from: date))",
+			subString: "Last aired:",
+			attributes: [.font: UIFont.preferredFont(forTextStyle: .callout, weight: .regular, size: 15)],
+			subStringAttributes: [.font: UIFont.preferredFont(forTextStyle: .callout, weight: .medium, size: 15)]
+		)
 		statusLabel.text = status
 
 		separatorView.isHidden = episodeAverageDuration.isEmpty ? true : false
