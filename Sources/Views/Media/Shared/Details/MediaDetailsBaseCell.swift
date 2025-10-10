@@ -52,3 +52,21 @@ class MediaDetailsBaseCell: UITableViewCell {
 		return label
 	}
 }
+
+extension NSAttributedString {
+	convenience init(
+		fullString: String,
+		subString: String,
+		attributes: [NSAttributedString.Key: Any] = [:],
+		subStringAttributes: [NSAttributedString.Key: Any] = [:]
+	) {
+		let rangeOfSubString = (fullString as NSString).range(of: subString)
+		let rangeOfFullString = NSRange(location: 0, length: fullString.count)
+		let attributedString = NSMutableAttributedString(string: fullString)
+
+		attributedString.addAttributes(attributes, range: rangeOfFullString)
+		attributedString.addAttributes(subStringAttributes, range: rangeOfSubString)
+
+		self.init(attributedString: attributedString)
+	}
+}
