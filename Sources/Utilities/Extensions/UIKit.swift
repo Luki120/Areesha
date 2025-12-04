@@ -127,7 +127,14 @@ extension UIView {
 	func createRoundedButton(title: String = "Seasons", completion: @escaping () -> Void) -> UIButton {
 		let button = UIButton()
 		if #available(iOS 15.0, *) {
-			var configuration: UIButton.Configuration = .plain()
+			var configuration: UIButton.Configuration
+
+			if #available(iOS 26.0, *) {
+				configuration = .prominentGlass()
+			}
+			else {
+				configuration = .plain()
+			}
 			configuration.title = title
 			configuration.baseForegroundColor = .label
 			button.configuration = configuration

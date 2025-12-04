@@ -7,7 +7,6 @@ final class RoundedBlurredButton: UIButton {
 		effectView.frame = bounds
 		effectView.backgroundColor = .clear
 		effectView.isUserInteractionEnabled = false
-		insertSubview(effectView, at: 0)
 
 		if let imageView {
 			imageView.backgroundColor = .clear
@@ -34,6 +33,8 @@ final class RoundedBlurredButton: UIButton {
 		case header(status: Bool)
 	}
 
+	private let systemVersion = Double(UIDevice.current.systemVersion) ?? 0
+
 	let systemImage: String
 	let isHeader: Bool
 
@@ -58,6 +59,8 @@ final class RoundedBlurredButton: UIButton {
 	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
 		super.traitCollectionDidChange(previousTraitCollection)
 
+		guard systemVersion < 26.0 else { return }
+
 		if !isHeader {
 			setupStyles()
 		}
@@ -67,11 +70,15 @@ final class RoundedBlurredButton: UIButton {
 
 	private func setupUI() {
 		frame = .init(origin: .zero, size: .init(width: 28, height: 28))
-		clipsToBounds = true
-		layer.cornerRadius = 14
 
 		let imageConfig = UIImage.SymbolConfiguration(pointSize: 14, weight: .bold)
 		setImage(.init(systemName: systemImage, withConfiguration: imageConfig), for: .normal)
+
+		guard systemVersion < 26.0 else { return }
+
+		clipsToBounds = true
+		layer.cornerRadius = 14
+		insertSubview(blurEffectView, at: 0)
 
 		setupStyles()
 	}
