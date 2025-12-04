@@ -1,4 +1,5 @@
 import UIKit
+import Combine
 
 /// Singleton manager to handle the image fetching logic
 final actor ImageActor {

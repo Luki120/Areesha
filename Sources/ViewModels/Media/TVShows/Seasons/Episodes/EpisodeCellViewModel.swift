@@ -2,9 +2,9 @@ import Foundation
 
 /// View model struct for `EpisodeCell`
 @MainActor
-struct EpisodeCellViewModel: Hashable, ImageFetching {
+struct EpisodeCellViewModel: ImageFetching {
 	let imageURL: URL?
-	let episodeName: String
-	let episodeDuration: String
-	let episodeDescription: String
+	let episodeName, episodeDuration, episodeDescription: String
 }
+
+nonisolated extension EpisodeCellViewModel: Hashable {}

@@ -3,6 +3,8 @@ import struct Foundation.URL
 
 /// View model struct for `MovieCell`
 @MainActor
-struct MovieCellViewModel: Hashable, ImageFetching {
+struct MovieCellViewModel: ImageFetching {
 	var imageURL: URL?
 }
+
+nonisolated extension MovieCellViewModel: Hashable {}

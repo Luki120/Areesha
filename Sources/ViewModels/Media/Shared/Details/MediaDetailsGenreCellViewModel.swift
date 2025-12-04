@@ -2,7 +2,7 @@ import Foundation
 
 /// View model struct for `TVShowDetailsGenreCell`
 @MainActor
-struct MediaDetailsGenreCellViewModel: Hashable {
+struct MediaDetailsGenreCellViewModel {
 	let genre: String?
 	let episodeAverageDuration: String?
 	let lastAirDate: String?
@@ -40,3 +40,5 @@ struct MediaDetailsGenreCellViewModel: Hashable {
 		self.revenue = revenue
 	}
 }
+
+nonisolated extension MediaDetailsGenreCellViewModel: Hashable {}

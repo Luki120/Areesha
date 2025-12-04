@@ -2,7 +2,7 @@ import Foundation
 
 /// View model struct for `RatedMovieCell`
 @MainActor
-struct RatedMovieCellViewModel: Hashable, ImageFetching {
+struct RatedMovieCellViewModel: ImageFetching {
 	private let id: Int
 	private let credits: Credits
 
@@ -23,3 +23,5 @@ struct RatedMovieCellViewModel: Hashable, ImageFetching {
 		self.ratedMovie = ratedMovie
 	}
 }
+
+nonisolated extension RatedMovieCellViewModel: Hashable {}

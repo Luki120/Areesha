@@ -2,7 +2,7 @@ import UIKit.UIImage
 
 /// View model struct for `DeveloperCell`
 @MainActor
-struct DeveloperCellViewModel: Hashable {
+struct DeveloperCellViewModel {
 	let lukiImageURL, leptosImageURL: URL?
 	let lukiName, leptosName: String
 
@@ -19,3 +19,5 @@ struct DeveloperCellViewModel: Hashable {
 		return [lukisImage, leptosImage]
 	}
 }
+
+nonisolated extension DeveloperCellViewModel: Hashable {}

@@ -2,7 +2,7 @@ import Foundation
 
 /// View model struct for `MediaDetailsCastCell`
 @MainActor
-struct MediaDetailsCastCellViewModel: Hashable {
+struct MediaDetailsCastCellViewModel {
 	let cast: String?
 
 	/// Designated initializer
@@ -11,3 +11,5 @@ struct MediaDetailsCastCellViewModel: Hashable {
 		self.cast = cast
 	}	
 }
+
+nonisolated extension MediaDetailsCastCellViewModel: Hashable {}
