@@ -23,7 +23,10 @@ final class RatedMoviesViewViewModel: BaseViewModel<RatedMovieCell> {
 	/// Async function to fetch rated movies
 	/// - Parameter completion: `@escaping` closure that takes no arguments & returns nothing
 	func fetchRatedMovies(completion: @escaping () -> Void = {}) async {
-		let ratedMovies = await fetchAllRatedMovies()
+		let accountId = UserDefaults.standard.integer(forKey: "accountId")
+		let sessionId = UserDefaults.standard.string(forKey: "sessionId") ?? ""
+
+		let ratedMovies = await fetchAllRatedMovies(accountId: accountId, sessionId: sessionId)
 		let updatedRatedMovies = await fetchMovieDetails(for: ratedMovies)
 
 		viewModels = updatedRatedMovies.map {
@@ -38,8 +41,11 @@ final class RatedMoviesViewViewModel: BaseViewModel<RatedMovieCell> {
 	}
 
 	nonisolated
-	private func fetchAllRatedMovies() async -> [RatedMovie] {
-		guard let baseURL = URL(string: Service.Constants.ratedMoviesURL) else { return [] }
+	private func fetchAllRatedMovies(accountId: Int, sessionId: String) async -> [RatedMovie] {
+		guard let baseURL = URL(
+			string: "\(Service.Constants.baseURL)account/\(accountId)/rated/movies?\(Service.Constants.apiKey)&session_id=\(sessionId)") else {
+			return []
+		}
 
 		var allRatedMovies = [RatedMovie]()
 		var currentPage = 1
@@ -47,7 +53,7 @@ final class RatedMoviesViewViewModel: BaseViewModel<RatedMovieCell> {
 
 		repeat {
 			var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
-			urlComponents?.queryItems = [URLQueryItem(name: "page", value: "\(currentPage)")]
+			urlComponents?.queryItems?.append(.init(name: "page", value: "\(currentPage)"))
 
 			guard let url = urlComponents?.url else { break }
 			let urlRequest = await Service.sharedInstance.makeRequest(for: url)

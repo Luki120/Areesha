@@ -64,7 +64,7 @@ final class RatedMoviesView: UIView {
 
 				UIView.animate(withDuration: 0.5, delay: 0, options: .transitionCrossDissolve) {
 					self?.ratedMoviesCollectionView.alpha = 1
-				}					
+				}
 			}
 		}
 	}

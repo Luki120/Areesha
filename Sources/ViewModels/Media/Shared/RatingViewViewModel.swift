@@ -37,9 +37,11 @@ extension RatingViewViewModel {
 	///		- completion: `@escaping` closure that takes no arguments & returns nothing
 	func addRating(isDecimal: Bool = false, completion: @escaping () -> Void) {
 		let rating = isDecimal ? currentRating.round(to: 1) : currentRating * 2
+		let accountId = UserDefaults.standard.integer(forKey: "accountId")
+		let sessionId = UserDefaults.standard.string(forKey: "sessionId") ?? ""
 
 		Task {
-			await Service.sharedInstance.addRating(for: object, rating: rating)
+			await Service.sharedInstance.addRating(for: object, rating: rating, sessionId: sessionId)
 				.catch { _ in Just(Data()) }
 				.receive(on: DispatchQueue.main)
 				.sink { [weak self] _ in
@@ -47,8 +49,8 @@ extension RatingViewViewModel {
 
 					Task {
 						let key = self?.object.type == .movie
-							? Service.Constants.ratedMoviesURL
-							: Service.Constants.ratedShowsURL
+							? "\(Service.Constants.baseURL)account/\(accountId)/rated/movies?"
+							: "\(Service.Constants.baseURL)account/\(accountId)/rated/tv?"
 
 						await Service.sharedInstance.resetCache(for: key)
 					}

@@ -13,8 +13,8 @@ final actor Service {
 		static let apiKey = "api_key=\(_Constants.apiKey)"
 		static let baseURL = "https://api.themoviedb.org/3/"
 		static let imageBaseURL = "https://image.tmdb.org/t/p/"
-		static let ratedShowsURL = "\(baseURL)/account/\(_Constants.accountID)/rated/tv"
-		static let ratedMoviesURL = "\(baseURL)/account/\(_Constants.accountID)/rated/movies"
+		static let requestTokenURL = "\(baseURL)authentication/token/new?\(apiKey)"
+		static let accountDetailsURL = "\(baseURL)account?\(apiKey)&session_id="
 		static let topRatedTVShowsURL = "\(baseURL)tv/top_rated?\(apiKey)"
 		static let trendingTVShowsURL = "\(baseURL)trending/tv/day?\(apiKey)"
 		static let trendingMoviesURL = "\(baseURL)trending/movie/day?\(apiKey)"
@@ -96,19 +96,38 @@ final actor Service {
 	/// - Parameters:
 	///		- object: The `ObjectType`
 	///		- rating: A `Double` that represents the rating
+	///		- sessionId: A `String` that represents the session id
 	/// - Returns: `AnyPublisher<Data, Error>`
-	func addRating(for object: ObjectType, rating: Double) -> AnyPublisher<Data, Error> {
+	func addRating(for object: ObjectType, rating: Double, sessionId: String) -> AnyPublisher<Data, Error> {
 		let media = object.type == .movie ? "movie" : "tv"
 
-		guard let url = URL(string: "\(Constants.baseURL)\(media)/\(object.id)/rating") else {
+		guard let url = URL(string: "\(Constants.baseURL)\(media)/\(object.id)/rating?session_id=\(sessionId)") else {
 			return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
 		}
 
 		var request = makeRequest(for: url)
 		request.httpBody = try? JSONEncoder().encode(["value": rating])
 		request.httpMethod = "POST"
-		request.timeoutInterval = 10
-		request.allHTTPHeaderFields?["Content-Type"] = "application/json;charset=utf-8"
+
+		return URLSession.shared.dataTaskPublisher(for: request)
+			.tryMap { data, _ in
+				return data
+			}
+			.receive(on: DispatchQueue.main)
+			.eraseToAnyPublisher()
+	}
+
+	/// Function to create a session id
+	/// - Parameter requestToken: A `String` that represents the token
+	/// - Returns: `AnyPublisher<Data, Error>`
+	func createSessionId(requestToken: String) -> AnyPublisher<Data, Error> {
+		guard let url = URL(string: "\(Constants.baseURL)authentication/session/new") else {
+			return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
+		}
+
+		var request = makeRequest(for: url)
+		request.httpBody = try? JSONEncoder().encode(["request_token": requestToken])
+		request.httpMethod = "POST"
 
 		return URLSession.shared.dataTaskPublisher(for: request)
 			.tryMap { data, _ in
@@ -171,9 +190,11 @@ extension Service {
 	/// - Returns: `URLRequest`
 	func makeRequest(for url: URL) -> URLRequest {
 		var request = URLRequest(url: url)
+		request.timeoutInterval = 10
 		request.allHTTPHeaderFields = [
 			"accept": "application/json",
-			"Authorization": "Bearer \(_Constants.token)"
+			"Authorization": "Bearer \(_Constants.token)",
+			"content-type": "application/json;charset=utf-8"
 		]
 		return request
 	}

@@ -38,6 +38,22 @@ final class TrackedMediaListView: UIView {
 
 		viewModel.delegate = self
 	}
+
+	/// Function to fetch a request token
+	///	- Parameter completion: `@escaping` closure that takes a `String` & returns nothing
+	func fetchRequestToken(completion: @escaping (String) -> ()) {
+		Task {
+			await viewModel.fetchRequestToken(completion: completion)
+		}
+	}
+
+	/// Function to create a session id
+	///	- Parameter requestToken: A `String` that represents the request token
+	func createSessionId(requestToken: String) {
+		Task {
+			await viewModel.createSessionId(requestToken: requestToken)
+		}
+	}
 }
 
 // ! TrackedMediaListViewViewModelDelegate

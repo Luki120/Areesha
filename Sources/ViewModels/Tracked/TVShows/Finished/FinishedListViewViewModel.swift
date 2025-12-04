@@ -31,14 +31,19 @@ final class FinishedListViewViewModel: BaseViewModel<TrackedTVShowListCell> {
 	}
 
 	func fetchRatedShows() async {
-		guard let baseURL = URL(string: Service.Constants.ratedShowsURL) else { return }
+		let accountId = UserDefaults.standard.integer(forKey: "accountId")
+		let sessionId = UserDefaults.standard.string(forKey: "sessionId") ?? ""
+
+		guard let url = URL(string: "\(Service.Constants.baseURL)account/\(accountId)/rated/tv?\(Service.Constants.apiKey)&session_id=\(sessionId)") else {
+			return
+		}
 
 		var currentPage = 1
 		var totalPages = 1
 
 		repeat {
-			var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
-			urlComponents?.queryItems = [URLQueryItem(name: "page", value: "\(currentPage)")]
+			var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+			urlComponents?.queryItems?.append(.init(name: "page", value: "\(currentPage)"))
 
 			guard let url = urlComponents?.url else { break }
 			let urlRequest = await Service.sharedInstance.makeRequest(for: url)
